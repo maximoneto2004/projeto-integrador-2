@@ -1,0 +1,200 @@
+{% extends 'global/base.html' %}
+{% block content %}
+
+<div class="card-agendamento">
+    <div class="titulo">Agendamento de Atendimento</div>
+
+    <!-- Seleção Unidade -->
+    <div class="mb-3">
+        <label class="label">Unidade CRAS:</label>
+        <select class="form-select" id="unidadeSelect">
+            <option value="">-- Selecione a unidade --</option>
+            {% for u in unidades %}
+                <option value="{{ u.id }}">{{ u.nome }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Seleção Tipo -->
+    <div class="mb-3">
+        <label class="label">Tipo de Serviço:</label>
+        <select class="form-select" id="tipoSelect" disabled>
+            <option value="">-- Escolha a unidade antes --</option>
+        </select>
+    </div>
+
+    <!-- Seleção Serviço -->
+    <div class="mb-3">
+        <label class="label">Serviço:</label>
+        <select class="form-select" id="servicoSelect" disabled>
+            <option value="">-- Escolha o tipo antes --</option>
+        </select>
+    </div>
+
+    <!-- Seleção Data -->
+    <div class="mb-3">
+        <label class="label">Data:</label>
+        <input type="date" class="form-control" id="dataSelect" disabled>
+    </div>
+
+    <!-- Resultado -->
+    <div id="resultadoVagas" class="mt-4"></div>
+</div>
+
+<div id="mensagemAgendamento" class="mt-3"></div>
+
+<script>
+function getCsrfToken() {
+    const match = document.cookie.match(/csrftoken=([^;]+)/);
+    return match ? match[1] : "";
+}
+
+const unidadeSelect = document.getElementById("unidadeSelect");
+const tipoSelect = document.getElementById("tipoSelect");
+const servicoSelect = document.getElementById("servicoSelect");
+const dataSelect = document.getElementById("dataSelect");
+const resultado = document.getElementById("resultadoVagas");
+const mensagem = document.getElementById("mensagemAgendamento");
+
+
+unidadeSelect.addEventListener("change", function() {
+    const id = this.value;
+    tipoSelect.innerHTML = '<option value="">-- Escolha o tipo --</option>';
+    tipoSelect.disabled = true;
+
+    servicoSelect.innerHTML = '<option value="">-- Escolha o tipo antes --</option>';
+    servicoSelect.disabled = true;
+
+    dataSelect.value = "";
+    dataSelect.disabled = true;
+    resultado.innerHTML = "";
+    mensagem.textContent = "";
+
+    if (!id) return;
+
+    fetch(`/agendamentos/ajax/tipos/${id}/`)
+        .then(r => r.json())
+        .then(data => {
+            data.tipos.forEach(t => {
+                tipoSelect.innerHTML += `<option value="${t.id}">${t.nome}</option>`;
+            });
+            tipoSelect.disabled = false;
+        });
+});
+
+
+tipoSelect.addEventListener("change", function() {
+    const unidade = unidadeSelect.value;
+    const tipo = tipoSelect.value;
+
+    servicoSelect.innerHTML = '<option value="">-- Escolha um serviço --</option>';
+    servicoSelect.disabled = true;
+
+    dataSelect.value = "";
+    dataSelect.disabled = true;
+    resultado.innerHTML = "";
+    mensagem.textContent = "";
+
+    if (!tipo) return;
+
+    fetch(`/agendamentos/ajax/servicos/${unidade}/${tipo}/`)
+        .then(r => r.json())
+        .then(data => {
+            data.servicos.forEach(s => {
+                servicoSelect.innerHTML += `<option value="${s.id}">${s.nome}</option>`;
+            });
+
+            servicoSelect.disabled = false;
+        });
+});
+
+
+servicoSelect.addEventListener("change", function() {
+    dataSelect.value = "";
+    resultado.innerHTML = "";
+    mensagem.textContent = "";
+    dataSelect.disabled = !this.value;
+});
+
+
+dataSelect.addEventListener("change", function() {
+    const unidade = unidadeSelect.value;
+    const tipo = tipoSelect.value;
+    const data = this.value;
+
+    mensagem.textContent = "";
+
+    if (!unidade || !tipo || !data) return;
+
+    fetch(`/agendamentos/ajax/vagas/${unidade}/${tipo}/${data}/`)
+        .then(r => r.json())
+        .then(data => {
+            let html = "<h4>Vagas Disponíveis</h4>";
+
+            if (data.vagas.length === 0) {
+                html += `<p class="sem-vagas">Nenhuma vaga disponível para esta data.</p>`;
+            } else {
+                html += "<ul>";
+                data.vagas.forEach(v => {
+                    html += `
+                        <li>
+                            <strong>${v.horario}</strong>
+                            <span class="badge-vagas">
+                                ${v.vagas_disponiveis} de ${v.vagas}
+                            </span>
+                            ${v.vagas_disponiveis > 0 ? `<button class="btn-agendar" data-vaga="${v.id}">Agendar</button>` : ''}
+                        </li>`;
+                });
+                html += "</ul>";
+            }
+
+            resultado.innerHTML = html;
+
+            document.querySelectorAll(".btn-agendar").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    agendarHorario(btn.dataset.vaga);
+                });
+            });
+        });
+});
+
+function agendarHorario(vagaId) {
+    mensagem.textContent = "";
+    const servicoId = servicoSelect.value;
+    if (!servicoId) {
+        mensagem.textContent = "Selecione o serviço antes de agendar.";
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("vaga_id", vagaId);
+    formData.append("servico_id", servicoId);
+
+    fetch(`/agendamentos/ajax/agendar/`, {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": getCsrfToken(),
+        },
+        body: formData
+    }).then(async r => {
+        const data = await r.json();
+        if (data.redirect) {
+            window.location.href = data.redirect;
+            return;
+        }
+        if (!r.ok) {
+            mensagem.textContent = data.error || "Não foi possível agendar.";
+            return;
+        }
+
+        mensagem.textContent = data.mensagem;
+        // Atualiza a lista de vagas após agendar
+        dataSelect.dispatchEvent(new Event("change"));
+    }).catch(() => {
+        mensagem.textContent = "Erro ao comunicar com o servidor.";
+    });
+}
+
+</script>
+
+{% endblock %}

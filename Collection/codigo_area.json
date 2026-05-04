@@ -1,0 +1,398 @@
+[
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "04995f15-7aef-4c6b-9f26-d56b8842610c",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Outros encaminhamentos (código livre, a ser utilizado conforme interesse específico de cada município)",
+    "codigo": 88
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "08e3d2ac-22b7-4492-a2ca-46af3f681ccf",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Para Delegacias (especializadas ou não)",
+    "codigo": 74
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "145df504-999f-420b-86e0-06ef30b10c66",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Encaminhamento para outras unidades/serviços de Proteção Social Especial",
+    "codigo": 15
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "18a75fd1-7c61-4f8d-8ec6-73ef96b50fa9",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Para Ministério Público",
+    "codigo": 72
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "1ba50b32-7aff-4cff-84ec-a915b5fe8b36",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Para Educação – Rede regular de ensino (ensino fundamental e ensino médio)",
+    "codigo": 41
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "1c70c2f7-86d1-4938-bc85-faa313c00bf8",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Para programa da área de habitação",
+    "codigo": 60
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "1f023759-d338-4c56-8a21-fb1fea6065c2",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Para atualização cadastral no CadÚnico (inclusive quando realizada nesta própria Unidade)",
+    "codigo": 7
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "1fb88485-c234-49da-b609-fa8a706bb68f",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Para acesso a Benefícios Eventuais",
+    "codigo": 11
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "23af621e-3b59-4c98-9305-6a7c240a33fe",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Para outros serviços ou unidades do Sistema Único de Saúde",
+    "codigo": 34
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "3ad5dc7b-8fd9-4761-a325-95f57affa087",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Para acesso a Documentação Civil (Certidão de Nascimento, RG, Carteira de Trabalho, etc)",
+    "codigo": 12
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "3cde74e2-91a2-4564-8184-69d3eabe5af9",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Para Serviços de Saúde voltados ao acesso de órteses e próteses para pessoas com deficiência",
+    "codigo": 32
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "3d0f3fc7-d5de-40ca-80f5-151660027ed6",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Para Serviços, Programas ou Projetos voltados à geração de trabalho e renda",
+    "codigo": 51
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "3ea39366-3023-4e2a-acec-12b25558bebd",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Para Educação de Jovens de Adultos (por exemplo: Brasil Alfabetizado)",
+    "codigo": 42
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "442616c5-bb69-4115-9822-21b902b5052f",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Para acesso a microcrédito",
+    "codigo": 53
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "5cb22dfc-ad52-4bdf-b366-9066a4a009b3",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Para Conselho Tutelar",
+    "codigo": 70
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "6c94746a-4040-40ec-a487-3d0d08c1c4e4",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Para Serviços de Convivência e Fortalecimento de Vínculos voltados a crianças e adolescentes",
+    "codigo": 5
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "707c7375-8ecf-40d1-b1c1-7c8288911c43",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Para Educação – Creche e Pré-escola (ensino infantil)",
+    "codigo": 40
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "7c79ee91-2d04-44a8-a454-c1e49508c707",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Para acesso à Tarifa Social de Energia Elétrica",
+    "codigo": 61
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "836798b6-7292-4fb6-a7ba-41e14b056dcd",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Para o Programa BPC-Trabalho",
+    "codigo": 54
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "8875773e-cf50-475b-a8f2-3bda5b8989ab",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Para Unidades de Saúde da Família",
+    "codigo": 33
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "8d0c60dd-90d7-41d8-b21e-89866f8afbf7",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Para Serviços, Programas ou Projetos voltados à intermediação de mão-de-obra",
+    "codigo": 52
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "962aac0f-2436-4eb5-afb5-f2220535f348",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Outros encaminhamentos (código livre, a ser utilizado conforme interesse específico de cada município)",
+    "codigo": 89
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "b634842f-8c79-43fa-8c6c-e6668eb6cea9",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Para Serviços de Saúde Bucal (por exemplo: Brasil Sorridente)",
+    "codigo": 30
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "b9f459a7-ebfe-47eb-95bb-26f1f7e7c1cd",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Para Serviços de Saúde Mental",
+    "codigo": 31
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "bd1129eb-ea18-487c-a3c0-8060e4777209",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Para Serviços de Convivência e Fortalecimento de Vínculos voltados para idosos",
+    "codigo": 6
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "c4da48e7-9618-45df-abbb-690e5f6b5472",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Para inclusão no CadÚnico (inclusive quando realizada nesta própria Unidade)",
+    "codigo": 8
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "d3fb33b7-7514-4d29-b5e9-3abf2b6a14f7",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Para o INSS, visando acesso ao BPC",
+    "codigo": 9
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "d6508ec0-9d1a-4752-9263-cc96d2e3eac2",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Encaminhamento do CREAS para o CRAS (marcação exclusiva para o CREAS)",
+    "codigo": 14
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "d7a94a58-ed66-40c2-bede-1714c7538580",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Outros encaminhamentos (código livre, a ser utilizado conforme interesse específico de cada município)",
+    "codigo": 87
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "dac5874f-f7c2-456d-95a5-b5123f877340",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Outros encaminhamentos (código livre, a ser utilizado conforme interesse específico de cada município)",
+    "codigo": 85
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "ddc21c2c-f57b-4a2c-ab32-b5e2caa90cf8",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Para Serviços, Programas ou Projetos voltados à capacitação profissional",
+    "codigo": 50
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "e37d3c5b-37c3-4e5c-be61-e2c319755e1b",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Outros encaminhamentos (código livre, a ser utilizado conforme interesse específico de cada município)",
+    "codigo": 86
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "eae76cda-e132-45cf-8687-ed7656a78af6",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Para o INSS, visando acesso a outros direitos, que não o BPC",
+    "codigo": 10
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "eaedde39-086b-4309-9bae-6397bddacda6",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Encaminhamento do CRAS para o CREAS (marcação exclusiva para o CRAS)",
+    "codigo": 13
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "ec9f5365-069e-44ea-89e5-def27930ab6b",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Para Poder Judiciário",
+    "codigo": 71
+  }
+},
+{
+  "model": "encaminhamentos.codigoarea",
+  "pk": "f38a0acf-9c81-4595-ae72-4e1ad333e209",
+  "fields": {
+    "created_at": "2026-02-19T18:38:41Z",
+    "updated_at": "2026-02-19T18:38:41Z",
+    "is_active": true,
+    "nome": "Para Defensoria Pública",
+    "codigo": 73
+  }
+}
+]

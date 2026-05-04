@@ -1,0 +1,123 @@
+[
+  {
+    "model": "servicos.classeservico",
+    "pk": "00f3bac6-72a7-4562-a693-0f7e94f39428",
+    "fields": {
+      "created_at": "2026-02-02T16:15:31.440Z",
+      "updated_at": "2026-02-02T16:39:23.308Z",
+      "is_active": true,
+      "nome": "Programas Usuários do CadÚnico",
+      "descricao": "Agrupa atendimentos voltados a programas e benefícios vinculados ao CadÚnico, com orientações, verificação de requisitos e encaminhamentos para emissão/solicitação conforme a demanda do usuário."
+    }
+  },
+  {
+    "model": "servicos.classeservico",
+    "pk": "23e7ef63-fe4e-4929-be54-3d0f5b605848",
+    "fields": {
+      "created_at": "2026-02-06T19:05:09.006Z",
+      "updated_at": "2026-02-06T19:05:09.006Z",
+      "is_active": true,
+      "nome": "Gestão de Benefício SICON",
+      "descricao": "Agrupa procedimentos e atendimentos relacionados à gestão de benefícios no SICON."
+    }
+  },
+  {
+    "model": "servicos.classeservico",
+    "pk": "27385bc0-17fa-45ec-81e9-b613de3b6b3c",
+    "fields": {
+      "created_at": "2026-02-06T18:46:52.613Z",
+      "updated_at": "2026-02-06T18:46:52.613Z",
+      "is_active": true,
+      "nome": "Ação Comunitária",
+      "descricao": "Agrupa ações comunitárias realizadas pela unidade (campanhas, palestras e eventos)"
+    }
+  },
+  {
+    "model": "servicos.classeservico",
+    "pk": "316c7d47-0921-4ce2-b042-5b792aa89af8",
+    "fields": {
+      "created_at": "2026-02-06T18:47:35.447Z",
+      "updated_at": "2026-02-06T18:47:35.447Z",
+      "is_active": true,
+      "nome": "Atendimento em atividade coletiva de caráter não continuado",
+      "descricao": "Agrupa atendimentos realizados em atividades coletivas de caráter não continuado (oficinas, busca ativa coletiva e outras ações)."
+    }
+  },
+  {
+    "model": "servicos.classeservico",
+    "pk": "4205f5a0-5a94-4670-9dc0-8efd4f0a1d01",
+    "fields": {
+      "created_at": "2026-02-06T18:46:33.010Z",
+      "updated_at": "2026-02-06T18:46:33.010Z",
+      "is_active": true,
+      "nome": "Encaminhar",
+      "descricao": "Agrupa encaminhamentos para serviços da rede socioassistencial e intersetorial, conforme a necessidade do usuário."
+    }
+  },
+  {
+    "model": "servicos.classeservico",
+    "pk": "6ba7f4ee-b5e5-4e95-90e4-d221a7922b21",
+    "fields": {
+      "created_at": "2026-02-06T18:46:10.764Z",
+      "updated_at": "2026-02-06T18:46:10.764Z",
+      "is_active": true,
+      "nome": "Solicitação de Concessão de benefícios",
+      "descricao": "Agrupa solicitações de concessão de benefícios, conforme critérios e fluxos da política de assistência social."
+    }
+  },
+  {
+    "model": "servicos.classeservico",
+    "pk": "8a97892e-6585-46cd-b6a1-7af1385157e5",
+    "fields": {
+      "created_at": "2026-02-06T18:47:52.405Z",
+      "updated_at": "2026-02-06T18:47:52.405Z",
+      "is_active": true,
+      "nome": "Acompanhamento Familiar",
+      "descricao": "Agrupa atendimentos de acompanhamento familiar, incluindo ações coletivas e particularizadas (no CRAS e domiciliares)."
+    }
+  },
+  {
+    "model": "servicos.classeservico",
+    "pk": "8ca47f82-e0af-4553-9688-3813ab2a36d4",
+    "fields": {
+      "created_at": "2026-02-02T16:15:42.322Z",
+      "updated_at": "2026-02-02T16:41:14.974Z",
+      "is_active": true,
+      "nome": "Documentos",
+      "descricao": "Agrupa atendimentos relacionados a solicitação, orientação e suporte sobre documentos e declarações, incluindo informações de como obter 2ª via, regularizações e encaminhamentos conforme o caso."
+    }
+  },
+  {
+    "model": "servicos.classeservico",
+    "pk": "ba92fbac-876f-4b6e-b2a8-0058d5d462ba",
+    "fields": {
+      "created_at": "2026-02-02T16:15:26.848Z",
+      "updated_at": "2026-02-02T16:40:28.517Z",
+      "is_active": true,
+      "nome": "Cadastro Único",
+      "descricao": "Agrupa atendimentos relacionados ao Cadastro Único, como inclusão, atualização, consulta e demais procedimentos cadastrais necessários para acesso e manutenção de benefícios e programas sociais."
+    }
+  },
+  {
+    "model": "servicos.classeservico",
+    "pk": "e65c305e-6feb-4031-bb6b-b18aaa739716",
+    "fields": {
+      "created_at": "2026-02-02T16:15:47.409Z",
+      "updated_at": "2026-02-02T16:43:26.088Z",
+      "is_active": true,
+      "nome": "Técnico Especializado",
+      "descricao": "Agrupa atendimentos que demandam avaliação técnica e acompanhamento por profissional de referência, com análise mais detalhada da situação, orientações qualificadas e encaminhamentos para a rede quando aplicável. (Assistente social, Psicólogo, Pedagogo, Terapeuta Ocupacional (T.O.)"
+    }
+  },
+  {
+    "model": "servicos.classeservico",
+    "pk": "f5bcdcc0-d0df-496e-8728-0bfe441cb0be",
+    "fields": {
+      "created_at": "2026-02-02T16:15:37.312Z",
+      "updated_at": "2026-02-02T16:40:42.213Z",
+      "is_active": true,
+      "nome": "Orientações sobre Programas de Usuários",
+      "descricao": "Agrupa atendimentos de orientação ao cidadão sobre programas/benefícios e serviços disponíveis, incluindo esclarecimentos de critérios, documentação e direcionamento para o setor responsável quando necessário."
+    }
+  }
+]

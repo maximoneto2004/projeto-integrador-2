@@ -1,0 +1,59 @@
+﻿ID,Cenário,Passos,Resultado esperado,Prioridade
+1,Acesso sem login ao perfil,"Acessar /perfil sem estar autenticado","Usuário deve ser redirecionado para a home/login do portal",Alta
+2,Acesso sem login ao agendamento,"Acessar /agendar sem autenticação","Usuário deve ser redirecionado para a home/login",Alta
+3,Acesso sem login aos detalhes do agendamento,"Acessar /agendar/detalhes diretamente sem sessão","Usuário deve ser redirecionado e não ver a tela protegida",Alta
+4,Sessão expirada durante uso,"Entrar no portal, expirar/remover token e tentar abrir tela protegida","Sistema deve exigir novo login",Alta
+5,Usuário SSO sem cadastro local,"Logar com usuário que existe no SSO mas não no banco local e acessar /perfil","Sistema deve redirecionar para /validar-cadastro",Alta
+6,Tela de validar cadastro carregando dados do SSO,"Abrir /validar-cadastro com usuário sem cadastro local","Tabela deve exibir nome, CPF, contato e endereço vindos do SSO",Alta
+7,Aceite obrigatório dos termos,"Abrir /validar-cadastro e não marcar checkbox","Botão Seguir deve permanecer desabilitado",Alta
+8,Abertura dos termos,"Na tela /validar-cadastro, clicar em termos de uso/política","Modal de termos deve abrir corretamente",Média
+9,Cadastro sem bairro vindo do SSO,"Usar usuário cujo perfil não tenha bairro","Ao clicar em Seguir, sistema deve exibir erro e não concluir cadastro",Alta
+10,Concluir validação de cadastro,"Marcar aceite e clicar em Seguir com dados válidos","Cadastro deve ser criado/atualizado e usuário deve ir para /perfil",Alta
+11,Reacesso após validar cadastro,"Após conclusão do cadastro, abrir novamente rota protegida","Usuário deve acessar normalmente sem voltar para /validar-cadastro",Alta
+12,Perfil exibe dados básicos,"Em /perfil, abrir aba Perfil","Nome, CPF, email, telefone, logradouro, número, bairro, complemento e CEP devem aparecer corretamente",Alta
+13,Perfil usa dados locais e fallback do SSO,"Testar caso com campos vazios no cadastro local e preenchidos no SSO","Tela deve mostrar os dados disponíveis, priorizando local e usando fallback do SSO",Média
+14,Estrutura do menu do cidadão,"Em /perfil, verificar menu lateral","Devem existir as opções Perfil, Agendamentos e Agendar",Média
+15,Agendar a partir do perfil,"Em /perfil, clicar na aba Agendar","Deve abrir o componente de solicitação de agendamento dentro do perfil",Média
+16,Listagem de unidades no agendamento,"Abrir fluxo de agendar","Devem ser listadas apenas unidades ativas",Alta
+17,Seleção de classe após unidade,"Selecionar uma unidade","Classes de serviço da unidade devem ser carregadas",Alta
+18,Seleção de serviço após classe,"Selecionar classe","Serviços ativos daquela classe/unidade devem ser carregados",Alta
+19,Bloqueio de avanço sem campos obrigatórios,"Tentar prosseguir sem unidade/classe/serviço","Botão de prosseguir deve permanecer desabilitado",Alta
+20,Entrada direta em /agendar/detalhes sem contexto,"Abrir rota de detalhes sem selecionar serviço antes","Sistema deve redirecionar para /agendar",Alta
+21,Exibição de dados do cidadão na confirmação,"No detalhe do agendamento, observar bloco de identificação","Nome, CPF, email e telefone do cidadão devem aparecer",Média
+22,Exibição da unidade escolhida,"No detalhe do agendamento, observar bloco de localização","Unidade selecionada e categoria devem aparecer corretamente",Média
+23,Calendário com datas disponíveis,"No detalhe do agendamento, abrir calendário","Apenas datas com vagas disponíveis e ativas devem ser selecionáveis",Alta
+24,Horários disponíveis por data,"Escolher uma data com vagas","Select de horário deve mostrar somente horários livres",Alta
+25,Tentativa de avançar sem data/horário,"Não selecionar data ou horário e tentar avançar","Fluxo não deve permitir confirmação",Alta
+26,Agendamento com sucesso,"Selecionar serviço, data e horário válidos e confirmar","Sistema deve criar agendamento, mostrar sucesso e redirecionar para /perfil",Alta
+27,Envio de email de confirmação,"Realizar agendamento com cidadão que possua email cadastrado","Email de confirmação deve ser disparado",Média
+28,Agendamento em unidade diferente da unidade de origem,"Usar cidadão com unidade_origem e escolher outra unidade","Sistema deve exigir preenchimento de motivo_territorio",Alta
+29,Falha ao omitir motivo de território,"Escolher unidade diferente da origem e não informar motivo","Sistema deve bloquear confirmação e exibir erro",Alta
+30,Agendamento com motivo de território preenchido,"Escolher unidade diferente e preencher motivo","Sistema deve permitir criação do agendamento",Alta
+31,Rejeitar vaga lotada,"Tentar agendar em horário cuja vaga já esteja cheia","Sistema deve rejeitar com erro de indisponibilidade",Alta
+32,Rejeitar combinação inválida serviço x tipo de vaga,"Forçar cenário de serviço incompatível com o tipo da vaga","Sistema deve rejeitar a operação",Alta
+33,Rejeitar agendamento duplicado do mesmo tipo,"Cidadão já com agendamento ativo de um tipo; tentar outro do mesmo tipo","Sistema deve bloquear e informar que já existe agendamento ativo daquele tipo",Alta
+34,Visualizar lista de agendamentos reais,"Em /perfil, abrir aba Agendamentos","Sistema deve carregar lista via API real do cidadão",Alta
+35,Paginação de agendamentos,"Ter mais de 3 agendamentos e clicar em Carregar mais","Sistema deve trazer novos itens sem duplicar os anteriores",Média
+36,Detalhes de agendamento,"Em um card/lista, clicar em visualizar","Modal/tela deve exibir dados do agendamento correto",Alta
+37,Status visual do agendamento,"Validar agendamentos em situações diferentes","Badge/status deve refletir corretamente o estado retornado pelo backend",Média
+38,Editar agendamento marcado,"Em agendamento com status Marcado, clicar em editar","Modal deve permitir alterar categoria/serviço/data/horário conforme disponibilidade",Alta
+39,Editar para nova vaga válida,"Alterar para outro horário disponível e salvar","Agendamento deve ser atualizado com nova data/horário",Alta
+40,Liberação da vaga antiga após edição,"Editar agendamento para novo horário","Vaga antiga deve ser liberada e nova vaga ocupada",Alta
+41,Edição para vaga indisponível,"Tentar salvar edição em vaga sem disponibilidade","Sistema deve impedir atualização",Alta
+42,Cancelar agendamento marcado,"Em agendamento com status Marcado, clicar em cancelar e confirmar","Situação deve mudar para CANCELADO_CIDADAO",Alta
+43,Liberação da vaga após cancelamento,"Cancelar um agendamento ativo","Vaga ocupada deve ser liberada no backend",Alta
+44,Cancelamento não deve apagar histórico,"Cancelar agendamento e voltar à lista","Item deve continuar visível no histórico/lista com status cancelado",Média
+45,Visualização de agendamento cancelado,"Abrir detalhe de agendamento cancelado","Dados devem continuar acessíveis para consulta",Média
+46,Agendamento finalizado sem ação de edição/cancelamento,"Abrir lista com item Finalizado","Não deve aparecer ação de editar/cancelar",Alta
+47,Avaliar atendimento finalizado,"Em agendamento finalizado, clicar em avaliar, dar nota e salvar","Avaliação deve ser criada com sucesso",Alta
+48,Avaliação com comentário opcional,"Avaliar com nota e sem comentário","Sistema deve aceitar normalmente",Média
+49,Nota obrigatória na avaliação,"Abrir avaliação e tentar salvar sem selecionar estrelas","Botão deve ficar desabilitado ou impedir envio",Alta
+50,Persistência da avaliação,"Após salvar avaliação, reabrir o mesmo agendamento","Avaliação deve aparecer vinculada ao agendamento",Alta
+51,Avaliação em modo somente leitura após existir,"Reabrir modal de avaliação de agendamento já avaliado","Campos devem aparecer bloqueados no frontend",Média
+52,Tentativa de avaliar agendamento não finalizado,"Verificar item Marcado ou Cancelado","A ação de avaliar não deve aparecer",Alta
+53,Histórico de ausência automática,"Ter agendamento antigo em aberto e aguardar rotina/backoffice","Situação deve mudar para AUSENCIA_CIDADAO",Média
+54,Restrição de acesso a agendamento de outro cidadão,"Tentar consultar/agendar via sessão de outro usuário por ID conhecido","API deve negar acesso e retornar não encontrado/permissão implícita",Alta
+55,Restrição de acesso a avaliação de outro cidadão,"Tentar abrir avaliação de outro cidadão","API deve retornar erro e não expor dados",Alta
+56,Robustez de navegação no portal,"Alternar entre abas Perfil, Agendamentos e Agendar dentro de /perfil","Conteúdo deve trocar sem quebrar estado básico da tela",Média
+57,Experiência em tela mobile,"Validar /perfil, agendamento e lista de agendamentos em largura mobile","Layout deve continuar utilizável e ações acessíveis",Média
+58,Mensagens de erro amigáveis,"Forçar falhas comuns: sessão expirada, bairro ausente, vaga lotada, duplicidade","Usuário deve receber mensagem clara e sem stacktrace",Alta

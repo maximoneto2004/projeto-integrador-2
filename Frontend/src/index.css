@@ -1,0 +1,330 @@
+@import url("https://fonts.googleapis.com/css2?family=Gravitas+One&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --font-portal: "Nunito Sans", sans-serif;
+    --font-portal-title: "Nunito Sans", sans-serif;
+    --background: 32 40% 96%;
+    --foreground: 210 25% 20%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 210 25% 20%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 25% 20%;
+
+    --primary: 16 88% 55%;
+    --primary-foreground: 0 0% 100%;
+
+
+    --secondary: 30 30% 90%;
+    --secondary-foreground: 210 25% 20%;
+
+    --muted: 30 25% 92%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 190 60% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 30 20% 85%;
+    --input: 30 15% 88%;
+    --ring: 16 88% 55%;
+
+    --radius: 0.75rem;
+
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 45 93% 47%;
+    --warning-foreground: 0 0% 100%;
+
+    --info: 199 89% 48%;
+    --info-foreground: 0 0% 100%;
+
+    --gradient-hero: linear-gradient(
+      135deg,
+      hsl(199, 89%, 48%) 0%,
+      hsl(190, 60%, 50%) 50%,
+      hsl(142, 76%, 50%) 100%
+    );
+    --gradient-card: linear-gradient(
+      135deg,
+      hsl(16, 88%, 55%) 0%,
+      hsl(30, 85%, 75%) 100%
+    );
+
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Backgrounds */
+    --portal-background-priority: 31 100% 90%; /* #FFE6CB */
+    --portal-background: 0 0% 100%;
+    --portal-foreground: 220 13% 18%; /* texto padrão */
+
+    /* Priority (Primary brand color) */
+    --portal-primary: 16 88% 54%; /* #F15A22 */
+    --portal-primary-foreground: 0 0% 100%;
+
+    /*Intro */
+    --portal-intro: 16 88% 54%;
+    --portal-intro-foreground: 0 0% 100%;
+
+    /* Secondary */
+    --portal-secondary: 173 100% 30%; /* #009889 */
+    --portal-secondary-foreground: 0 0% 100%;
+
+    /* Tertiary */
+    --portal-tertiary: 31 100% 90%; /* #FFE6CB */
+    --portal-tertiary-foreground: 0 0% 100%;
+
+    --portal-texto: 31 100% 90%; /* #FFE6CB */
+    --portal-texto-foreground: 0 0% 100%;
+
+    /* Detail */
+    --portal-detail: 199 100% 43%; /* #00A0DC */
+    --portal-detail-foreground: 0 0% 100%;
+
+    /* Black and White */
+    --portal-black: 0 0% 0%; /* #000000 */
+    --portal-white: 0 0% 100%; /* #FFFFFF */
+
+    /* text */
+    --portal-text-strong: 240 2% 25%; /* #414042 */
+    --portal-text-muted: 199 34% 30%; /* #325565 */
+
+    /* Muted */
+    --portal-muted: 199 34% 30%; /* #325565 */
+    --portal-muted-foreground: 215 16% 47%;
+
+    /*Neutral */
+    --portal-neutral: 210 16% 93%; /* #EAEDF0 */
+    --portal-neutral-foreground: 210 16% 20%; /* #2B333B */
+
+    --portal-salmon: 16 88% 54%; /* #F15A22 */
+  }
+
+  .dark {
+    --background: 210 25% 12%;
+    --foreground: 210 20% 90%;
+
+    --card: 210 25% 15%;
+    --card-foreground: 210 20% 90%;
+
+    --popover: 210 25% 15%;
+    --popover-foreground: 210 20% 90%;
+
+    --primary: 16 88% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 25% 20%;
+    --secondary-foreground: 210 20% 90%;
+
+    --muted: 210 25% 20%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 190 60% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 210 25% 25%;
+    --input: 210 25% 20%;
+    --ring: 16 88% 55%;
+
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Portal theme (dark) */
+    --portal-background-priority: 210 22% 14%;
+    --portal-background: 210 22% 12%;
+    --portal-foreground: 210 20% 92%;
+
+    --portal-primary: 16 88% 55%;
+    --portal-primary-foreground: 0 0% 100%;
+
+    --portal-secondary: 210 24% 16%;
+    --portal-secondary-foreground: 210 20% 90%;
+
+    --portal-tertiary: 210 22% 14%;
+    --portal-tertiary-foreground: 210 20% 90%;
+
+
+    --portal-detail: 210 28% 18%;
+    --portal-detail-foreground: 210 20% 92%;
+
+    --portal-black: 0 0% 0%;
+    --portal-white: 0 0% 100%;
+
+    --portal-text-strong: 210 20% 92%;
+    --portal-text-muted: 210 16% 78%;
+
+    --portal-muted: 210 16% 78%;
+    --portal-muted-foreground: 210 12% 68%;
+
+    --portal-neutral: 210 16% 18%;
+    --portal-neutral-foreground: 210 20% 90%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+.grayscale {
+  filter: grayscale(1);
+}
+
+.brr {
+  border-color: 2px solid red !important;
+}
+
+.bg-portal-hero {
+  background-image: url("./assets/images/bgCras.jpg");
+}
+
+.dark .bg-portal-hero {
+  background-image: linear-gradient(
+      135deg,
+      rgba(6, 12, 18, 0.85) 0%,
+      rgba(8, 20, 26, 0.85) 100%
+    ),
+    url("./assets/images/bgCras.jpg");
+  background-blend-mode: multiply;
+}
+
+.bg-portal-about {
+  background-image: url("./assets/images/bgAbout.jpg");
+}
+
+.dark .bg-portal-about {
+  background-image: none;
+  background-color: hsl(var(--background));
+}
+
+.bg-portal-cadastro {
+  background-image: url("./assets/images/hands-wheart.png");
+}
+
+.dark .bg-portal-cadastro {
+  background-image: linear-gradient(
+      180deg,
+      rgba(8, 14, 20, 0.9) 0%,
+      rgba(8, 14, 20, 0.9) 100%
+    ),
+    url("./assets/images/hands-wheart.png");
+  background-blend-mode: multiply;
+}
+
+.portal-image {
+  transition: filter 200ms ease;
+}
+
+.dark .portal-image {
+  filter: brightness(0.85) contrast(0.9);
+}
+
+.dark .portal-image--invert {
+  filter: brightness(0) invert(1);
+}
+
+/* Leaflet uses high z-index (controls/markers). Keep it below dialogs/overlays. */
+.leaflet-container {
+  z-index: 0;
+}
+
+.cras-house-marker {
+  background: transparent;
+  border: 0;
+}
+
+.cras-house-marker__bubble {
+  width: 34px;
+  height: 34px;
+  border: 2px solid #ffffff;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+}
+
+.cras-house-marker__bubble svg {
+  display: block;
+}
+
+.cras-house-marker__bubble--sem-dados {
+  background: #64748b;
+}
+
+.cras-house-marker__bubble--excelente {
+  background: #16a34a;
+}
+
+.cras-house-marker__bubble--muito-bom {
+  background: #eab308;
+}
+
+.cras-house-marker__bubble--regular {
+  background: #f97316;
+}
+
+.cras-house-marker__bubble--critico {
+  background: #dc2626;
+}
+
+body.vlibras-hidden-route [vw],
+body.vlibras-hidden-route [vw-access-button],
+body.vlibras-hidden-route [vw-plugin-wrapper] {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  body:not(.vlibras-hidden-route) [vw] {
+    position: fixed !important;
+    left: auto !important;
+    right: 12px !important;
+    bottom: 92px !important;
+    top: auto !important;
+    margin: 0 !important;
+    transform: none !important;
+    z-index: 1200 !important;
+  }
+
+  body:not(.vlibras-hidden-route) [vw-access-button] {
+    margin: 0 !important;
+  }
+}

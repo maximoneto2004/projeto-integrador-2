@@ -1,0 +1,10 @@
+{% extends 'global/base.html' %}
+{% block content %}
+    <h1>Olá Mundo!</h1>
+    {% if logged_name %}
+        <p>{{ logged_name }}</p>
+        <a href="{% url 'tela_agendamento' %}">Agendar</a><br>
+        <a href="{% url 'logout_sso' %}">Sair</a></br>
+    {% endif %}
+    <a href="{% url 'login' %}">Login</a>
+{% endblock %}

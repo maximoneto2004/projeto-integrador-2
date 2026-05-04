@@ -1,0 +1,1454 @@
+[
+  {
+    "model": "app.bairro",
+    "pk": "006e06a6-f282-440b-b5cc-409d169b26f5",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.078Z",
+      "updated_at": "2026-01-27T18:49:05.078Z",
+      "is_active": true,
+      "nome": "Conjunto Esperança",
+      "latitude": -3.814375,
+      "longitude": -38.591529
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "00db3032-9130-4b4a-b6d6-9b589e309503",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.122Z",
+      "updated_at": "2026-01-27T18:49:05.122Z",
+      "is_active": true,
+      "nome": "Praia de Iracema",
+      "latitude": -3.718709,
+      "longitude": -38.517205
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "01e0a56d-002e-4fab-9fc5-6d6e212c3613",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.053Z",
+      "updated_at": "2026-01-27T18:49:05.053Z",
+      "is_active": true,
+      "nome": "Aldeota",
+      "latitude": -3.737308,
+      "longitude": -38.502801
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "01f13439-263e-4735-82c1-bb4d280b2985",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.064Z",
+      "updated_at": "2026-01-27T18:49:05.064Z",
+      "is_active": true,
+      "nome": "Centro",
+      "latitude": -3.727254,
+      "longitude": -38.527041
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "0642eb3b-f22b-4aaa-846c-93263c68e375",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.035Z",
+      "updated_at": "2026-01-27T18:49:05.035Z",
+      "is_active": true,
+      "nome": "Bom Futuro",
+      "latitude": -3.757952,
+      "longitude": -38.546223
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "0d853fbf-ae51-4924-bbf0-bab71b4e827d",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.111Z",
+      "updated_at": "2026-01-27T18:49:05.111Z",
+      "is_active": true,
+      "nome": "Rodolfo Teófilo",
+      "latitude": -3.746114,
+      "longitude": -38.551198
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "0dae1c86-86ba-48fb-8cbc-c5ed7a6e93cc",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.193Z",
+      "updated_at": "2026-01-27T18:49:05.193Z",
+      "is_active": true,
+      "nome": "Jangurussu",
+      "latitude": -3.846276,
+      "longitude": -38.510961
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "0fce198f-a789-4537-a6e9-83b6060a69bd",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.289Z",
+      "updated_at": "2026-01-27T18:49:05.289Z",
+      "is_active": true,
+      "nome": "Vicente Pinzón",
+      "latitude": -3.727617,
+      "longitude": -38.468903
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "10ce695c-b645-4a4d-a93a-eb68e52b7004",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.269Z",
+      "updated_at": "2026-01-27T18:49:05.269Z",
+      "is_active": true,
+      "nome": "Cais do Porto",
+      "latitude": -3.712033,
+      "longitude": -38.469302
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "160a80d7-108a-436e-a310-b62c520cbfb5",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.055Z",
+      "updated_at": "2026-01-27T18:49:05.055Z",
+      "is_active": true,
+      "nome": "Amadeu Furtado",
+      "latitude": -3.744757,
+      "longitude": -38.559461
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "1c442cab-d4b9-4d59-8735-abd58fec1cc6",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.311Z",
+      "updated_at": "2026-01-27T18:49:05.311Z",
+      "is_active": true,
+      "nome": "Sapiranga / Coité",
+      "latitude": -3.797656,
+      "longitude": -38.466924
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "1e8b156f-64ed-4360-b393-b67976ebe346",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.236Z",
+      "updated_at": "2026-01-27T18:49:05.236Z",
+      "is_active": true,
+      "nome": "Parque Dois Irmãos",
+      "latitude": -3.808862,
+      "longitude": -38.549901
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "2012207d-4c8a-4b7f-852c-423cf830ac55",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.032Z",
+      "updated_at": "2026-01-27T18:49:05.032Z",
+      "is_active": true,
+      "nome": "Edson Queiroz",
+      "latitude": -3.775939,
+      "longitude": -38.461993
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "21a54d02-3133-4a83-a93f-28c984a0c8f6",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.134Z",
+      "updated_at": "2026-01-27T18:49:05.134Z",
+      "is_active": true,
+      "nome": "Presidente Kennedy",
+      "latitude": -3.729501,
+      "longitude": -38.570918
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "264a80e9-088a-42c6-8b6b-172f72b01621",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.087Z",
+      "updated_at": "2026-01-27T18:49:05.087Z",
+      "is_active": true,
+      "nome": "Farias Brito",
+      "latitude": -3.732452,
+      "longitude": -38.541324
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "2656630b-712a-4e10-9c44-78292f295314",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.242Z",
+      "updated_at": "2026-01-27T18:49:05.242Z",
+      "is_active": true,
+      "nome": "Siqueira",
+      "latitude": -3.807432,
+      "longitude": -38.617249
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "284bbaeb-e2a9-4592-adca-c2455d342b65",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.303Z",
+      "updated_at": "2026-01-27T18:49:05.303Z",
+      "is_active": true,
+      "nome": "Guajeru",
+      "latitude": -3.832388,
+      "longitude": -38.478568
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "2a01a957-0d67-4732-9d29-4d4a59ba73ac",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.042Z",
+      "updated_at": "2026-01-27T18:49:05.042Z",
+      "is_active": true,
+      "nome": "Dias Macedo",
+      "latitude": -3.788418,
+      "longitude": -38.523706
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "2e603792-c8c0-4366-8f81-4a3927b5ca49",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.278Z",
+      "updated_at": "2026-01-27T18:49:05.278Z",
+      "is_active": true,
+      "nome": "De Lourdes",
+      "latitude": -3.740861,
+      "longitude": -38.462886
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "2f1d7d6f-de49-4903-9ebc-d198b8d682ea",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.277Z",
+      "updated_at": "2026-01-27T18:49:05.277Z",
+      "is_active": true,
+      "nome": "Planalto Ayrton Senna",
+      "latitude": -3.8333,
+      "longitude": -38.571757
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "30b5b631-57c4-4096-a5ff-d51da491b1a4",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.252Z",
+      "updated_at": "2026-01-27T18:49:05.252Z",
+      "is_active": true,
+      "nome": "Serrinha",
+      "latitude": -3.78399,
+      "longitude": -38.541968
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "31b88d42-3eed-4db6-8345-bf8eff07707e",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.258Z",
+      "updated_at": "2026-01-27T18:49:05.258Z",
+      "is_active": true,
+      "nome": "Álvaro Weyne",
+      "latitude": -3.716108,
+      "longitude": -38.567133
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "32a1fc2e-9de5-44a0-8bb4-69e26e05c2c4",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.238Z",
+      "updated_at": "2026-01-27T18:49:05.238Z",
+      "is_active": true,
+      "nome": "Panamericano",
+      "latitude": -3.755808,
+      "longitude": -38.565191
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "340a9742-46d7-4a5b-b52b-ec74fc2e1fa6",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.246Z",
+      "updated_at": "2026-01-27T18:49:05.246Z",
+      "is_active": true,
+      "nome": "Aeroporto",
+      "latitude": -3.77088,
+      "longitude": -38.525283
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "34d3dc32-daaa-4dd6-aeba-e6ac7b0b94d2",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.250Z",
+      "updated_at": "2026-01-27T18:49:05.250Z",
+      "is_active": true,
+      "nome": "Montese",
+      "latitude": -3.764071,
+      "longitude": -38.549722
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "38cc49a2-6892-4900-b29e-2eaf8e8ed8cb",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.230Z",
+      "updated_at": "2026-01-27T18:49:05.230Z",
+      "is_active": true,
+      "nome": "Passaré",
+      "latitude": -3.812462,
+      "longitude": -38.529566
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "3c05bda1-b390-4ab4-8a33-0925ddd52185",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.297Z",
+      "updated_at": "2026-01-27T18:49:05.297Z",
+      "is_active": true,
+      "nome": "Conjunto Ceará II",
+      "latitude": -3.770233,
+      "longitude": -38.611789
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "3dbf4070-dd8a-4d34-bde4-fc5645c5b2f1",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.097Z",
+      "updated_at": "2026-01-27T18:49:05.097Z",
+      "is_active": true,
+      "nome": "Fátima",
+      "latitude": -3.751258,
+      "longitude": -38.528983
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "3f1fa52e-0561-42e9-bd17-7cf263421f11",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.309Z",
+      "updated_at": "2026-01-27T18:49:05.309Z",
+      "is_active": true,
+      "nome": "Tauape",
+      "latitude": -3.755902,
+      "longitude": -38.509645
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "409a90b6-fdf8-4c8d-8c14-6b8888a7fa1b",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.040Z",
+      "updated_at": "2026-01-27T18:49:05.040Z",
+      "is_active": true,
+      "nome": "Demócrito Rocha",
+      "latitude": -3.761872,
+      "longitude": -38.566127
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "41a77660-7157-4650-b937-360d6bb9273f",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.287Z",
+      "updated_at": "2026-01-27T18:49:05.287Z",
+      "is_active": true,
+      "nome": "Novo Mondubim",
+      "latitude": -3.808045,
+      "longitude": -38.585945
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "4309a929-58e0-43a1-b716-edea28bf1018",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.191Z",
+      "updated_at": "2026-01-27T18:49:05.191Z",
+      "is_active": true,
+      "nome": "Jardim das Oliveiras",
+      "latitude": -3.780435,
+      "longitude": -38.503721
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "4334a876-266f-4e75-bec8-2a3536718c66",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.044Z",
+      "updated_at": "2026-01-27T18:49:05.044Z",
+      "is_active": true,
+      "nome": "Itaperi",
+      "latitude": -3.788597,
+      "longitude": -38.55253
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "43c6c8b9-a6b9-4d6b-9a80-15a67f6df9ef",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.232Z",
+      "updated_at": "2026-01-27T18:49:05.232Z",
+      "is_active": true,
+      "nome": "Mondubim",
+      "latitude": -3.817409,
+      "longitude": -38.571368
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "454b4616-39ae-4e2f-8de7-5c2d9e1fee22",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.164Z",
+      "updated_at": "2026-01-27T18:49:05.164Z",
+      "is_active": true,
+      "nome": "João XXIII",
+      "latitude": -3.770023,
+      "longitude": -38.586819
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "456c9571-0c72-4a89-b582-84b4b3aef78e",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.234Z",
+      "updated_at": "2026-01-27T18:49:05.234Z",
+      "is_active": true,
+      "nome": "Parque São José",
+      "latitude": -3.796727,
+      "longitude": -38.587933
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "49482003-3c08-492c-971a-dda2f210186a",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.240Z",
+      "updated_at": "2026-01-27T18:49:05.240Z",
+      "is_active": true,
+      "nome": "Alto da Balança",
+      "latitude": -3.764984,
+      "longitude": -38.512895
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "4ce30846-a48a-4f82-9e5d-49a65bbf7eb4",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.299Z",
+      "updated_at": "2026-01-27T18:49:05.299Z",
+      "is_active": true,
+      "nome": "Parque Presidente Vargas",
+      "latitude": -3.82545,
+      "longitude": -38.600234
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "4f407fd6-a786-4543-8ae8-98684bf8df57",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.211Z",
+      "updated_at": "2026-01-27T18:49:05.211Z",
+      "is_active": true,
+      "nome": "Bom Jardim",
+      "latitude": -3.795707,
+      "longitude": -38.602083
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "59dec9b5-7206-410d-8140-d1a9df465e5f",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.273Z",
+      "updated_at": "2026-01-27T18:49:05.273Z",
+      "is_active": true,
+      "nome": "Manuel Dias Branco",
+      "latitude": -3.761255,
+      "longitude": -38.460506
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "5a7fea56-a32c-497d-9614-be22c7c78b92",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.100Z",
+      "updated_at": "2026-01-27T18:49:05.100Z",
+      "is_active": true,
+      "nome": "Jacarecanga",
+      "latitude": -3.719643,
+      "longitude": -38.545579
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "5b4d4578-6072-40da-8479-5db80ee7ed4c",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.138Z",
+      "updated_at": "2026-01-27T18:49:05.138Z",
+      "is_active": true,
+      "nome": "Dom Lustosa",
+      "latitude": -3.752423,
+      "longitude": -38.587974
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "5b99d57f-fddc-4729-8104-1120edb6b49e",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.285Z",
+      "updated_at": "2026-01-27T18:49:05.285Z",
+      "is_active": true,
+      "nome": "São Bento",
+      "latitude": -3.854917,
+      "longitude": -38.479128
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "5cc8f214-4309-4f74-ba10-9ec5ffc8fe21",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.222Z",
+      "updated_at": "2026-01-27T18:49:05.222Z",
+      "is_active": true,
+      "nome": "Couto Fernandes",
+      "latitude": -3.760275,
+      "longitude": -38.560091
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "5cf8e933-38d9-4c7a-bbe1-92c7f4c15b81",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.084Z",
+      "updated_at": "2026-01-27T18:49:05.084Z",
+      "is_active": true,
+      "nome": "Dionísio Torres",
+      "latitude": -3.747497,
+      "longitude": -38.501514
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "5e8ea95a-d678-42e1-9b8e-9cfff5585a00",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.291Z",
+      "updated_at": "2026-01-27T18:49:05.291Z",
+      "is_active": true,
+      "nome": "Boa Vista / Castelão",
+      "latitude": -3.799324,
+      "longitude": -38.522651
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "5fcc68c7-6335-4f1d-959f-3eedf84c7b08",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.103Z",
+      "updated_at": "2026-01-27T18:49:05.103Z",
+      "is_active": true,
+      "nome": "Joaquim Távora",
+      "latitude": -3.745284,
+      "longitude": -38.5161
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "6379db5e-1ac4-4611-b249-4e460bf4a464",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.131Z",
+      "updated_at": "2026-01-27T18:49:05.131Z",
+      "is_active": true,
+      "nome": "Parquelândia",
+      "latitude": -3.737558,
+      "longitude": -38.560821
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "65de6726-d419-48ee-86b1-23a8d61d86ea",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.301Z",
+      "updated_at": "2026-01-27T18:49:05.301Z",
+      "is_active": true,
+      "nome": "Engenheiro Luciano Cavalcante",
+      "latitude": -3.776466,
+      "longitude": -38.490636
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "65ea9ef6-0f81-4a11-b858-eb119b1e01cd",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.090Z",
+      "updated_at": "2026-01-27T18:49:05.090Z",
+      "is_active": true,
+      "nome": "Floresta",
+      "latitude": -3.720333,
+      "longitude": -38.576379
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "678e1a76-a604-4cce-b62a-caab324c19f8",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.220Z",
+      "updated_at": "2026-01-27T18:49:05.220Z",
+      "is_active": true,
+      "nome": "Bela Vista",
+      "latitude": -3.751912,
+      "longitude": -38.562306
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "6b372583-9e9c-484d-84d5-44f821f5f40b",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.254Z",
+      "updated_at": "2026-01-27T18:49:05.254Z",
+      "is_active": true,
+      "nome": "Vila Peri",
+      "latitude": -3.788554,
+      "longitude": -38.580538
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "6b4497bf-912b-40ef-9372-a10ebcfbd421",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.283Z",
+      "updated_at": "2026-01-27T18:49:05.283Z",
+      "is_active": true,
+      "nome": "Conjunto Palmeiras",
+      "latitude": -3.849169,
+      "longitude": -38.530801
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "6c425388-0be6-46a2-a092-de740ee5bfe6",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.173Z",
+      "updated_at": "2026-01-27T18:49:05.173Z",
+      "is_active": true,
+      "nome": "Quintino Cunha",
+      "latitude": -3.730612,
+      "longitude": -38.599185
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "6c8b6e0f-9a1e-4ba5-9284-68e08b562994",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.226Z",
+      "updated_at": "2026-01-27T18:49:05.226Z",
+      "is_active": true,
+      "nome": "Maraponga",
+      "latitude": -3.796787,
+      "longitude": -38.572385
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "6d2f5ff8-9483-40bf-b726-500fc6ddad9f",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.307Z",
+      "updated_at": "2026-01-27T18:49:05.307Z",
+      "is_active": true,
+      "nome": "Parque Santa Maria",
+      "latitude": -3.849669,
+      "longitude": -38.499624
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "6fcee8bb-d3a6-445d-8d87-ee34f0fde6c8",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.244Z",
+      "updated_at": "2026-01-27T18:49:05.244Z",
+      "is_active": true,
+      "nome": "Aerolândia",
+      "latitude": -3.776173,
+      "longitude": -38.514014
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "76e331ff-b0e8-4c95-9903-5238b9798442",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.161Z",
+      "updated_at": "2026-01-27T18:49:05.161Z",
+      "is_active": true,
+      "nome": "Henrique Jorge",
+      "latitude": -3.761814,
+      "longitude": -38.586653
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "78b9866b-e04d-423f-82f1-c2ed34f770e5",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.136Z",
+      "updated_at": "2026-01-27T18:49:05.136Z",
+      "is_active": true,
+      "nome": "Cambeba",
+      "latitude": -3.806741,
+      "longitude": -38.483986
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "7926f1d8-9748-4796-a8a8-94f2ad4993b9",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.049Z",
+      "updated_at": "2026-01-27T18:49:05.049Z",
+      "is_active": true,
+      "nome": "São Gerardo",
+      "latitude": -3.730122,
+      "longitude": -38.556749
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "7acf2cc2-90e4-4cdd-95b7-526c23289cb8",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.106Z",
+      "updated_at": "2026-01-27T18:49:05.106Z",
+      "is_active": true,
+      "nome": "Meireles",
+      "latitude": -3.727589,
+      "longitude": -38.501423
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "7b714d3a-61b3-4028-90d1-0a8872653ac1",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.256Z",
+      "updated_at": "2026-01-27T18:49:05.256Z",
+      "is_active": true,
+      "nome": "Vila União",
+      "latitude": -3.766714,
+      "longitude": -38.535349
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "87b0ff56-a64c-4adc-a83c-cb265e077555",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.199Z",
+      "updated_at": "2026-01-27T18:49:05.199Z",
+      "is_active": true,
+      "nome": "Messejana",
+      "latitude": -3.826444,
+      "longitude": -38.493018
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "8b3bef6b-3a93-4676-a1f9-83be8e81f745",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.275Z",
+      "updated_at": "2026-01-27T18:49:05.275Z",
+      "is_active": true,
+      "nome": "Praia do Futuro II",
+      "latitude": -3.763643,
+      "longitude": -38.443794
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "8d11f496-3d5a-44d5-92c3-7b86404b4689",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.051Z",
+      "updated_at": "2026-01-27T18:49:05.051Z",
+      "is_active": true,
+      "nome": "Moura Brasil",
+      "latitude": -3.718105,
+      "longitude": -38.537213
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "8ff2891e-0ec9-435e-9ba9-f8375f896ff3",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.265Z",
+      "updated_at": "2026-01-27T18:49:05.265Z",
+      "is_active": true,
+      "nome": "Pici",
+      "latitude": -3.748928,
+      "longitude": -38.57535
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "94e0d0f5-4971-46eb-93db-51aa966bd683",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.155Z",
+      "updated_at": "2026-01-27T18:49:05.155Z",
+      "is_active": true,
+      "nome": "Autran Nunes",
+      "latitude": -3.754501,
+      "longitude": -38.596457
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "95c4aebb-e951-4659-81e5-8ab87040315d",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.182Z",
+      "updated_at": "2026-01-27T18:49:05.182Z",
+      "is_active": true,
+      "nome": "Aracapé",
+      "latitude": -3.829405,
+      "longitude": -38.587087
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "95ef3b54-f3dc-4476-843c-997d7e1960ab",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.177Z",
+      "updated_at": "2026-01-27T18:49:05.177Z",
+      "is_active": true,
+      "nome": "Barroso",
+      "latitude": -3.821138,
+      "longitude": -38.511118
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "98afcfca-adbd-46c2-8aca-890a89cea113",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.207Z",
+      "updated_at": "2026-01-27T18:49:05.207Z",
+      "is_active": true,
+      "nome": "Parque Iracema",
+      "latitude": -3.806202,
+      "longitude": -38.495467
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "9b0cc282-c2a1-42c4-94d4-25c8a0e02307",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.260Z",
+      "updated_at": "2026-01-27T18:49:05.260Z",
+      "is_active": true,
+      "nome": "Parangaba",
+      "latitude": -3.777463,
+      "longitude": -38.564913
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "9c309376-daf9-4b7d-ad99-da2c660344d2",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.195Z",
+      "updated_at": "2026-01-27T18:49:05.195Z",
+      "is_active": true,
+      "nome": "Lagoa Redonda",
+      "latitude": -3.825555,
+      "longitude": -38.460019
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "9c7128f0-1432-4227-af32-0d19be14ee31",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.046Z",
+      "updated_at": "2026-01-27T18:49:05.046Z",
+      "is_active": true,
+      "nome": "Carlito Pamplona",
+      "latitude": -3.717212,
+      "longitude": -38.555317
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "9d42af3c-47e8-4577-b32d-a8a39294f7a3",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.076Z",
+      "updated_at": "2026-01-27T18:49:05.076Z",
+      "is_active": true,
+      "nome": "Cristo Redentor",
+      "latitude": -3.705954,
+      "longitude": -38.563583
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "9e3699fb-7a31-4d6c-9a54-da3100e878ad",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.070Z",
+      "updated_at": "2026-01-27T18:49:05.070Z",
+      "is_active": true,
+      "nome": "Mucuripe",
+      "latitude": -3.726026,
+      "longitude": -38.484827
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "9f9cb9a9-5436-48de-9f42-5378ec7a2c9d",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.152Z",
+      "updated_at": "2026-01-27T18:49:05.152Z",
+      "is_active": true,
+      "nome": "Vila Velha",
+      "latitude": -3.713119,
+      "longitude": -38.604051
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "a04a596d-f3eb-467c-bc90-bff4bb24353c",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.125Z",
+      "updated_at": "2026-01-27T18:49:05.125Z",
+      "is_active": true,
+      "nome": "Papicu",
+      "latitude": -3.739997,
+      "longitude": -38.476719
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "a566ea58-c7c1-48df-92be-2dedaa0ca963",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.149Z",
+      "updated_at": "2026-01-27T18:49:05.149Z",
+      "is_active": true,
+      "nome": "Ellery",
+      "latitude": -3.723454,
+      "longitude": -38.56337
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "a5ee09aa-e1f0-4983-a78a-e07c04307ec5",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.188Z",
+      "updated_at": "2026-01-27T18:49:05.188Z",
+      "is_active": true,
+      "nome": "Paupina",
+      "latitude": -3.86204,
+      "longitude": -38.494341
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "a9d62deb-f36e-4c1f-bb3f-4a44aad2cb88",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.019Z",
+      "updated_at": "2026-01-27T18:49:05.019Z",
+      "is_active": true,
+      "nome": "Rachel de Queiroz",
+      "latitude": -3.798683,
+      "longitude": -38.556735
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "aaa0feb1-0e1f-4516-a1fd-4185763f94c6",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.038Z",
+      "updated_at": "2026-01-27T18:49:05.038Z",
+      "is_active": true,
+      "nome": "Bonsucesso",
+      "latitude": -3.782934,
+      "longitude": -38.587475
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "b4d4b2de-41c9-4747-b8fe-c9b5809fede4",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.213Z",
+      "updated_at": "2026-01-27T18:49:05.213Z",
+      "is_active": true,
+      "nome": "Salinas",
+      "latitude": -3.763919,
+      "longitude": -38.500949
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "b5d3c602-b9f4-4a0e-936a-4d5418b70093",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.159Z",
+      "updated_at": "2026-01-27T18:49:05.159Z",
+      "is_active": true,
+      "nome": "Coaçu",
+      "latitude": -3.845167,
+      "longitude": -38.474436
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "b677208c-37e1-4a47-ad6a-124c9d749a04",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.108Z",
+      "updated_at": "2026-01-27T18:49:05.108Z",
+      "is_active": true,
+      "nome": "Parreão",
+      "latitude": -3.758499,
+      "longitude": -38.537592
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "b93831e4-133e-4396-9d3f-ec9b57a6edeb",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.081Z",
+      "updated_at": "2026-01-27T18:49:05.081Z",
+      "is_active": true,
+      "nome": "Damas",
+      "latitude": -3.752072,
+      "longitude": -38.549305
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "b959c32a-e7de-436d-ab33-d8ee4a3b0ea1",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.171Z",
+      "updated_at": "2026-01-27T18:49:05.171Z",
+      "is_active": true,
+      "nome": "Padre Andrade",
+      "latitude": -3.736387,
+      "longitude": -38.580292
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "b95a7ca6-ddf7-4a09-b11d-89e3072e2c4d",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.175Z",
+      "updated_at": "2026-01-27T18:49:05.175Z",
+      "is_active": true,
+      "nome": "Ancuri",
+      "latitude": -3.863857,
+      "longitude": -38.5081
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "bb61af4a-8b9c-4d63-921e-7aeab7aa0d32",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.215Z",
+      "updated_at": "2026-01-27T18:49:05.215Z",
+      "is_active": true,
+      "nome": "Canindezinho",
+      "latitude": -3.810863,
+      "longitude": -38.602331
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "bc17da81-426f-4685-9333-d0da5aef57df",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.295Z",
+      "updated_at": "2026-01-27T18:49:05.295Z",
+      "is_active": true,
+      "nome": "Conjunto Ceará I",
+      "latitude": -3.763941,
+      "longitude": -38.608086
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "bd7b1119-5f35-4c86-a4ce-54e1df70585b",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.305Z",
+      "updated_at": "2026-01-27T18:49:05.305Z",
+      "is_active": true,
+      "nome": "Prefeito José Walter",
+      "latitude": -3.837233,
+      "longitude": -38.547827
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "bff2ebae-a409-4b25-9c1b-2526c876269a",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.281Z",
+      "updated_at": "2026-01-27T18:49:05.281Z",
+      "is_active": true,
+      "nome": "Olavo Oliveira",
+      "latitude": -3.730115,
+      "longitude": -38.589407
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "c0dfad06-6567-483d-a6b8-a7216c4cb37a",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.024Z",
+      "updated_at": "2026-01-27T18:49:05.024Z",
+      "is_active": true,
+      "nome": "José Bonifácio",
+      "latitude": -3.738759,
+      "longitude": -38.528383
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "c0fc34c3-2f61-4f72-8fff-45fe626273de",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.058Z",
+      "updated_at": "2026-01-27T18:49:05.058Z",
+      "is_active": true,
+      "nome": "Barra do Ceará",
+      "latitude": -3.703693,
+      "longitude": -38.580285
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "c16a9862-b642-4a9c-ace6-4fd2e0bd50e4",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.095Z",
+      "updated_at": "2026-01-27T18:49:05.095Z",
+      "is_active": true,
+      "nome": "Jardim Iracema",
+      "latitude": -3.723241,
+      "longitude": -38.583806
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "c6cfe380-e1cc-4046-892b-aeba4e12fac6",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.271Z",
+      "updated_at": "2026-01-27T18:49:05.271Z",
+      "is_active": true,
+      "nome": "Cidade 2000",
+      "latitude": -3.75112,
+      "longitude": -38.471865
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "cbc20817-943c-4225-80ec-0f158c3bec05",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.184Z",
+      "updated_at": "2026-01-27T18:49:05.184Z",
+      "is_active": true,
+      "nome": "Guararapes",
+      "latitude": -3.763529,
+      "longitude": -38.488583
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "cfeeec68-a40f-4a57-b0b9-92bbb8318cbd",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.092Z",
+      "updated_at": "2026-01-27T18:49:05.092Z",
+      "is_active": true,
+      "nome": "Jardim América",
+      "latitude": -3.752375,
+      "longitude": -38.54191
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "d0af14a3-c465-40eb-8d28-74f63361d2e2",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.146Z",
+      "updated_at": "2026-01-27T18:49:05.146Z",
+      "is_active": true,
+      "nome": "Jardim Cearense",
+      "latitude": -3.800809,
+      "longitude": -38.566072
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "d11c3fe1-aac8-4e16-9791-e787e2bd36d3",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.166Z",
+      "updated_at": "2026-01-27T18:49:05.166Z",
+      "is_active": true,
+      "nome": "José de Alencar",
+      "latitude": -3.81064,
+      "longitude": -38.47064
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "d3069c42-c2a7-479a-a78c-f8c327ab3e59",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.061Z",
+      "updated_at": "2026-01-27T18:49:05.061Z",
+      "is_active": true,
+      "nome": "Benfica",
+      "latitude": -3.741971,
+      "longitude": -38.538643
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "dfbfca73-29ad-4f75-81b4-73799c26d1fe",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.073Z",
+      "updated_at": "2026-01-27T18:49:05.073Z",
+      "is_active": true,
+      "nome": "Cocó",
+      "latitude": -3.75128,
+      "longitude": -38.483205
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "dfc2f282-f7d2-464d-a17f-42b0d0a24812",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.119Z",
+      "updated_at": "2026-01-27T18:49:05.119Z",
+      "is_active": true,
+      "nome": "Pirambu",
+      "latitude": -3.709339,
+      "longitude": -38.55482
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "e3188bc7-31ec-4241-9534-2bb7b3d4a6b4",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.224Z",
+      "updated_at": "2026-01-27T18:49:05.224Z",
+      "is_active": true,
+      "nome": "Granja Portugal",
+      "latitude": -3.781509,
+      "longitude": -38.600711
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "e43ba280-7a14-4be3-8815-0b04fc875d35",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.228Z",
+      "updated_at": "2026-01-27T18:49:05.228Z",
+      "is_active": true,
+      "nome": "Parque Santa Rosa",
+      "latitude": -3.820127,
+      "longitude": -38.594599
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "e5d79821-dff2-40b3-b0bf-5e945ec7df8e",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.116Z",
+      "updated_at": "2026-01-27T18:49:05.116Z",
+      "is_active": true,
+      "nome": "Pedras",
+      "latitude": -3.879776,
+      "longitude": -38.515787
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "e6d006c6-8e46-49b5-96aa-c965b52c7161",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.169Z",
+      "updated_at": "2026-01-27T18:49:05.169Z",
+      "is_active": true,
+      "nome": "Cidade dos Funcionários",
+      "latitude": -3.794142,
+      "longitude": -38.499804
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "e7993c49-f9af-410c-b4d9-89071d5fed57",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.143Z",
+      "updated_at": "2026-01-27T18:49:05.144Z",
+      "is_active": true,
+      "nome": "Cajazeiras",
+      "latitude": -3.800441,
+      "longitude": -38.510132
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "e8ca05ca-99b1-4fb2-8802-65bb9cde2e18",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.186Z",
+      "updated_at": "2026-01-27T18:49:05.186Z",
+      "is_active": true,
+      "nome": "Parque Manibura",
+      "latitude": -3.791025,
+      "longitude": -38.486275
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "ec100e32-95d8-407b-a7e8-61a601f61b69",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.029Z",
+      "updated_at": "2026-01-27T18:49:05.029Z",
+      "is_active": true,
+      "nome": "Genibaú",
+      "latitude": -3.757504,
+      "longitude": -38.604876
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "ed3d29b8-c89d-441f-9f54-dbad00bb4992",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.026Z",
+      "updated_at": "2026-01-27T18:49:05.026Z",
+      "is_active": true,
+      "nome": "Antônio Bezerra",
+      "latitude": -3.73996,
+      "longitude": -38.592124
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "ed8e01a1-de1e-4a25-a106-6a8557420c0b",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.293Z",
+      "updated_at": "2026-01-27T18:49:05.293Z",
+      "is_active": true,
+      "nome": "Manoel Sátiro",
+      "latitude": -3.797952,
+      "longitude": -38.580132
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "ee164df7-db9e-4c17-9148-f1cd09cab366",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.067Z",
+      "updated_at": "2026-01-27T18:49:05.067Z",
+      "is_active": true,
+      "nome": "Jardim Guanabara",
+      "latitude": -3.723993,
+      "longitude": -38.590667
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "f0577d84-ffb0-4c50-bceb-b39c9199f180",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.179Z",
+      "updated_at": "2026-01-27T18:49:05.179Z",
+      "is_active": true,
+      "nome": "Curió",
+      "latitude": -3.822795,
+      "longitude": -38.477465
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "f096654b-4977-4aa7-8ac0-3fa767832a0b",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.209Z",
+      "updated_at": "2026-01-27T18:49:05.209Z",
+      "is_active": true,
+      "nome": "Sabiaguaba",
+      "latitude": -3.802422,
+      "longitude": -38.428258
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "f11cedfe-c8f2-4a99-bd28-1ad2a758ec00",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.267Z",
+      "updated_at": "2026-01-27T18:49:05.267Z",
+      "is_active": true,
+      "nome": "Praia do Futuro I",
+      "latitude": -3.739959,
+      "longitude": -38.45586
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "f3bc89d4-de31-4902-9397-8b26ddfe73ea",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.217Z",
+      "updated_at": "2026-01-27T18:49:05.217Z",
+      "is_active": true,
+      "nome": "Granja Lisboa",
+      "latitude": -3.787298,
+      "longitude": -38.6204
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "f42d747a-680a-4d42-950c-d08decc1836e",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.197Z",
+      "updated_at": "2026-01-27T18:49:05.197Z",
+      "is_active": true,
+      "nome": "Itaoca",
+      "latitude": -3.772311,
+      "longitude": -38.555861
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "f4f5ab43-6172-497f-b3d6-e054b6033249",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.127Z",
+      "updated_at": "2026-01-27T18:49:05.127Z",
+      "is_active": true,
+      "nome": "Parque Araxá",
+      "latitude": -3.735291,
+      "longitude": -38.547688
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "fb45287c-59b2-4790-b939-85de7907140c",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.248Z",
+      "updated_at": "2026-01-27T18:49:05.248Z",
+      "is_active": true,
+      "nome": "Jóquei Clube",
+      "latitude": -3.767446,
+      "longitude": -38.573676
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "fcdb0d35-f3df-490b-a7ff-4e2ea98e7aee",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.114Z",
+      "updated_at": "2026-01-27T18:49:05.114Z",
+      "is_active": true,
+      "nome": "Monte Castelo",
+      "latitude": -3.724823,
+      "longitude": -38.553159
+    }
+  },
+  {
+    "model": "app.bairro",
+    "pk": "fde805bd-9445-470e-9543-1e0e7d2cb6ad",
+    "fields": {
+      "created_at": "2026-01-27T18:49:05.141Z",
+      "updated_at": "2026-01-27T18:49:05.141Z",
+      "is_active": true,
+      "nome": "Varjota",
+      "latitude": -3.73442,
+      "longitude": -38.48629
+    }
+  }
+]

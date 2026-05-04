@@ -1,0 +1,744 @@
+[
+{
+  "model": "servicos.servico",
+  "pk": "02c24aff-d9e2-41cf-b812-c7f9a5cb3c72",
+  "fields": {
+    "created_at": "2026-02-02T17:04:38.072Z",
+    "updated_at": "2026-02-02T17:04:38.072Z",
+    "is_active": true,
+    "nome": "Orientação sobre Isenção Taxa de inscrição Concurso Público e ENEM",
+    "descricao": "Atendimento para orientar sobre solicitação de isenção, prazos, critérios e documentação.",
+    "classe": "f5bcdcc0-d0df-496e-8728-0bfe441cb0be",
+    "tipo_servico": "d67bdfb9-037d-410c-b9df-c6b395e06d93",
+    "tipo_marcacao": "AGENDAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "1841d88d-81d1-4dac-9e74-db473077b0d8",
+  "fields": {
+    "created_at": "2026-02-06T18:59:19Z",
+    "updated_at": "2026-02-06T18:59:19Z",
+    "is_active": true,
+    "nome": "Solicitação de Concessão de benefícios - Auxílio Funeral",
+    "descricao": "Atendimento para Solicitação de Concessão de benefícios - Auxílio Funeral.",
+    "classe": "6ba7f4ee-b5e5-4e95-90e4-d221a7922b21",
+    "tipo_servico": "57488658-a251-44c0-bf74-f7eaef78368d",
+    "tipo_marcacao": "ENCAMINHAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "26168051-1040-40f0-9b8f-eacda68929ba",
+  "fields": {
+    "created_at": "2026-02-06T18:59:19Z",
+    "updated_at": "2026-02-06T18:59:19Z",
+    "is_active": true,
+    "nome": "Encaminhar: Para acesso a microcrédito",
+    "descricao": "Atendimento para Encaminhar: Para acesso a microcrédito.",
+    "classe": "4205f5a0-5a94-4670-9dc0-8efd4f0a1d01",
+    "tipo_servico": "57488658-a251-44c0-bf74-f7eaef78368d",
+    "tipo_marcacao": "ENCAMINHAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "2951cac7-39a0-475d-8c74-7ecde985cc0c",
+  "fields": {
+    "created_at": "2026-02-02T17:02:52.210Z",
+    "updated_at": "2026-02-02T17:02:52.210Z",
+    "is_active": true,
+    "nome": "Orientação sobre Programa Minha Casa Minha Vida - PMCMV",
+    "descricao": "Atendimento para orientar sobre o programa, etapas e requisitos.",
+    "classe": "f5bcdcc0-d0df-496e-8728-0bfe441cb0be",
+    "tipo_servico": "d67bdfb9-037d-410c-b9df-c6b395e06d93",
+    "tipo_marcacao": "AGENDAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "29d16454-54af-4003-8e9b-2ffbdf2559c0",
+  "fields": {
+    "created_at": "2026-02-02T17:04:57.695Z",
+    "updated_at": "2026-02-02T17:04:57.695Z",
+    "is_active": true,
+    "nome": "Orientação sobre Programa Gás do Povo",
+    "descricao": "Atendimento para orientar sobre acesso ao programa e procedimentos de solicitação/retirada.",
+    "classe": "f5bcdcc0-d0df-496e-8728-0bfe441cb0be",
+    "tipo_servico": "d67bdfb9-037d-410c-b9df-c6b395e06d93",
+    "tipo_marcacao": "AGENDAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "33357ac9-59ff-4e12-945f-faf3d789b5b5",
+  "fields": {
+    "created_at": "2026-02-06T18:59:19Z",
+    "updated_at": "2026-02-06T18:59:19Z",
+    "is_active": true,
+    "nome": "Encaminhar: Para outras unidades/serviços da proteção social especial",
+    "descricao": "Atendimento para Encaminhar: Para outras unidades/serviços da proteção social especial.",
+    "classe": "4205f5a0-5a94-4670-9dc0-8efd4f0a1d01",
+    "tipo_servico": "57488658-a251-44c0-bf74-f7eaef78368d",
+    "tipo_marcacao": "ENCAMINHAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "3a2a86ec-ef14-4777-891f-fd5f5ea6526e",
+  "fields": {
+    "created_at": "2026-02-02T16:58:33.370Z",
+    "updated_at": "2026-02-02T16:58:33.370Z",
+    "is_active": true,
+    "nome": "Carteira do Idoso para viagem interestadual (solicitação/entrega)",
+    "descricao": "Atendimento para registrar a solicitação e/ou realizar a entrega da Carteira da Pessoa Idosa.",
+    "classe": "00f3bac6-72a7-4562-a693-0f7e94f39428",
+    "tipo_servico": "d67bdfb9-037d-410c-b9df-c6b395e06d93",
+    "tipo_marcacao": "AGENDAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "3c02c83a-676e-4924-a7e4-71d51dd38824",
+  "fields": {
+    "created_at": "2026-02-02T17:03:15.948Z",
+    "updated_at": "2026-02-02T17:03:15.948Z",
+    "is_active": true,
+    "nome": "Orientação sobre Identidade Jovem - ID Jovem",
+    "descricao": "Atendimento para orientar sobre emissão/uso do ID Jovem e procedimentos necessários para obtenção.",
+    "classe": "f5bcdcc0-d0df-496e-8728-0bfe441cb0be",
+    "tipo_servico": "d67bdfb9-037d-410c-b9df-c6b395e06d93",
+    "tipo_marcacao": "AGENDAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "3f222a8e-75d8-44cc-8b12-6a49a01e68b6",
+  "fields": {
+    "created_at": "2026-02-06T18:59:19Z",
+    "updated_at": "2026-02-06T18:59:19Z",
+    "is_active": true,
+    "nome": "Busca ativa coletiva (divulgação dos serviços ofertados no CRAS)",
+    "descricao": "Atendimento para Busca ativa coletiva (divulgação dos serviços ofertados no CRAS).",
+    "classe": "316c7d47-0921-4ce2-b042-5b792aa89af8",
+    "tipo_servico": "57488658-a251-44c0-bf74-f7eaef78368d",
+    "tipo_marcacao": "ENCAMINHAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "3fd9b531-3d71-42d0-9c83-d0bd19f659ab",
+  "fields": {
+    "created_at": "2026-02-02T16:56:19.468Z",
+    "updated_at": "2026-02-02T16:56:19.468Z",
+    "is_active": true,
+    "nome": "Mudança de Titularidade",
+    "descricao": "Atendimento para alterar o Responsável Familiar do Cadastro Único, registrando a mudança de titularidade conforme a organização da família.",
+    "classe": "ba92fbac-876f-4b6e-b2a8-0058d5d462ba",
+    "tipo_servico": "d67bdfb9-037d-410c-b9df-c6b395e06d93",
+    "tipo_marcacao": "AGENDAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "422c44d8-c434-4c07-8cde-2469c5a914db",
+  "fields": {
+    "created_at": "2026-02-06T18:59:19Z",
+    "updated_at": "2026-02-06T18:59:19Z",
+    "is_active": true,
+    "nome": "Encaminhar: Para Serviços de Convivência e Fortalecimento de Vínculos",
+    "descricao": "Atendimento para Encaminhar: Para Serviços de Convivência e Fortalecimento de Vínculos.",
+    "classe": "4205f5a0-5a94-4670-9dc0-8efd4f0a1d01",
+    "tipo_servico": "57488658-a251-44c0-bf74-f7eaef78368d",
+    "tipo_marcacao": "ENCAMINHAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "43f87606-9191-4706-8501-37796d5dd0e0",
+  "fields": {
+    "created_at": "2026-02-02T16:54:58.104Z",
+    "updated_at": "2026-02-02T16:54:58.104Z",
+    "is_active": true,
+    "nome": "Mudança de Município no Cadastro Único",
+    "descricao": "Atendimento para transferir o cadastro para outro município, atualizando a vinculação territorial conforme necessidade do usuário.",
+    "classe": "ba92fbac-876f-4b6e-b2a8-0058d5d462ba",
+    "tipo_servico": "d67bdfb9-037d-410c-b9df-c6b395e06d93",
+    "tipo_marcacao": "AGENDAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "48854aef-b7e9-46b5-a49a-40ffdbad0457",
+  "fields": {
+    "created_at": "2026-02-06T18:59:19Z",
+    "updated_at": "2026-02-06T18:59:19Z",
+    "is_active": true,
+    "nome": "Encaminhar: Para habitação",
+    "descricao": "Atendimento para Encaminhar: Para habitação.",
+    "classe": "4205f5a0-5a94-4670-9dc0-8efd4f0a1d01",
+    "tipo_servico": "57488658-a251-44c0-bf74-f7eaef78368d",
+    "tipo_marcacao": "ENCAMINHAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "4aab4a4c-c345-4274-8889-6cd10ad22ffd",
+  "fields": {
+    "created_at": "2026-02-06T18:59:19Z",
+    "updated_at": "2026-02-06T18:59:19Z",
+    "is_active": true,
+    "nome": "Encaminhar: Para serviços, programas ou projetos voltados para capacitação profissional",
+    "descricao": "Atendimento para Encaminhar: Para serviços, programas ou projetos voltados para capacitação profissional.",
+    "classe": "4205f5a0-5a94-4670-9dc0-8efd4f0a1d01",
+    "tipo_servico": "57488658-a251-44c0-bf74-f7eaef78368d",
+    "tipo_marcacao": "ENCAMINHAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "4c656f98-3cd9-4c8e-ad60-52f291ae9b26",
+  "fields": {
+    "created_at": "2026-02-06T18:59:19Z",
+    "updated_at": "2026-02-06T18:59:19Z",
+    "is_active": true,
+    "nome": "Encaminhar: Para Cadastro Único",
+    "descricao": "Atendimento para Encaminhar: Para Cadastro Único.",
+    "classe": "4205f5a0-5a94-4670-9dc0-8efd4f0a1d01",
+    "tipo_servico": "57488658-a251-44c0-bf74-f7eaef78368d",
+    "tipo_marcacao": "ENCAMINHAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "5110d47b-5668-4419-a662-4fb573975acb",
+  "fields": {
+    "created_at": "2026-02-02T16:28:38.676Z",
+    "updated_at": "2026-02-02T16:54:16.893Z",
+    "is_active": true,
+    "nome": "Inclusão de nova família no Cadastro Único (1° vez)",
+    "descricao": "Atendimento para realizar o primeiro cadastro da família no CadÚnico.",
+    "classe": "ba92fbac-876f-4b6e-b2a8-0058d5d462ba",
+    "tipo_servico": "d67bdfb9-037d-410c-b9df-c6b395e06d93",
+    "tipo_marcacao": "AGENDAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "53fa9ab8-0494-4984-bbf0-e4756b7c2a57",
+  "fields": {
+    "created_at": "2026-02-06T18:59:19Z",
+    "updated_at": "2026-02-06T18:59:19Z",
+    "is_active": true,
+    "nome": "Encaminhar: Para saúde",
+    "descricao": "Atendimento para Encaminhar: Para saúde.",
+    "classe": "4205f5a0-5a94-4670-9dc0-8efd4f0a1d01",
+    "tipo_servico": "57488658-a251-44c0-bf74-f7eaef78368d",
+    "tipo_marcacao": "ENCAMINHAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "580b9a5c-6d4e-4cc2-bd91-26048fa32a0d",
+  "fields": {
+    "created_at": "2026-02-02T16:59:40.777Z",
+    "updated_at": "2026-02-02T16:59:40.777Z",
+    "is_active": true,
+    "nome": "Declaração Gratuidade PCD/ETUFOR",
+    "descricao": "Atendimento para emissão/encaminhamento de declaração relacionada à gratuidade PCD/ETUFOR.",
+    "classe": "00f3bac6-72a7-4562-a693-0f7e94f39428",
+    "tipo_servico": "d67bdfb9-037d-410c-b9df-c6b395e06d93",
+    "tipo_marcacao": "AGENDAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "5ee81c3c-21ca-41f0-8a9b-5ee934c090e3",
+  "fields": {
+    "created_at": "2026-02-06T18:59:19Z",
+    "updated_at": "2026-02-06T18:59:19Z",
+    "is_active": true,
+    "nome": "Oficinas com famílias beneficiarias do CMIC",
+    "descricao": "Atendimento para Oficinas com famílias beneficiarias do CMIC.",
+    "classe": "316c7d47-0921-4ce2-b042-5b792aa89af8",
+    "tipo_servico": "57488658-a251-44c0-bf74-f7eaef78368d",
+    "tipo_marcacao": "ENCAMINHAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "5eef5f72-cab5-4a2b-abbb-95e7d032eaf2",
+  "fields": {
+    "created_at": "2026-02-06T18:59:19Z",
+    "updated_at": "2026-02-06T18:59:19Z",
+    "is_active": true,
+    "nome": "Encaminhar: Para o INSS",
+    "descricao": "Atendimento para Encaminhar: Para o INSS.",
+    "classe": "4205f5a0-5a94-4670-9dc0-8efd4f0a1d01",
+    "tipo_servico": "57488658-a251-44c0-bf74-f7eaef78368d",
+    "tipo_marcacao": "ENCAMINHAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "61f43eb2-8dd0-4de9-9dd9-d4710d90f82f",
+  "fields": {
+    "created_at": "2026-02-06T18:59:19Z",
+    "updated_at": "2026-02-06T18:59:19Z",
+    "is_active": true,
+    "nome": "Solicitação de Concessão de benefícios - Cesta Básica",
+    "descricao": "Atendimento para Solicitação de Concessão de benefícios - Cesta Básica.",
+    "classe": "6ba7f4ee-b5e5-4e95-90e4-d221a7922b21",
+    "tipo_servico": "57488658-a251-44c0-bf74-f7eaef78368d",
+    "tipo_marcacao": "ENCAMINHAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "66efc792-59f4-4d32-92fe-d26015b027c7",
+  "fields": {
+    "created_at": "2026-02-06T18:59:19Z",
+    "updated_at": "2026-02-06T18:59:19Z",
+    "is_active": true,
+    "nome": "Eventos",
+    "descricao": "Atendimento para Eventos.",
+    "classe": "27385bc0-17fa-45ec-81e9-b613de3b6b3c",
+    "tipo_servico": "57488658-a251-44c0-bf74-f7eaef78368d",
+    "tipo_marcacao": "ENCAMINHAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "6d7f8191-5386-44d3-b790-49501dd4d5ac",
+  "fields": {
+    "created_at": "2026-02-06T18:59:19Z",
+    "updated_at": "2026-02-06T18:59:19Z",
+    "is_active": true,
+    "nome": "Solicitação de Concessão de benefícios - Passagens",
+    "descricao": "Atendimento para Solicitação de Concessão de benefícios - Passagens.",
+    "classe": "6ba7f4ee-b5e5-4e95-90e4-d221a7922b21",
+    "tipo_servico": "57488658-a251-44c0-bf74-f7eaef78368d",
+    "tipo_marcacao": "ENCAMINHAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "73883194-2c49-406c-ae05-7357e00353b1",
+  "fields": {
+    "created_at": "2026-02-02T17:05:48.044Z",
+    "updated_at": "2026-02-02T17:05:48.044Z",
+    "is_active": true,
+    "nome": "Solicitação de 2ª via de Certidão (Nascimento/Casamento)",
+    "descricao": "Atendimento para registrar o pedido de 2ª via, coletando as informações necessárias.",
+    "classe": "8ca47f82-e0af-4553-9688-3813ab2a36d4",
+    "tipo_servico": "d67bdfb9-037d-410c-b9df-c6b395e06d93",
+    "tipo_marcacao": "AGENDAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "75cf3d58-3354-4647-bd6f-3fc55cd4063a",
+  "fields": {
+    "created_at": "2026-02-06T18:59:19Z",
+    "updated_at": "2026-02-06T18:59:19Z",
+    "is_active": true,
+    "nome": "Acompanhamento Particularizado (visita domiciliar)",
+    "descricao": "Atendimento para Acompanhamento Particularizado (visita domiciliar).",
+    "classe": "8a97892e-6585-46cd-b6a1-7af1385157e5",
+    "tipo_servico": "57488658-a251-44c0-bf74-f7eaef78368d",
+    "tipo_marcacao": "ENCAMINHAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "76712f06-c281-4814-83a8-b2271abbd3ed",
+  "fields": {
+    "created_at": "2026-02-06T18:59:19Z",
+    "updated_at": "2026-02-06T18:59:19Z",
+    "is_active": true,
+    "nome": "Palestras",
+    "descricao": "Atendimento para Palestras.",
+    "classe": "27385bc0-17fa-45ec-81e9-b613de3b6b3c",
+    "tipo_servico": "57488658-a251-44c0-bf74-f7eaef78368d",
+    "tipo_marcacao": "ENCAMINHAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "7922bfb0-b030-469c-b552-1c6cbf7ea88b",
+  "fields": {
+    "created_at": "2026-02-06T18:59:19Z",
+    "updated_at": "2026-02-06T18:59:19Z",
+    "is_active": true,
+    "nome": "Encaminhar: Para programa ACESSUAS Trabalho",
+    "descricao": "Atendimento para Encaminhar: Para programa ACESSUAS Trabalho.",
+    "classe": "4205f5a0-5a94-4670-9dc0-8efd4f0a1d01",
+    "tipo_servico": "57488658-a251-44c0-bf74-f7eaef78368d",
+    "tipo_marcacao": "ENCAMINHAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "88bb6073-0b65-4c43-ae98-ea9ae904d565",
+  "fields": {
+    "created_at": "2026-02-02T17:04:18.520Z",
+    "updated_at": "2026-02-02T17:04:18.520Z",
+    "is_active": true,
+    "nome": "Orientação sobre Passe Livre Interestadual PCD",
+    "descricao": "Atendimento para orientar sobre solicitação do passe livre interestadual para PCD.",
+    "classe": "f5bcdcc0-d0df-496e-8728-0bfe441cb0be",
+    "tipo_servico": "d67bdfb9-037d-410c-b9df-c6b395e06d93",
+    "tipo_marcacao": "AGENDAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "8c4454fc-2bcc-4f2c-a41e-e4d3ac7acc07",
+  "fields": {
+    "created_at": "2026-02-02T17:02:02.945Z",
+    "updated_at": "2026-02-02T17:02:02.945Z",
+    "is_active": true,
+    "nome": "Orientação sobre Tarifa Social de Energia Elétrica - TSEE",
+    "descricao": "Atendimento para orientar sobre acesso/regularização da TSEE, informando requisitos e procedimentos de solicitação/atualização.",
+    "classe": "f5bcdcc0-d0df-496e-8728-0bfe441cb0be",
+    "tipo_servico": "d67bdfb9-037d-410c-b9df-c6b395e06d93",
+    "tipo_marcacao": "AGENDAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "9aaf2481-efdd-410a-89a0-1d553b8dff74",
+  "fields": {
+    "created_at": "2026-02-06T18:59:19Z",
+    "updated_at": "2026-02-06T18:59:19Z",
+    "is_active": true,
+    "nome": "Encaminhar: Para serviços, programas ou projetos voltados para geração de renda",
+    "descricao": "Atendimento para Encaminhar: Para serviços, programas ou projetos voltados para geração de renda.",
+    "classe": "4205f5a0-5a94-4670-9dc0-8efd4f0a1d01",
+    "tipo_servico": "57488658-a251-44c0-bf74-f7eaef78368d",
+    "tipo_marcacao": "ENCAMINHAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "9bdd1987-c0be-4abb-9fdb-549141907a5a",
+  "fields": {
+    "created_at": "2026-02-02T16:57:17.695Z",
+    "updated_at": "2026-02-02T16:57:17.695Z",
+    "is_active": true,
+    "nome": "Consulta situação cadastral e do Programa Bolsa Família",
+    "descricao": "Atendimento para verificar e informar a situação do cadastro e a situação do Bolsa Família.",
+    "classe": "ba92fbac-876f-4b6e-b2a8-0058d5d462ba",
+    "tipo_servico": "d67bdfb9-037d-410c-b9df-c6b395e06d93",
+    "tipo_marcacao": "AGENDAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "9c43a010-298d-498c-a0ec-3556eb2441b4",
+  "fields": {
+    "created_at": "2026-02-02T16:55:52.449Z",
+    "updated_at": "2026-02-02T16:55:52.449Z",
+    "is_active": true,
+    "nome": "Atualização Cadastral",
+    "descricao": "Atendimento para atualizar informações do cadastro (endereço, membros, escolaridade, renda), garantindo que os dados permaneçam corretos e atuais.",
+    "classe": "ba92fbac-876f-4b6e-b2a8-0058d5d462ba",
+    "tipo_servico": "d67bdfb9-037d-410c-b9df-c6b395e06d93",
+    "tipo_marcacao": "AGENDAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "a2b66ee0-b36a-447c-b36f-4f4d9a17c017",
+  "fields": {
+    "created_at": "2026-02-06T18:59:19Z",
+    "updated_at": "2026-02-06T18:59:19Z",
+    "is_active": true,
+    "nome": "Encaminhar: Para Defensoria Pública",
+    "descricao": "Atendimento para Encaminhar: Para Defensoria Pública.",
+    "classe": "4205f5a0-5a94-4670-9dc0-8efd4f0a1d01",
+    "tipo_servico": "57488658-a251-44c0-bf74-f7eaef78368d",
+    "tipo_marcacao": "ENCAMINHAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "a37ab83a-156e-4a77-b57f-fec9c661493f",
+  "fields": {
+    "created_at": "2026-02-06T18:59:19Z",
+    "updated_at": "2026-02-06T18:59:19Z",
+    "is_active": true,
+    "nome": "Oficinas com famílias em não comprimento de condicionalidades (Programa Bolsa Família)",
+    "descricao": "Atendimento para Oficinas com famílias em não comprimento de condicionalidades (Programa Bolsa Família).",
+    "classe": "316c7d47-0921-4ce2-b042-5b792aa89af8",
+    "tipo_servico": "57488658-a251-44c0-bf74-f7eaef78368d",
+    "tipo_marcacao": "ENCAMINHAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "a39b347a-1fac-4018-9214-5809b713d657",
+  "fields": {
+    "created_at": "2026-02-02T17:02:31.753Z",
+    "updated_at": "2026-02-02T17:02:31.753Z",
+    "is_active": true,
+    "nome": "Orientação sobre Tarifa Social de Água e Esgoto",
+    "descricao": "Atendimento para orientar sobre acesso/regularização da tarifa social de água/esgoto.",
+    "classe": "f5bcdcc0-d0df-496e-8728-0bfe441cb0be",
+    "tipo_servico": "d67bdfb9-037d-410c-b9df-c6b395e06d93",
+    "tipo_marcacao": "AGENDAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "aa069c0b-1287-435f-b8b3-5a2e8acd9031",
+  "fields": {
+    "created_at": "2026-02-02T17:00:52.864Z",
+    "updated_at": "2026-02-02T17:00:52.864Z",
+    "is_active": true,
+    "nome": "Emissão do Comprovante do Cadastro Único (Governo Federal)",
+    "descricao": "Atendimento para emitir e entregar o comprovante do CadÚnico.",
+    "classe": "00f3bac6-72a7-4562-a693-0f7e94f39428",
+    "tipo_servico": "d67bdfb9-037d-410c-b9df-c6b395e06d93",
+    "tipo_marcacao": "AGENDAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "ade32294-4618-4837-bd9f-555c9123b7e7",
+  "fields": {
+    "created_at": "2026-02-02T17:00:17.809Z",
+    "updated_at": "2026-02-02T17:00:17.809Z",
+    "is_active": true,
+    "nome": "Passe Livre Intermunicipal PCD/ARCE",
+    "descricao": "Atendimento para orientar e encaminhar/registrar solicitação do Passe Livre Intermunicipal PCD.",
+    "classe": "00f3bac6-72a7-4562-a693-0f7e94f39428",
+    "tipo_servico": "d67bdfb9-037d-410c-b9df-c6b395e06d93",
+    "tipo_marcacao": "AGENDAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "b814f424-adfe-4552-ae03-e706dc3035ca",
+  "fields": {
+    "created_at": "2026-02-06T18:59:19Z",
+    "updated_at": "2026-02-06T18:59:19Z",
+    "is_active": true,
+    "nome": "Encaminhar: Outros encaminhamentos (especificar)",
+    "descricao": "Atendimento para Encaminhar: Outros encaminhamentos (especificar).",
+    "classe": "4205f5a0-5a94-4670-9dc0-8efd4f0a1d01",
+    "tipo_servico": "57488658-a251-44c0-bf74-f7eaef78368d",
+    "tipo_marcacao": "ENCAMINHAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "b9aa9e32-e8e6-42ee-9d42-0d7b863fed47",
+  "fields": {
+    "created_at": "2026-02-06T18:59:19Z",
+    "updated_at": "2026-02-06T18:59:19Z",
+    "is_active": true,
+    "nome": "Outras Oficinas com temáticas diversas",
+    "descricao": "Atendimento para Outras Oficinas com temáticas diversas.",
+    "classe": "316c7d47-0921-4ce2-b042-5b792aa89af8",
+    "tipo_servico": "57488658-a251-44c0-bf74-f7eaef78368d",
+    "tipo_marcacao": "ENCAMINHAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "bb945cd5-5d00-4d23-b83e-2abaaec0a238",
+  "fields": {
+    "created_at": "2026-02-06T18:59:19Z",
+    "updated_at": "2026-02-06T18:59:19Z",
+    "is_active": true,
+    "nome": "Encaminhar: Para Conselho Tutelar",
+    "descricao": "Atendimento para Encaminhar: Para Conselho Tutelar.",
+    "classe": "4205f5a0-5a94-4670-9dc0-8efd4f0a1d01",
+    "tipo_servico": "57488658-a251-44c0-bf74-f7eaef78368d",
+    "tipo_marcacao": "ENCAMINHAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "c04ea87b-dfec-4083-ab40-e506e91cefdd",
+  "fields": {
+    "created_at": "2026-02-06T18:59:19Z",
+    "updated_at": "2026-02-06T18:59:19Z",
+    "is_active": true,
+    "nome": "Encaminhar: Para o CREAS",
+    "descricao": "Atendimento para Encaminhar: Para o CREAS.",
+    "classe": "4205f5a0-5a94-4670-9dc0-8efd4f0a1d01",
+    "tipo_servico": "57488658-a251-44c0-bf74-f7eaef78368d",
+    "tipo_marcacao": "ENCAMINHAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "c5bd0621-39e8-41db-9ce4-ceedec335095",
+  "fields": {
+    "created_at": "2026-02-06T18:59:19Z",
+    "updated_at": "2026-02-06T18:59:19Z",
+    "is_active": true,
+    "nome": "Gestão de Benefício SICON",
+    "descricao": "Atendimento para Gestão de Benefício SICON.",
+    "classe": "23e7ef63-fe4e-4929-be54-3d0f5b605848",
+    "tipo_servico": "57488658-a251-44c0-bf74-f7eaef78368d",
+    "tipo_marcacao": "ENCAMINHAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "d61c68da-4c41-4192-89ed-296d934cbaaa",
+  "fields": {
+    "created_at": "2026-02-02T17:06:07.130Z",
+    "updated_at": "2026-02-02T17:06:07.130Z",
+    "is_active": true,
+    "nome": "Entrega / Recebimento de 2ª via de Certidão",
+    "descricao": "Atendimento para realizar a entrega/recebimento da certidão solicitada.",
+    "classe": "8ca47f82-e0af-4553-9688-3813ab2a36d4",
+    "tipo_servico": "d67bdfb9-037d-410c-b9df-c6b395e06d93",
+    "tipo_marcacao": "AGENDAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "d6ae5788-41cf-4da6-8449-757d89b76af4",
+  "fields": {
+    "created_at": "2026-02-06T18:59:19Z",
+    "updated_at": "2026-02-06T18:59:19Z",
+    "is_active": true,
+    "nome": "Acompanhamento Particularizado (atendimento no CRAS)",
+    "descricao": "Atendimento para Acompanhamento Particularizado (atendimento no CRAS).",
+    "classe": "8a97892e-6585-46cd-b6a1-7af1385157e5",
+    "tipo_servico": "57488658-a251-44c0-bf74-f7eaef78368d",
+    "tipo_marcacao": "ENCAMINHAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "db752f0b-3ff9-432a-8bbb-38cc77396263",
+  "fields": {
+    "created_at": "2026-02-02T17:07:07.912Z",
+    "updated_at": "2026-02-02T17:07:07.912Z",
+    "is_active": true,
+    "nome": "Atendimento por profissional técnico (AS, Psicólogo, Pedagogo, TO)",
+    "descricao": "Atendimento para avaliação técnica e orientações especializadas.",
+    "classe": "e65c305e-6feb-4031-bb6b-b18aaa739716",
+    "tipo_servico": "b45ae596-af8f-41fe-86fc-970cadc866ea",
+    "tipo_marcacao": "AGENDAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "ddbcffd3-1741-44a7-bcc8-a2c1579ae644",
+  "fields": {
+    "created_at": "2026-02-06T18:59:19Z",
+    "updated_at": "2026-02-06T18:59:19Z",
+    "is_active": true,
+    "nome": "Encaminhar: Para educação",
+    "descricao": "Atendimento para Encaminhar: Para educação.",
+    "classe": "4205f5a0-5a94-4670-9dc0-8efd4f0a1d01",
+    "tipo_servico": "57488658-a251-44c0-bf74-f7eaef78368d",
+    "tipo_marcacao": "ENCAMINHAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "e17e590b-3e09-4481-a6e7-a049067ff283",
+  "fields": {
+    "created_at": "2026-02-06T18:59:19Z",
+    "updated_at": "2026-02-06T18:59:19Z",
+    "is_active": true,
+    "nome": "Solicitação de Concessão de benefícios - Kit Enxoval",
+    "descricao": "Atendimento para Solicitação de Concessão de benefícios - Kit Enxoval.",
+    "classe": "6ba7f4ee-b5e5-4e95-90e4-d221a7922b21",
+    "tipo_servico": "57488658-a251-44c0-bf74-f7eaef78368d",
+    "tipo_marcacao": "ENCAMINHAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "e98181be-36f0-4ec6-b58c-a32bab058104",
+  "fields": {
+    "created_at": "2026-02-06T18:59:19Z",
+    "updated_at": "2026-02-06T18:59:19Z",
+    "is_active": true,
+    "nome": "Encaminhar: Para Poder Judiciário",
+    "descricao": "Atendimento para Encaminhar: Para Poder Judiciário.",
+    "classe": "4205f5a0-5a94-4670-9dc0-8efd4f0a1d01",
+    "tipo_servico": "57488658-a251-44c0-bf74-f7eaef78368d",
+    "tipo_marcacao": "ENCAMINHAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "ec15c696-e3f1-43c9-95a3-49ce8ac2d534",
+  "fields": {
+    "created_at": "2026-02-06T18:59:19Z",
+    "updated_at": "2026-02-06T18:59:19Z",
+    "is_active": true,
+    "nome": "Encaminhar: Para acesso à documentação civil",
+    "descricao": "Atendimento para Encaminhar: Para acesso à documentação civil.",
+    "classe": "4205f5a0-5a94-4670-9dc0-8efd4f0a1d01",
+    "tipo_servico": "57488658-a251-44c0-bf74-f7eaef78368d",
+    "tipo_marcacao": "ENCAMINHAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "ef14d164-3915-4f20-ae3b-621edcef9408",
+  "fields": {
+    "created_at": "2026-02-02T17:03:43.573Z",
+    "updated_at": "2026-02-02T17:03:43.573Z",
+    "is_active": true,
+    "nome": "Orientação sobre Programa Dignidade Menstrual (absorventes)",
+    "descricao": "Atendimento para orientar sobre acesso ao programa e procedimentos de retirada/encaminhamento conforme fluxo adotado.",
+    "classe": "f5bcdcc0-d0df-496e-8728-0bfe441cb0be",
+    "tipo_servico": "d67bdfb9-037d-410c-b9df-c6b395e06d93",
+    "tipo_marcacao": "AGENDAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "f9f27ae8-8783-4e95-8aaa-8aa4d019831b",
+  "fields": {
+    "created_at": "2026-02-02T16:56:42.851Z",
+    "updated_at": "2026-02-02T16:56:42.851Z",
+    "is_active": true,
+    "nome": "Exclusão do Cadastro Único",
+    "descricao": "Atendimento para solicitar e registrar a exclusão do cadastro, quando aplicável, com atualização da situação cadastral no sistema.",
+    "classe": "ba92fbac-876f-4b6e-b2a8-0058d5d462ba",
+    "tipo_servico": "d67bdfb9-037d-410c-b9df-c6b395e06d93",
+    "tipo_marcacao": "AGENDAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "fc1c0705-8552-4c3a-a41b-49d2c896422a",
+  "fields": {
+    "created_at": "2026-02-06T18:59:19Z",
+    "updated_at": "2026-02-06T18:59:19Z",
+    "is_active": true,
+    "nome": "Acompanhamento Coletivo (grupo com famílias)",
+    "descricao": "Atendimento para Acompanhamento Coletivo (grupo com famílias).",
+    "classe": "8a97892e-6585-46cd-b6a1-7af1385157e5",
+    "tipo_servico": "57488658-a251-44c0-bf74-f7eaef78368d",
+    "tipo_marcacao": "ENCAMINHAMENTO"
+  }
+},
+{
+  "model": "servicos.servico",
+  "pk": "fe3173a5-26b8-4bce-b328-dd6d679ec6fb",
+  "fields": {
+    "created_at": "2026-02-06T18:59:19Z",
+    "updated_at": "2026-02-06T18:59:19Z",
+    "is_active": true,
+    "nome": "Campanhas",
+    "descricao": "Atendimento para Campanhas.",
+    "classe": "27385bc0-17fa-45ec-81e9-b613de3b6b3c",
+    "tipo_servico": "57488658-a251-44c0-bf74-f7eaef78368d",
+    "tipo_marcacao": "ENCAMINHAMENTO"
+  }
+}
+]

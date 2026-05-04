@@ -1,0 +1,110 @@
+const HIGHLIGHTED_LINES = new Set([
+  "TERMOS DE USO",
+  "ACOLHE",
+  "Informações aos Usuários",
+  "1.1. Quem são os usuários do Acolhe?",
+  "1.2. Dos Cookies",
+  "1.2.1. Cookies técnicos ou funcionais",
+  "Responsabilidades dos Usuários",
+  "Isenção de Responsabilidade da Prefeitura Municipal de Fortaleza",
+  "Bases Legais",
+  "Privacidade e Coleta de Informações",
+  "Comunicação",
+  "Foro",
+  "Alterações e Atualização deste Termo",
+  "Aceitação dos Termos de Uso",
+]);
+
+const TERMOS_DE_USO_LINHAS = [
+  "TERMOS DE USO",
+  "ACOLHE",
+  "Termos de Uso do portal Acolhe - Versão 1 (01/04/2026)",
+  "Agradecemos sua visita ao Acolhe. Dedique alguns minutos do seu tempo para ler este documento e aproveitar, de forma consciente e segura, tudo o que a plataforma Acolhe tem a oferecer.",
+  "Neste espaço, divulgamos os nossos Termos de Uso, nos quais os usuários encontrarão: informações sobre o funcionamento da Plataforma e suas regras aplicáveis; as responsabilidades dos usuários ao utilizarem os serviços; as limitações de responsabilidade; a elucidação de direitos autorais e licenças; as disposições sobre privacidade e coleta de dados, os canais de comunicação e o foro responsável para o caso de reclamações em relação aos eventuais casos de violação deste Termo; assim como a aceitação às condições descritas.",
+  "Ainda, como fonte de consulta, segue abaixo alguns links do arcabouço legal que respalda o tema aqui exposto:",
+  "Lei Geral de Proteção de Dados Pessoais (LGPD) - Lei n. 13.709, de 14 de agosto de 2018;",
+  "Marco civil da internet — Lei n. 12.965, de 23 de abril de 2014;",
+  "Informações aos Usuários",
+  "1.1. Quem são os usuários do Acolhe?",
+  "Cidadão fortalezense que precisa dos serviços oferecidos pelo CRAS;",
+  "Os usuários da plataforma Acolhe poderão ter suas informações e/ou seus dados, alternativamente, armazenados, gravados ou lidos, em qualquer formato digital, dentro ou fora dos limites de suas estações de trabalho, desde que respeitadas as margens e diretrizes da Lei nº 13.709/2018.",
+  "A disponibilização das informações de usuários relativos aos dados pessoais e aos registros de auditoria está restrita ao âmbito governamental municipal, sem necessidade de expressa autorização do proprietário, desde que respeitado os princípios e diretrizes da LGPD, em conformidade com a hipótese de tratamento respaldada na execução de políticas públicas, vide art. 7º, inciso III, da referida Lei.",
+  "O teor finalístico da execução desta política pública fica evidenciado nos incisos do item 4. “Bases legais” deste Termo de Uso. Neste sentido, em consonância com a Lei Federal nº 14.129/2021 (Lei do Governo Digital), com o Decreto Municipal nº 15.030/2021 (Programa Fortaleza Digital) e com a Lei Ordinária Municipal nº 9.990/2012 (SUAS Fortaleza), menciona-se como resultados pretendidos para os titulares dos dados:",
+  "Agendamento simplificado e transparente de atendimentos, reduzindo o tempo de espera nas unidades físicas;",
+  "Acesso facilitado às informações sobre os serviços socioassistenciais e documentação necessária;",
+  "Maior controle e acompanhamento de seus históricos de agendamento e solicitações.",
+  "Assim como benefícios para os órgãos e entidades da PMF e sociedade como um todo:",
+  "Otimização do fluxo de atendimento e alocação de recursos humanos e físicos nos CRAS;",
+  "Geração de dados estatísticos mais precisos para o planejamento e execução de políticas públicas de assistência social em Fortaleza;",
+  "Redução do risco de fraudes e duplicidade nos agendamentos, promovendo equidade no acesso.",
+  "Para atender à finalidade descrita introdutoriamente, o usuário deve fornecer, por meio de preenchimento de formulário eletrônico, os seguintes dados para registrar seu cadastro junto ao Acolhe: nome completo; e-mail; além da criação de uma senha.",
+  "O CPF é utilizado para cadastro do usuário na Aplicação, para validação de suas informações e para torná-lo apto a utilizar os serviços públicos disponíveis.",
+  "A Prefeitura poderá, a qualquer tempo, fornecer dados ou informações relativas aos usuários da Plataforma a outros Órgãos integrantes da Administração Pública que ofereçam serviços públicos digitais cuja finalidade seja a efetiva prestação de serviço público pelo compartilhamento de dados ou informações, ou atender demanda judicial, conforme Lei Geral de Proteção de Dados Pessoais, 13.709, de 14 de agosto de 2018.",
+  "A Prefeitura de Fortaleza, em se tratando da referida plataforma Acolhe, não comercializa em qualquer hipótese, dados ou informações dos usuários com terceiros, respeitados os limites e diretrizes da Lei 13.709/2018.",
+  "A transparência será proporcionada nos termos da Lei de Acesso à Informação 12.527, de 18 de novembro de 2011; do Decreto Federal 7.724, de 16 de maio de 2012; e regulamentada no âmbito do Município de Fortaleza vide Decreto 13.305, de 21 de fevereiro de 2014.",
+  "1.2. Dos Cookies",
+  "Um cookie é um arquivo pequeno e simples que é enviado junto com páginas do site e armazenado pelo seu navegador no disco rígido do computador do usuário ou outro dispositivo. As informações armazenadas podem ser enviadas de volta aos nossos servidores ou aos servidores dos terceiros relevantes durante uma visita subsequente.",
+  "1.2.1. Cookies técnicos ou funcionais",
+  "Alguns cookies garantem que certas partes do site funcionem corretamente e que suas preferências de usuário permaneçam conhecidas. Utilizamos cookies funcionais para facilitar a visita ao nosso site. Dessa forma, você não precisa inserir repetidamente as mesmas informações ao visitar nosso site como, por exemplo, o usuário de Login a plataforma Acolhe.",
+  "Responsabilidades dos Usuários",
+  "O usuário se responsabiliza pela precisão e veracidade dos dados informados no cadastro e reconhece que a inconsistência destes poderá implicar a impossibilidade de utilizar serviços públicos da Prefeitura Municipal de Fortaleza.",
+  "O login e a senha somente poderão ser utilizados pelo usuário cadastrado. Este deve manter o sigilo da senha, que é pessoal e intransferível, não sendo possível, em qualquer hipótese, a alegação de uso indevido, após o ato de compartilhamento. Sendo o usuário da plataforma Acolhe responsável pela atualização de suas informações pessoais e consequências na omissão ou erros nas informações pessoais cadastradas.",
+  "O usuário é responsável pela reparação de todos e quaisquer danos, diretos ou indiretos, que sejam causados à Prefeitura de Fortaleza, a qualquer outro usuário, ou, ainda, a qualquer terceiro, inclusive em virtude do descumprimento do disposto nestes Termos de Uso e na Política de Privacidade da Secretaria dos Direitos Humanos e Desenvolvimento Social ou de qualquer ato praticado a partir de seu acesso à Internet, ao sítio eletrônico e/ou aplicativo.",
+  "Ressaltamos que se faz necessário que os usuários da Plataforma adotem boas práticas de segurança em relação às suas contas e aos seus dados, e caso tomem conhecimento de algum fator que possa comprometer a segurança, entrem em contato conosco pelos canais informados ao final deste instrumento.",
+  "Isenção de Responsabilidade da Prefeitura Municipal de Fortaleza",
+  "Embora sejam adotados elevados padrões de segurança a fim de evitar incidentes, não há nenhuma Plataforma/Programa/Serviço Online inteiramente livre de riscos. Logo, a Prefeitura Municipal de Fortaleza não será responsabilizada por:",
+  "Não realizar o tratamento de dados pessoais que lhes é atribuído, quando provar (LGPD, art. 43, I);",
+  "Embora tenha realizado o tratamento de dados pessoais que lhes é atribuído, não tenha havido violação à legislação de proteção de dados; (LGPD, art. 43, II) ou",
+  "Dano que seja decorrente de culpa exclusiva do titular dos dados ou de terceiro (LGPD, art. 43, III);",
+  "Quaisquer consequências decorrentes de informações falsas ou inseridas de má-fé pelos usuários nos registros necessários para utilização da Plataforma;",
+  "Ações maliciosas de terceiros que impliquem em ataque hacker ou danificação de equipamentos;",
+  "Proteção do computador;",
+  "Equipamento avariado no momento do consumo de serviços;",
+  "Proteção das informações baseadas nos computadores dos usuários;",
+  "Quaisquer consequências decorrentes da negligência, imprudência ou imperícia dos usuários em relação ao tratamento de seus dados pessoais;",
+  "Abuso de uso dos computadores dos usuários;",
+  "Monitoração clandestina do computador dos usuários;",
+  "Vulnerabilidades ou instabilidades existentes nos sistemas dos usuários;",
+  "Perímetro inseguro.",
+  "Bases Legais",
+  "Destaca-se o comprometimento da Prefeitura Municipal de Fortaleza em zelar pela aplicação dos Princípios e Diretrizes previstos na Lei Federal nº 14.129/2021 (Lei do Governo Digital), no Decreto Municipal nº 15.030/2021 (Programa Fortaleza Digital) e na Lei Ordinária Municipal nº 9.990/2012 (SUAS Fortaleza), que fundamentam a execução desta política pública, sem prejuízo de outras legislações pertinentes ao tema e das disposições elencadas na Política de Privacidade da Secretaria dos Direitos Humanos e Desenvolvimento Social (SDHDS):",
+  "Desburocratização e modernização do acesso aos serviços socioassistenciais oferecidos pelos Centros de Referência da Assistência Social (CRAS) de Fortaleza;",
+  "Facilitação e agilidade nos agendamentos de atendimentos para os cidadãos titulares de dados pessoais;",
+  "Transparência na execução e acompanhamento das demandas assistenciais da população;",
+  "Uso da tecnologia para otimização dos fluxos de trabalho e melhor aproveitamento dos recursos humanos e físicos da rede CRAS;",
+  "Execução eficiente e monitoramento de políticas públicas de assistência social amparadas na necessidade do compartilhamento seguro de dados pessoais;",
+  "Atendimento ao princípio da dignidade da pessoa humana através da redução de filas e do tempo de espera nas unidades físicas de atendimento.",
+  "Privacidade e Coleta de Informações",
+  "Objetivando atender ao devido funcionamento da plataforma Acolhe, faz-se necessário coletar alguns dados e informações dos usuários, que será feita quando estes iniciarem a utilização dos serviços operacionalizados no Portal Acolhe, mediante histórico de uso, formulários e cookies (autenticação e sessão). Tais informações visam realizar a melhoria contínua dos processos e serviços prestados pela Prefeitura Municipal de Fortaleza.",
+  "Para fins de elucidação, segue a descrição dos dados cadastrais coletados, sem prejuízo dos demais dados que serão tratados para atendimento de políticas públicas ofertadas pelos Órgãos da Administração Pública: nome completo; e-mail; além da criação de uma senha.",
+  "Esses dados são importantes para identificação do usuário em seu acesso aos serviços da Prefeitura Municipal de Fortaleza, além de possibilitar nossa comunicação com o usuário/cidadão.",
+  "Em razão disso, com o fito de assegurar a proteção das informações e dados pessoais, alicerçada nas diretrizes dos arts. 46 a 51 da LGPD, buscando mitigar riscos, a Prefeitura Municipal de Fortaleza lança mão de ferramentas específicas para garantir a segurança do tráfego de dados e criptografia de senhas, assim como dispõe de instrumento de fiscalização e controle interno por meio de Relatório de Impacto à Proteção de Dados Pessoais (RIPD).",
+  "Comunicação",
+  "Sempre que desejar, o usuário poderá entrar em contato com a equipe da plataforma Acolhe, pelo link acolhe.fortaleza.ce.gov.br, para informações sobre dúvidas, elogios, reclamações e sugestões.",
+  "Os casos omissos poderão ser tratados em uma instância administrativa por meio da Ouvidoria da Prefeitura de Fortaleza, mediante o link https://ouvidoria.cgm.fortaleza.ce.gov.br.",
+  "Foro",
+  "Quaisquer disputas e/ou controvérsias oriundas de quaisquer atos praticados no âmbito da utilização dos sítios eletrônicos e/ou aplicativos pelos usuários, inclusive com relação ao descumprimento dos Termos de Uso e da Política de Privacidade, ou pela violação dos direitos da Prefeitura Municipal de Fortaleza, de outros usuários e/ou de terceiros, assim como direitos de propriedade intelectual, de sigilo e de personalidade, serão processadas na Comarca de Fortaleza/CE.",
+  "Sem prejuízo de qualquer outra via de recurso administrativo ou judicial, todos os titulares de dados têm direito a apresentar reclamação à Autoridade Nacional de Proteção de Dados, com base no artigo 18, §1º, da Lei Geral de Proteção de Dados 13.709, de 14 de agosto de 2018.",
+  "Alterações e Atualização deste Termo",
+  "A atual versão inicial deste termo foi formulada e atualizada pela última vez em: 01/04/2026.",
+  "Este instrumento tem validade indeterminada, podendo ser alterado em suas disposições, a qualquer tempo, principalmente em função da adequação a eventuais alterações feitas em nossa Plataforma ou em âmbito legislativo.",
+  "Assim, a versão atualizada deste documento passará a vigorar a partir da data de sua publicação no sítio eletrônico acolhe.fortaleza.ce.gov.br e deverá ser integralmente observada pelos usuários.",
+  "Aceitação dos Termos de Uso",
+  "O usuário declara ter lido e entendido todas as regras, condições e obrigações estabelecidas no presente termo. Portanto, ao acessar e utilizar os serviços disponibilizados pela plataforma Acolhe, por intermédio da Plataforma Online ou via Aplicativo, o usuário concorda e aceita integralmente as disposições aplicáveis à Plataforma.",
+] as const;
+
+export const TermsOfUseContent = () => {
+  return (
+    <div className="p-8 overflow-y-auto text-slate-600 text-sm leading-relaxed space-y-4">
+      {TERMOS_DE_USO_LINHAS.map((line, index) => {
+        const isHeading = HIGHLIGHTED_LINES.has(line);
+        return (
+          <p key={`${line}-${index}`} className={isHeading ? "font-bold text-slate-800" : undefined}>
+            {line}
+          </p>
+        );
+      })}
+    </div>
+  );
+};
+

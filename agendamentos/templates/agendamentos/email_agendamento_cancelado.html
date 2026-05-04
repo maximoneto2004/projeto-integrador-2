@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Confirmação de Cancelamento do Agendamento</title>
+</head>
+<body style="margin:0; padding:0; background-color: #fde4c9; font-family: 'Segoe UI', Arial, sans-serif;"> <table width="100%" cellspacing="0" cellpadding="0" style="background-color: #fde4c9; padding: 40px 0;">
+        <tr>
+            <td>
+                <div style="max-width:600px; margin:0 auto; background: #ffffff; border-radius:12px; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);">
+                    
+                    <div style="background-color: #ffffff; padding: 30px 20px; text-align: center; border-bottom: 4px solid #ff8558;">
+                        <img src="https://citinova.fortaleza.ce.gov.br/static/dist/images/logo-pmf-2025.png" alt="Prefeitura de Fortaleza" style="width: 220px; height: auto;">
+                    </div>
+
+                    <div style="padding: 40px 35px;">
+                        <h1 style="margin:0 0 10px; font-size:24px; color:#1f2937; text-align: left; font-weight: 700;">
+                            Agendamento Cancelado
+                        </h1>
+                        <div style="width: 50px; height: 3px; background-color: #ff8558; margin-bottom: 25px;"></div>
+
+                        <p style="margin:0 0 30px; color:#4b5563; line-height:1.6; font-size: 16px; text-align: center;">
+                            Olá, <strong>{% if cidadao_nome %}{{ cidadao_nome }}{% else %}Cidadão(ã){% endif %}</strong>.<br>
+                            Seu agendamento para o serviço de <strong>{{ servico_nome }}</strong> marcado para o dia <strong>{{ data }}</strong><br>
+                            às <strong>{{ horario }}</strong> na unidade <strong>{{ unidade_nome }}</strong> foi cancelado.
+                        </p>
+                        <p style="margin:0 0 10px; color:#374151; font-size: 14px; font-weight: bold; text-align: center;">
+                            Você pode agendar para um novo dia, basta seguir os passos:
+                        </p>
+                        <ul style="margin:0 0 30px; padding-left: 20px; color:#4b5563; font-size: 14px; line-height: 1.8; text-align: center;">
+                            <li>Acesse o portal do Acolhe.</li>
+                            <li>Escolha o serviço que deseja para uma data disponível.</li>
+                            <li>Após o agendamento, fique atento(a) à sua caixa de e-mail.</li>
+                        </ul>
+                        <div style="border-top: 1px solid #e5e7eb; padding-top: 25px; text-align: center;">
+                            <p style="margin:0 0 10px; color:#9ca3af; font-size:12px; text-align: center;">
+                                Em caso de dúvidas, acesse o portal oficial:
+                            </p>
+                            <a href="{{ contato_url }}" style="display: inline-block; padding: 12px 25px; background-color: #ff8558; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 14px;">
+                                Central de Atendimento
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="max-width:600px; margin: 20px auto; text-align: center;">
+                    <p style="color:#92400e; font-size:11px; opacity: 0.8;">
+                        © 2026 Prefeitura Municipal de Fortaleza. <br> Este é um informativo automático e não deve ser respondido.
+                    </p>
+                </div>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
