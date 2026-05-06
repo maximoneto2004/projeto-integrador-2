@@ -20,3 +20,4 @@ jobs:
             git pull origin main
             docker build -t projetointegrador-web:latest .
             docker stack deploy -c stack.yml cras
+            docker service update --force cras_web
