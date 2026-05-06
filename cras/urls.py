@@ -75,18 +75,19 @@ caso queira depois é só trazer no no login-sso sem problemas.
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    urlpatterns.append(path("api/schema/", SpectacularAPIView.as_view(), name="schema"))
-    urlpatterns.append(
-        path(
-            "api/schema/swagger-ui/",
-            SpectacularSwaggerView.as_view(url_name="schema"),
-            name="swagger-ui",
-        )
+
+urlpatterns.append(path("api/schema/", SpectacularAPIView.as_view(), name="schema"))
+urlpatterns.append(
+    path(
+        "api/schema/swagger-ui/",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger-ui",
     )
-    urlpatterns.append(
-        path(
-            "api/schema/redoc/",
-            SpectacularRedocView.as_view(url_name="schema"),
-            name="redoc",
-        )
+)
+urlpatterns.append(
+    path(
+        "api/schema/redoc/",
+        SpectacularRedocView.as_view(url_name="schema"),
+        name="redoc",
     )
+)
