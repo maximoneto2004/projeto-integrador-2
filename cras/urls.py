@@ -76,18 +76,18 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
-urlpatterns.append(path("api/schema/", SpectacularAPIView.as_view(), name="schema"))
+urlpatterns.append(path("api/schema/", SpectacularAPIView.as_view(permission_classes=[]), name="schema"))
 urlpatterns.append(
     path(
         "api/schema/swagger-ui/",
-        SpectacularSwaggerView.as_view(url_name="schema"),
+        SpectacularSwaggerView.as_view(url_name="schema", permission_classes=[]),
         name="swagger-ui",
     )
 )
 urlpatterns.append(
     path(
         "api/schema/redoc/",
-        SpectacularRedocView.as_view(url_name="schema"),
+        SpectacularRedocView.as_view(url_name="schema", permission_classes=[]),
         name="redoc",
     )
 )
