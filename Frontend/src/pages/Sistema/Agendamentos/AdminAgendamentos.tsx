@@ -12,7 +12,7 @@ import { ModalConfirmarExclusao } from "@/components/tela-atendimentos/modais/mo
 import { ModalDetalhesAgendamento } from "@/components/tela-atendimentos/modais/modalDetalhesAgendamento";
 import { ModalChamada } from "@/components/tela-atendimentos/modais/modalChamada";
 import { ModalAssumirAtendimento } from "@/components/tela-atendimentos/modais/modalAssumirAtendimento";
-import { ModalCriarProntuario } from "@/components/tela-atendimentos/modais/modalCriarProntuário";
+import { ModalRegistrarReceita } from "@/components/tela-atendimentos/modais/modalRegistrarReceita";
 import { Filtro } from "@/components/tela-atendimentos/filtro";
 import { TabelaAtendimentos } from "@/components/tela-atendimentos/tabelaAtendimentos";
 import { AgendamentosHeader } from "@/components/tela-atendimentos/AgendamentosHeader";
@@ -85,8 +85,8 @@ const AdminAgendamentos = () => {
   const [appointmentExcluir, setAppointmentExcluir] = useState<Appointment | null>(null);
   const [modalServicosAberto, setModalServicosAberto] = useState(false);
   const [agendamentoServicoId, setAgendamentoServicoId] = useState<string | null>(null);
-  const [modalCriarProntuario, setModalCriarProntuario] = useState(false);
-  const [agendamentoCriarProntuario, setAgendamentoCriarProntuario] = useState<Appointment | null>(null);
+  const [modalReceitaAberto, setModalReceitaAberto] = useState(false);
+  const [agendamentoReceita, setAgendamentoReceita] = useState<Appointment | null>(null);
   const [modalChamada, setModalChamada] = useState(false);
   const [agendamentoParaChamar, setAgendamentoParaChamar] = useState<Appointment | null>(null);
   const [modalAgendamentoAberto, setModalAgendamentoAberto] = useState(false);
@@ -441,9 +441,9 @@ const AdminAgendamentos = () => {
     setModalServicosAberto(true);
   };
 
-  const abrirModalCriarProntuario = (appointment: Appointment) => {
-    setAgendamentoCriarProntuario(appointment);
-    setModalCriarProntuario(true);
+  const abrirModalRegistrarReceita = (appointment: Appointment) => {
+    setAgendamentoReceita(appointment);
+    setModalReceitaAberto(true);
   };
 
   const fecharModalAssumir = () => {
@@ -494,15 +494,6 @@ const AdminAgendamentos = () => {
     }
   };
 
-  const onRegistrar = (appointment: Appointment) => {
-    if (appointment.status === "Atendimento") {
-      navigate(`/sistema/prontuario?id=${appointment.id}&cpf=${appointment.cpfCidadao || ""}`);
-      return;
-    }
-
-    toast.info("Registro de atendimento indisponivel.");
-  };
-
   const onFinalizarAtendimento = (appointment: Appointment) => {
     if (appointment.status !== "Atendimento") return;
     setAppointmentFinalizar(appointment);
@@ -538,14 +529,6 @@ const AdminAgendamentos = () => {
       return;
     }
     navigate(`/sistema/encaminhamento-prontuario?agendamento=${appointment.id}&cpf=${cpf}`);
-  };
-
-  const confirmarCriarProntuario = (prontuarioId?: string) => {
-    if (!agendamentoCriarProntuario) return;
-    const extra = prontuarioId ? `&prontuarioId=${prontuarioId}` : "";
-    navigate(`/sistema/prontuario?id=${agendamentoCriarProntuario.id}&cpf=${agendamentoCriarProntuario.cpfCidadao || ""}${extra}`);
-    setModalCriarProntuario(false);
-    setAgendamentoCriarProntuario(null);
   };
 
   const onChamarProximo = async () => {
@@ -675,13 +658,12 @@ const AdminAgendamentos = () => {
             onChamar={onChamar}
             onExcluir={onExcluir}
             onEditar={abrirEdicaoAgendamento}
-            onRegistrar={onRegistrar}
+            onRegistrarReceita={abrirModalRegistrarReceita}
             onAssumir={abrirModalAssumir}
             onFinalizar={onFinalizarAtendimento}
             onAbrirFicha={onAbrirFichaAtendimento}
             onAbrirEncaminhamento={onAbrirEncaminhamento}
             onAbrirServicos={abrirModalServicos}
-            onCriarProntuario={abrirModalCriarProntuario}
             podeExibirBotaoChamar={podeExibirBotaoChamar}
             renderStatusBadge={getStatusBadge}
             ordemHorario={ordemHorario}
@@ -815,16 +797,16 @@ const AdminAgendamentos = () => {
 
       <ModalConfirmarExclusao open={excluirDialog} onOpenChange={setExcluirDialog} appointment={appointmentExcluir} onConfirm={confirmarExclusao} />
 
-      <ModalCriarProntuario
-        open={modalCriarProntuario}
+      <ModalRegistrarReceita
+        open={modalReceitaAberto}
         onOpenChange={(open) => {
-          setModalCriarProntuario(open);
+          setModalReceitaAberto(open);
           if (!open) {
-            setAgendamentoCriarProntuario(null);
+            setAgendamentoReceita(null);
           }
         }}
-        appointment={agendamentoCriarProntuario}
-        onConfirm={confirmarCriarProntuario}
+        appointment={agendamentoReceita}
+        profissional={user?.nome}
       />
 
       <ModalServicosAgendamento

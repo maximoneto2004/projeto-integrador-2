@@ -53,7 +53,7 @@ interface MenuGroup {
 }
 
 // ------------------------------
-// 📌 GRUPOS DO MENU
+// ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…â€™ GRUPOS DO MENU
 // ------------------------------
 const menuGroups: MenuGroup[] = [
 
@@ -133,11 +133,11 @@ const menuGroups: MenuGroup[] = [
   },
 
   {
-    label: "Prontuário",
+    label: "Medicamentos",
     items: [
       {
-        title: "Buscar Prontuário",
-        url: "/sistema/buscar-prontuario",
+        title: "Buscar Receitas",
+        url: "/sistema/buscar-receitas",
         icon: FileText,
         roles: ["atendente"],
       },
@@ -167,7 +167,7 @@ const menuGroups: MenuGroup[] = [
       },
 
       // {
-      //   title: "Gerênciar profissionais",
+      //   title: "GerÃƒÆ’Ã‚Âªnciar profissionais",
       //   url: "/sistema/gerenciar-profissionais",
       //   icon: Users,
       //   roles: ["coordenador"],
@@ -238,31 +238,31 @@ const menuGroups: MenuGroup[] = [
         icon: MapPin,
         roles: ["admin"],
       },
-      {
-        title: "Campos Prontuário",
-        url: "/sistema/administrador/prontuario-campos",
-        icon: FileText,
-        roles: ["admin"],
-      },
+      // {
+      //   title: "Campos ProntuÃƒÆ’Ã‚Â¡rio",
+      //   url: "/sistema/administrador/prontuario-campos",
+      //   icon: FileText,
+      //   roles: ["admin"],
+      // },
     ],
   },
 
-  {
-    label: "Relatórios",
-    items: [
-      {
-        title: "Geração de relatórios",
-        url: "/sistema/relatorio",
-        icon: FileDown,
-        roles: ["admin", "gestor", "coordenador"],
-      },
-    ]
-  },
+  // {
+  //   label: "Relatórios",
+  //   items: [
+  //     {
+  //       title: "Geração de relatórioss",
+  //       url: "/sistema/relatorio",
+  //       icon: FileDown,
+  //       roles: ["admin", "gestor", "coordenador"],
+  //     },
+  //   ]
+  // },
 
-  {
-    label: "Portal",
-    items: [{ title: "Dúvidas frequentes", url: "/sistema/administrador/duvidas", icon: CircleHelp, roles: ["admin"] }],
-  },
+  // {
+  //   label: "Portal",
+  //   items: [{ title: "DÃƒÆ’Ã‚Âºvidas frequentes", url: "/sistema/administrador/duvidas", icon: CircleHelp, roles: ["admin"] }],
+  // },
 ];
 
 export function RoleBasedSidebar() {
@@ -284,7 +284,7 @@ export function RoleBasedSidebar() {
     <Sidebar>
       {/* 1. Header Dedicado para a Logo */}
       <div className="flex flex-col items-center px-6 py-4">
-        <img src={logoSdhdsCor} alt="Logo Prefeitura" className="h-14 w-auto object-contain " />
+        {/* <img src={logoSdhdsCor} alt="Logo Prefeitura" className="h-14 w-auto object-contain " /> */}
       </div>
 
       <SidebarContent>
@@ -340,7 +340,7 @@ export function RoleBasedSidebar() {
       </SidebarContent>
 
       <div className="flex flex-col items-center justify-center gap-2">
-        <img src={citinovaLogoSrc} alt="Logo CITINOVA" className="h-16 w-auto object-contain" />
+        {/* <img src={citinovaLogoSrc} alt="Logo CITINOVA" className="h-16 w-auto object-contain" /> */}
         {/* <img src={logoSdhdsCor} alt="Logo SDHDS" className="h-8 w-auto pb-4 object-contain" /> */}
 
       </div>

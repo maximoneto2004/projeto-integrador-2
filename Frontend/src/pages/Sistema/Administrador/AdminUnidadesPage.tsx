@@ -345,7 +345,7 @@ export default function AdminUnidadesPage() {
                 <SidebarTrigger />
 
                 <div>
-                  <h1 className="text-3xl font-bold text-foreground">Unidades CRAS</h1>
+                  <h1 className="text-3xl font-bold text-foreground">Unidades de Atendimento</h1>
                   <p className="text-muted-foreground">Crie, edite e visualize unidades</p>
                 </div>
               </div>

@@ -1020,7 +1020,7 @@ export default function AdminMapaUnidades() {
               <SidebarTrigger />
               <div>
                 <h1 className="text-2xl font-bold tracking-tight">Mapa de Monitoramento</h1>
-                <p className="text-sm text-muted-foreground">Visualize todas as unidades CRAS de Fortaleza.</p>
+                <p className="text-sm text-muted-foreground">Visualize todas as unidades de postos de Fortaleza.</p>
               </div>
             </div>
             <Button type="button" variant="outline" onClick={handleAtualizar} disabled={loading || unidadesCardLoading}>
@@ -1033,7 +1033,7 @@ export default function AdminMapaUnidades() {
               <div className="space-y-4">
                 <div className="space-y-1">
                   <Label htmlFor="busca-unidade">Buscar unidade</Label>
-                  <Input id="busca-unidade" placeholder="Ex: CRAS Centro..." value={busca} onChange={(e) => setBusca(e.target.value)} />
+                  <Input id="busca-unidade" placeholder="Ex: Unidade Centro..." value={busca} onChange={(e) => setBusca(e.target.value)} />
                 </div>
 
                 <div className="space-y-1">
