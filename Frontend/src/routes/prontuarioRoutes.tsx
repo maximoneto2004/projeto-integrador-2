@@ -1,9 +1,10 @@
-import { RouteObject } from "react-router-dom";
+﻿import { RouteObject } from "react-router-dom";
 import { guard } from "./guard";
 import { ACCESS } from "@/security/acess";
 import AdminProntuarioPage from "@/pages/Sistema/Prontuário/AdminProntuarioPage";
 import AdminHistoricoProntuario from "@/pages/Sistema/Prontuário/AdminHistoricoProntuario";
 import AdminBuscarProntuario from "@/pages/Sistema/Prontuário/AdminBuscarProntuario";
+import AdminBuscarReceitas from "@/pages/Sistema/Prontuário/AdminBuscarReceitas";
 import AdminEncaminhamentoProntuario from "@/pages/Sistema/Prontuário/AdminEncaminhamentoProntuario";
 import AdminPerfilFamiliar from "@/pages/Sistema/Prontuário/AdminPerfilFamiliar";
 
@@ -21,6 +22,10 @@ export const prontuarioRoutes: RouteObject[] = [
     element: guard(<AdminBuscarProntuario />, { withGuiche: true, allowedRoles: ACCESS.prontuario }),
   },
   {
+    path: "/sistema/buscar-receitas",
+    element: guard(<AdminBuscarReceitas />, { withGuiche: true, allowedRoles: ACCESS.prontuario }),
+  },
+  {
     path: "/sistema/encaminhamento-prontuario",
     element: guard(<AdminEncaminhamentoProntuario />, { withGuiche: true, allowedRoles: ACCESS.prontuario }),
   },
@@ -29,4 +34,3 @@ export const prontuarioRoutes: RouteObject[] = [
     element: guard(<AdminPerfilFamiliar />, { withGuiche: true, allowedRoles: ACCESS.prontuario }),
   },
 ];
-

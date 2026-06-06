@@ -27,8 +27,7 @@ type ActionRuleContext = {
 export type AppointmentActionVisibility = {
   showConfirmarChegada: boolean;
   showChamar: boolean;
-  showCriarProntuario: boolean;
-  showProntuario: boolean;
+  showRegistrarReceita: boolean;
   showFinalizarAtendimento: boolean;
   showServicosAtendimento: boolean;
   showFichaAtendimento: boolean;
@@ -48,12 +47,6 @@ const normalize = (value?: string) =>
         .replace(/[\u0300-\u036f]/g, "")
         .toLowerCase()
     : "";
-
-const hasProntuario = (prontuario: unknown) =>
-  prontuario !== null &&
-  prontuario !== undefined &&
-  (!(typeof prontuario === "string") ||
-    !["", "null", "undefined"].includes(prontuario.trim().toLowerCase()));
 
 const STATUS_PERMITE_CHAMAR: Appointment["status"][] = ["Aguardando", "Ativado - Aguardando Atendimento"];
 
@@ -76,7 +69,6 @@ export function getAppointmentActionVisibility({
   const isEspecializado = tipoServicoNormalizado.includes("especializado");
   const isComum = tipoServicoNormalizado.includes("comum");
   const atendenteEspecializado = isAtendente && isEspecializado;
-  const temProntuario = hasProntuario(appointment.prontuario);
 
   return {
     showConfirmarChegada: permissions.canConfirmArrival && canAct && appointment.status === "Marcado",
@@ -86,8 +78,7 @@ export function getAppointmentActionVisibility({
       (!isSupervisor || isComum) &&
       (permissions.canCall || permissions.canAssume) &&
       podeExibirBotaoChamar(appointment),
-    showCriarProntuario: atendenteEspecializado && appointment.status === "Atendimento" && canAct && !temProntuario,
-    showProntuario: atendenteEspecializado && permissions.canRegister && appointment.status === "Atendimento" && temProntuario,
+    showRegistrarReceita: atendenteEspecializado && permissions.canRegister && appointment.status === "Atendimento" && canAct,
     showFinalizarAtendimento: permissions.canRegister && canAct && appointment.status === "Atendimento",
     showServicosAtendimento: isAtendente && appointment.status === "Finalizado",
     showFichaAtendimento:

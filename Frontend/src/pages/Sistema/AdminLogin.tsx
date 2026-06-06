@@ -1,17 +1,16 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/lib/sonner";
-import { Mail, Lock, ArrowRight, Eye, EyeOff } from "lucide-react"; // Adicionando ícones
+import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label"; // Se tiver o componente Label
+import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
 import { deriveRoleFromGroups, getDefaultRouteByRole } from "@/lib/authHelpers";
 import { authService } from "@/services/sistema/authService";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import bgCras from "@/assets/images/bgCras.jpg";
-import citinova from "@/assets/images/logo-citinova-branc.png";
-import sdhds from "@/assets/images/logo-sdhds-branca.png";
+
 const AdminLogin = () => {
   const navigate = useNavigate();
   const { login, loading } = useAuth();
@@ -53,12 +52,11 @@ const AdminLogin = () => {
 
   return (
     <div className="min-h-screen bg-background flex">
-      {/* Lado Esquerdo - Formulário */}
       <div className="w-full lg:w-[40%] flex items-center justify-center p-8 lg:p-12">
         <div className="w-full max-w-md space-y-8">
           <div className="space-y-2 text-left">
             <h1 className="text-4xl font-extrabold tracking-tight text-slate-900">Acesso Restrito</h1>
-            <p className="text-muted-foreground">Bem-vindo ao sistema administrativo do CRAS.</p>
+            <p className="text-muted-foreground">Bem-vindo ao sistema administrativo dos postos de saúde</p>
           </div>
 
           <div className="bg-white rounded-2xl shadow-xl shadow-slate-200/60 p-8 border border-slate-100">
@@ -121,33 +119,12 @@ const AdminLogin = () => {
               </Button>
             </form>
           </div>
-
-          {/* <p className="text-center text-sm text-slate-500">Suporte técnico: (85) 0000-0000</p> */}
         </div>
       </div>
 
-      {/* Lado Direito - Imagem de Fundo e Logos */}
       <div className="hidden lg:block lg:w-[60%] relative overflow-hidden bg-slate-200">
         <img src={bgCras} alt="" aria-hidden="true" className="absolute inset-0 z-0 h-full w-full object-cover" />
-        {/* Overlay opcional para melhorar contraste se necessário */}
         <div className="absolute inset-0 z-10 bg-black/10" />
-
-        {/* Logo Superior */}
-        <div className="absolute top-8 left-8 z-20">
-          <img src={sdhds} alt="Logo SDHDS" className="h-28 w-auto object-contain drop-shadow-lg" />
-        </div>
-
-        {/* Logo Inferior */}
-        <div className="absolute bottom-8 left-8 z-20">
-          <img src={citinova} alt="Logo Citinova" className="h-16 w-auto object-contain drop-shadow-lg" />
-        </div>
-
-        {/* Texto de apoio (opcional, mantido comentado conforme seu original) */}
-        {/* <div className="absolute bottom-8 right-8 text-white text-right drop-shadow-md">
-    <h2 className="text-xl font-bold">Inclusão Social</h2>
-    <p className="text-sm opacity-90">Prefeitura de Fortaleza</p>
-  </div> 
-  */}
       </div>
 
       <Dialog open={forgotOpen} onOpenChange={setForgotOpen}>

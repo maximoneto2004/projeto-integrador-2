@@ -105,14 +105,9 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon" className="border-r border-border">
       <SidebarHeader className="border-b border-border p-4">
-        <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Calendar className="h-4 w-4" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-sm font-semibold">CRAS Fortaleza</span>
-            <span className="text-xs text-muted-foreground">Painel Admin</span>
-          </div>
+        <div className="flex flex-col">
+          <span className="text-sm font-semibold">CRAS Fortaleza</span>
+          <span className="text-xs text-muted-foreground">Painel Admin</span>
         </div>
       </SidebarHeader>
 

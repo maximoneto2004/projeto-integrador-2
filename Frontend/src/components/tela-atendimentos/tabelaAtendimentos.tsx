@@ -1,5 +1,5 @@
 ﻿import type { Appointment } from "@/types/agenda";
-import { Eye, Edit, Phone, Save, UserCheck, FileText, CircleX, ClipboardList, CheckCircle2, FilePlus } from "lucide-react";
+import { Eye, Edit, Phone, UserCheck, FileText, CircleX, ClipboardList, CheckCircle2, ReceiptText } from "lucide-react";
 import { getAppointmentActionVisibility } from "./appointmentActionRules";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -26,13 +26,12 @@ interface TabelaAtendimentosProps {
   onChamar: (a: Appointment) => void;
   onExcluir: (a: Appointment) => void;
   onEditar: (a: Appointment) => void;
-  onRegistrar: (a: Appointment) => void;
+  onRegistrarReceita: (a: Appointment) => void;
   onAssumir: (a: Appointment) => void;
   onFinalizar: (a: Appointment) => void;
   onAbrirFicha: (a: Appointment) => void;
   onAbrirEncaminhamento: (a: Appointment) => void;
   onAbrirServicos: (a: Appointment) => void;
-  onCriarProntuario: (a: Appointment) => void;
 
   podeExibirBotaoChamar: (a: Appointment) => boolean;
 
@@ -60,13 +59,12 @@ export function TabelaAtendimentos({
   onChamar,
   onEditar,
   onExcluir,
-  onRegistrar,
+  onRegistrarReceita,
   onAssumir,
   onFinalizar,
   onAbrirFicha,
   onAbrirEncaminhamento,
   onAbrirServicos,
-  onCriarProntuario,
   podeExibirBotaoChamar,
   renderStatusBadge,
   ordemHorario,
@@ -153,19 +151,13 @@ export function TabelaAtendimentos({
                         </button>
                       )}
 
-                      {actions.showCriarProntuario && (
+                      {actions.showRegistrarReceita && (
                         <button
                           className="p-2 hover:bg-indigo-100 rounded-full"
-                          title="Criar prontuário"
-                          onClick={() => onCriarProntuario(appointment)}
+                          title="Registrar receita"
+                          onClick={() => onRegistrarReceita(appointment)}
                         >
-                          <FilePlus className="w-5 h-5 text-indigo-700" />
-                        </button>
-                      )}
-
-                      {actions.showProntuario && (
-                        <button className="p-2 hover:bg-blue-100 rounded-full" title="Prontuário" onClick={() => onRegistrar(appointment)}>
-                          <FileText className="w-5 h-5 text-blue-600" />
+                          <ReceiptText className="w-5 h-5 text-indigo-700" />
                         </button>
                       )}
 
