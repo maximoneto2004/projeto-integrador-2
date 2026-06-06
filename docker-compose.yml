@@ -24,11 +24,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    command: >
-      sh -c "python manage.py migrate &&
-             python manage.py collectstatic --noinput &&
-             gunicorn --bind 0.0.0.0:8080 --workers 2 --threads 2
-             --worker-class gthread --timeout 120 --log-level info cras.wsgi"
-
+    command: sh -c "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn cras.wsgi:application --bind 0.0.0.0:8080 --workers 2 --threads 2 --worker-class gthread --timeout 120 --log-level info"
 volumes:
   postgres_data:
