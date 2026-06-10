@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { RoleBasedSidebar } from "@/components/RoleBasedSidebar";
 import { Button } from "@/components/ui/button";
@@ -6,9 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Search, Eye } from "lucide-react";
-import { filterMockReceitas, type ReceitaRegistro } from "@/lib/mockReceitas";
 import { formatCpf } from "@/utils/cpfFormater";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { receitaService, type Receita } from "@/services/prontuario/receitaService";
+import { toast } from "@/lib/sonner";
 
 const PAGE_SIZE = 10;
 
@@ -21,26 +22,39 @@ function toDateLabel(iso: string): string {
 export default function AdminBuscarReceitas() {
   const [termo, setTermo] = useState("");
   const [buscaRealizada, setBuscaRealizada] = useState(false);
+  const [carregando, setCarregando] = useState(false);
+  const [resultado, setResultado] = useState<Receita[]>([]);
+  const [total, setTotal] = useState(0);
   const [paginaAtual, setPaginaAtual] = useState(1);
-  const [resultado, setResultado] = useState<ReceitaRegistro[]>([]);
-  const [receitaSelecionada, setReceitaSelecionada] = useState<ReceitaRegistro | null>(null);
+  const [receitaSelecionada, setReceitaSelecionada] = useState<Receita | null>(null);
 
-  const totalItens = resultado.length;
-  const totalPaginas = Math.max(1, Math.ceil(totalItens / PAGE_SIZE));
-  const paginaInicio = totalItens ? (paginaAtual - 1) * PAGE_SIZE + 1 : 0;
-  const paginaFim = Math.min(paginaAtual * PAGE_SIZE, totalItens);
+  const totalPaginas = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const paginaInicio = total ? (paginaAtual - 1) * PAGE_SIZE + 1 : 0;
+  const paginaFim = Math.min(paginaAtual * PAGE_SIZE, total);
 
-  const paginaItems = useMemo(() => {
-    const offset = (paginaAtual - 1) * PAGE_SIZE;
-    return resultado.slice(offset, offset + PAGE_SIZE);
-  }, [paginaAtual, resultado]);
-
-  const handleBuscar = () => {
-    const items = filterMockReceitas(termo.trim());
-    setResultado(items);
-    setBuscaRealizada(true);
-    setPaginaAtual(1);
+  const buscar = async (pagina = 1) => {
+    setCarregando(true);
+    try {
+      const res = await receitaService.listar({
+        search: termo.trim() || undefined,
+        limit: PAGE_SIZE,
+        offset: (pagina - 1) * PAGE_SIZE,
+      });
+      const data = res.data;
+      setResultado(data.result ?? []);
+      setTotal(data.count ?? 0);
+      setPaginaAtual(pagina);
+      setBuscaRealizada(true);
+    } catch {
+      toast.error("Erro ao buscar receitas.");
+    } finally {
+      setCarregando(false);
+    }
   };
+
+  const handleBuscar = () => buscar(1);
+
+  const irPagina = (pagina: number) => buscar(pagina);
 
   return (
     <SidebarProvider>
@@ -52,7 +66,7 @@ export default function AdminBuscarReceitas() {
             <div className="container mx-auto p-6">
               <div className="mb-6">
                 <h1 className="text-3xl font-bold">Receitas</h1>
-                <p className="text-muted-foreground">Busque receitas associadas ao cidadão (mock)</p>
+                <p className="text-muted-foreground">Busque receitas associadas ao cidadão</p>
               </div>
 
               <div className="bg-card border rounded-lg p-6 mb-6">
@@ -66,10 +80,9 @@ export default function AdminBuscarReceitas() {
                       if (e.key === "Enter") handleBuscar();
                     }}
                   />
-
-                  <Button onClick={handleBuscar} className="gap-2">
+                  <Button onClick={handleBuscar} className="gap-2" disabled={carregando}>
                     <Search className="h-4 w-4" />
-                    Pesquisar
+                    {carregando ? "Buscando..." : "Pesquisar"}
                   </Button>
                 </div>
               </div>
@@ -88,18 +101,18 @@ export default function AdminBuscarReceitas() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {paginaItems.length === 0 ? (
+                      {resultado.length === 0 ? (
                         <TableRow>
                           <TableCell colSpan={5} className="text-center text-sm text-muted-foreground py-8">
                             Nenhuma receita encontrada.
                           </TableCell>
                         </TableRow>
                       ) : (
-                        paginaItems.map((r) => (
+                        resultado.map((r) => (
                           <TableRow key={r.id}>
-                            <TableCell className="font-semibold">{r.cidadaoNome || "-"}</TableCell>
-                            <TableCell>{formatCpf(r.cidadaoCpf) || "-"}</TableCell>
-                            <TableCell>{toDateLabel(r.dataEmissao)}</TableCell>
+                            <TableCell className="font-semibold">{r.cidadao_nome || "-"}</TableCell>
+                            <TableCell>{formatCpf(r.cidadao_cpf) || "-"}</TableCell>
+                            <TableCell>{toDateLabel(r.data_emissao)}</TableCell>
                             <TableCell>
                               <Badge variant="outline">{r.medicamentos.length}</Badge>
                             </TableCell>
@@ -114,13 +127,18 @@ export default function AdminBuscarReceitas() {
                     </TableBody>
                   </Table>
 
-                  {totalItens > 0 && (
+                  {total > 0 && (
                     <div className="mt-4 flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">
-                        Mostrando {paginaInicio} - {paginaFim} de {totalItens}
+                        Mostrando {paginaInicio} - {paginaFim} de {total}
                       </span>
                       <div className="flex items-center gap-2">
-                        <Button variant="outline" size="sm" onClick={() => setPaginaAtual((p) => Math.max(1, p - 1))} disabled={paginaAtual === 1}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => irPagina(paginaAtual - 1)}
+                          disabled={paginaAtual === 1 || carregando}
+                        >
                           Anterior
                         </Button>
                         <span className="text-sm text-muted-foreground">
@@ -129,8 +147,8 @@ export default function AdminBuscarReceitas() {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => setPaginaAtual((p) => Math.min(totalPaginas, p + 1))}
-                          disabled={paginaAtual >= totalPaginas}
+                          onClick={() => irPagina(paginaAtual + 1)}
+                          disabled={paginaAtual >= totalPaginas || carregando}
                         >
                           Próxima
                         </Button>
@@ -152,13 +170,13 @@ export default function AdminBuscarReceitas() {
           {receitaSelecionada && (
             <div className="space-y-3">
               <p>
-                <strong>Cidadão:</strong> {receitaSelecionada.cidadaoNome}
+                <strong>Cidadão:</strong> {receitaSelecionada.cidadao_nome}
               </p>
               <p>
-                <strong>CPF:</strong> {formatCpf(receitaSelecionada.cidadaoCpf)}
+                <strong>CPF:</strong> {formatCpf(receitaSelecionada.cidadao_cpf)}
               </p>
               <p>
-                <strong>Profissional:</strong> {receitaSelecionada.profissional || "-"}
+                <strong>Profissional:</strong> {receitaSelecionada.profissional_nome || "-"}
               </p>
               <p>
                 <strong>Diagnóstico:</strong> {receitaSelecionada.diagnostico || "-"}
@@ -169,8 +187,8 @@ export default function AdminBuscarReceitas() {
 
               <div className="space-y-2">
                 <h3 className="font-semibold">Medicamentos</h3>
-                {receitaSelecionada.medicamentos.map((m, idx) => (
-                  <div key={`${receitaSelecionada.id}-${idx}`} className="border rounded-md p-3 text-sm">
+                {receitaSelecionada.medicamentos.map((m) => (
+                  <div key={m.id} className="border rounded-md p-3 text-sm">
                     <p>
                       <strong>Nome:</strong> {m.nome}
                     </p>
@@ -196,4 +214,3 @@ export default function AdminBuscarReceitas() {
     </SidebarProvider>
   );
 }
-

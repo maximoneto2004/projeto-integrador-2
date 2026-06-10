@@ -32,6 +32,7 @@ from .models import (
     MedidaSocioEducativaMembro,
     AcompanhamentoLAPSC,
     MedidaSocioEducativa,
+    Receita,
 )
 
 
@@ -284,3 +285,20 @@ class MedidaSocioEducativaFilter(django_filters.FilterSet):
     class Meta:
         model = MedidaSocioEducativa
         fields = ["prontuario"]
+
+
+class ReceitaFilter(django_filters.FilterSet):
+    agendamento = django_filters.CharFilter(field_name="agendamento__id")
+    cidadao = django_filters.CharFilter(field_name="cidadao__id")
+    search = django_filters.CharFilter(method="filter_search")
+
+    def filter_search(self, queryset, name, value):
+        return queryset.filter(
+            Q(cidadao__nome__icontains=value)
+            | Q(cidadao__cpf__icontains=value)
+            | Q(medicamentos__nome__icontains=value)
+        ).distinct()
+
+    class Meta:
+        model = Receita
+        fields = ["agendamento", "cidadao", "search"]

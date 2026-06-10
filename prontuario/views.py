@@ -37,6 +37,7 @@ from prontuario.models import (
     MedidaSocioEducativaMembro,
     AcompanhamentoLAPSC,
     MedidaSocioEducativa,
+    Receita,
 )
 from prontuario.serializers import (
     CondicoesDeSaudeSerializer,
@@ -73,11 +74,13 @@ from prontuario.serializers import (
     MedidaSocioEducativaMembroSerializer,
     AcompanhamentoLAPSCSerializer,
     MedidaSocioEducativaSerializer,
+    ReceitaSerializer,
 )
 from rest_framework.response import Response
 from django.http import Http404
 from prontuario.filters import (
     CondicoesDeSaudeFilter,
+    ReceitaFilter,
     BeneficiosEventuaisFilter,
     BeneficiosServicosFilter,
     CondicaoEducacionalFilter,
@@ -2877,4 +2880,62 @@ class MedidaSocioEducativaRetrieveUpdateDestroyView(
             },
             status=status.HTTP_200_OK,
         )
+
+
+class ReceitaListCreateView(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticated, DjangoModelPermissionsWithView]
+    queryset = Receita.objects.select_related("cidadao", "profissional", "agendamento").prefetch_related("medicamentos")
+    serializer_class = ReceitaSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ReceitaFilter
+    pagination_class = LimitOffsetPagination
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        paginator = self.pagination_class()
+        page = paginator.paginate_queryset(queryset, request, view=self)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return Response(
+                {
+                    "success": bool(serializer.data),
+                    "count": paginator.count,
+                    "next": paginator.get_next_link(),
+                    "previous": paginator.get_previous_link(),
+                    "result": serializer.data,
+                },
+                status=status.HTTP_200_OK,
+            )
+        serializer = self.get_serializer(queryset, many=True)
+        return Response({"success": True, "result": serializer.data})
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response({"success": True, "result": serializer.data}, status=status.HTTP_201_CREATED)
+
+
+class ReceitaRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated, DjangoModelPermissionsWithView]
+    queryset = Receita.objects.select_related("cidadao", "profissional", "agendamento").prefetch_related("medicamentos")
+    serializer_class = ReceitaSerializer
+
+    def handle_exception(self, exc):
+        if isinstance(exc, Http404):
+            return Response(
+                {"success": False, "result": "Receita não encontrada."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        return super().handle_exception(exc)
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response({"success": True, "result": serializer.data})
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({"success": True, "result": "Receita removida com sucesso."}, status=status.HTTP_200_OK)
 

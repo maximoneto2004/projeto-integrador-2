@@ -221,7 +221,7 @@ const menuGroups: MenuGroup[] = [
     label: "Gerenciamento do sistema",
     items: [
       {
-        title: "Unidades CRAS",
+        title: "Unidades",
         url: "/sistema/administrador/unidades",
         icon: Building2,
         roles: ["admin"],

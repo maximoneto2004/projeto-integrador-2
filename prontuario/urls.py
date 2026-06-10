@@ -1,5 +1,7 @@
 from django.urls import path
 from prontuario.views import (
+    ReceitaListCreateView,
+    ReceitaRetrieveUpdateDestroyView,
     BeneficiosEventuaisListCreateView,
     BeneficiosEventuaisRetrieveUpdateDestroyView,
     BeneficiosServicosListCreateView,
@@ -419,4 +421,6 @@ urlpatterns = [
         MedidaSocioEducativaRetrieveUpdateDestroyView.as_view(),
         name="medida-socioeducativa-retrieve",
     ),
+    path("receita/", ReceitaListCreateView.as_view(), name="receita-list"),
+    path("receita/<uuid:pk>/", ReceitaRetrieveUpdateDestroyView.as_view(), name="receita-retrieve"),
 ]

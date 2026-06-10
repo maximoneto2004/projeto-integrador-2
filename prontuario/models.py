@@ -830,3 +830,58 @@ class MedidaSocioEducativa(BaseModel):
 
     def __str__(self):
         return f"Prontuário {self.prontuario}"
+
+
+class Receita(BaseModel):
+    agendamento = models.ForeignKey(
+        "agendamentos.Agendamento",
+        verbose_name="Agendamento",
+        on_delete=models.PROTECT,
+        related_name="receitas",
+    )
+    cidadao = models.ForeignKey(
+        Cidadao,
+        verbose_name="Cidadão",
+        on_delete=models.PROTECT,
+        related_name="receitas",
+    )
+    profissional = models.ForeignKey(
+        Usuario,
+        verbose_name="Profissional",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="receitas_emitidas",
+    )
+    data_emissao = models.DateTimeField(verbose_name="Data de Emissão", auto_now_add=True)
+    diagnostico = models.TextField(verbose_name="Diagnóstico", null=True, blank=True, max_length=600)
+    observacoes = models.TextField(verbose_name="Observações", null=True, blank=True, max_length=600)
+
+    class Meta:
+        verbose_name = "Receita"
+        verbose_name_plural = "Receitas"
+        ordering = ["-data_emissao"]
+
+    def __str__(self):
+        return f"Receita {self.id} - {self.cidadao.nome}"
+
+
+class ReceitaMedicamento(BaseModel):
+    receita = models.ForeignKey(
+        Receita,
+        verbose_name="Receita",
+        on_delete=models.CASCADE,
+        related_name="medicamentos",
+    )
+    nome = models.CharField(verbose_name="Medicamento", max_length=200)
+    dosagem = models.CharField(verbose_name="Dosagem", max_length=100)
+    frequencia = models.CharField(verbose_name="Frequência", max_length=100)
+    duracao = models.CharField(verbose_name="Duração", max_length=100)
+    instrucoes = models.TextField(verbose_name="Instruções", null=True, blank=True, max_length=600)
+
+    class Meta:
+        verbose_name = "Medicamento da Receita"
+        verbose_name_plural = "Medicamentos da Receita"
+
+    def __str__(self):
+        return f"{self.nome} - {self.dosagem}"

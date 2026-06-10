@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import type { Appointment } from "@/types/agenda";
-import { saveMockReceita, type ReceitaMedicamento } from "@/lib/mockReceitas";
+import { receitaService, type ReceitaMedicamentoPayload } from "@/services/prontuario/receitaService";
 import { toast } from "@/lib/sonner";
 
 interface ModalRegistrarReceitaProps {
@@ -14,7 +14,7 @@ interface ModalRegistrarReceitaProps {
   profissional?: string;
 }
 
-const emptyMedicamento = (): ReceitaMedicamento => ({
+const emptyMedicamento = (): ReceitaMedicamentoPayload => ({
   nome: "",
   dosagem: "",
   frequencia: "",
@@ -22,10 +22,11 @@ const emptyMedicamento = (): ReceitaMedicamento => ({
   instrucoes: "",
 });
 
-export function ModalRegistrarReceita({ open, onOpenChange, appointment, profissional }: ModalRegistrarReceitaProps) {
+export function ModalRegistrarReceita({ open, onOpenChange, appointment }: ModalRegistrarReceitaProps) {
   const [diagnostico, setDiagnostico] = useState("");
   const [observacoes, setObservacoes] = useState("");
-  const [medicamentos, setMedicamentos] = useState<ReceitaMedicamento[]>([emptyMedicamento()]);
+  const [medicamentos, setMedicamentos] = useState<ReceitaMedicamentoPayload[]>([emptyMedicamento()]);
+  const [salvando, setSalvando] = useState(false);
 
   const reset = () => {
     setDiagnostico("");
@@ -33,41 +34,40 @@ export function ModalRegistrarReceita({ open, onOpenChange, appointment, profiss
     setMedicamentos([emptyMedicamento()]);
   };
 
-  const updateMedicamento = (index: number, field: keyof ReceitaMedicamento, value: string) => {
+  const updateMedicamento = (index: number, field: keyof ReceitaMedicamentoPayload, value: string) => {
     setMedicamentos((prev) => prev.map((m, i) => (i === index ? { ...m, [field]: value } : m)));
   };
 
   const adicionarMedicamento = () => setMedicamentos((prev) => [...prev, emptyMedicamento()]);
   const removerMedicamento = (index: number) => setMedicamentos((prev) => prev.filter((_, i) => i !== index));
 
-  const salvar = () => {
+  const salvar = async () => {
     if (!appointment) return;
-    const cpf = (appointment.cpfCidadao || "").replace(/\D/g, "");
-    if (!cpf) {
-      toast.error("CPF do cidadão não encontrado.");
-      return;
-    }
-    const medsValidos = medicamentos.filter((m) => m.nome.trim() && m.dosagem.trim() && m.frequencia.trim() && m.duracao.trim());
+
+    const medsValidos = medicamentos.filter(
+      (m) => m.nome.trim() && m.dosagem.trim() && m.frequencia.trim() && m.duracao.trim()
+    );
     if (!medsValidos.length) {
       toast.error("Informe pelo menos um medicamento com nome, dosagem, frequência e duração.");
       return;
     }
 
-    saveMockReceita({
-      id: `${Date.now()}`,
-      agendamentoId: appointment.id,
-      cidadaoNome: appointment.nomeCidadao || "-",
-      cidadaoCpf: cpf,
-      profissional: profissional || appointment.atendente || "",
-      dataEmissao: new Date().toISOString(),
-      diagnostico: diagnostico.trim(),
-      observacoes: observacoes.trim(),
-      medicamentos: medsValidos,
-    });
-
-    toast.success("Receita registrada (mock).");
-    reset();
-    onOpenChange(false);
+    setSalvando(true);
+    try {
+      await receitaService.criar({
+        agendamento: appointment.id,
+        diagnostico: diagnostico.trim() || undefined,
+        observacoes: observacoes.trim() || undefined,
+        medicamentos: medsValidos,
+      });
+      toast.success("Receita registrada com sucesso.");
+      reset();
+      onOpenChange(false);
+    } catch {
+      toast.error("Erro ao registrar receita. Tente novamente.");
+    } finally {
+      setSalvando(false);
+    }
   };
 
   return (
@@ -133,12 +133,11 @@ export function ModalRegistrarReceita({ open, onOpenChange, appointment, profiss
           <Button type="button" variant="outline" onClick={adicionarMedicamento}>
             Adicionar medicamento
           </Button>
-          <Button type="button" onClick={salvar}>
-            Salvar receita
+          <Button type="button" onClick={salvar} disabled={salvando}>
+            {salvando ? "Salvando..." : "Salvar receita"}
           </Button>
         </div>
       </DialogContent>
     </Dialog>
   );
 }
-

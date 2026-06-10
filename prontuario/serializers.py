@@ -3,6 +3,8 @@ from django.db import transaction
 from prontuario.models import (
     BeneficioSocial,
     BeneficiosEventuais,
+    Receita,
+    ReceitaMedicamento,
     BeneficiosServicos,
     ConvivenviaFortalecimento,
     CondicoesDeSaude,
@@ -760,3 +762,43 @@ class MedidaSocioEducativaSerializer(
     class Meta:
         model = MedidaSocioEducativa
         fields = "__all__"
+
+
+class ReceitaMedicamentoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ReceitaMedicamento
+        fields = ["id", "nome", "dosagem", "frequencia", "duracao", "instrucoes"]
+
+
+class ReceitaSerializer(serializers.ModelSerializer):
+    medicamentos = ReceitaMedicamentoSerializer(many=True)
+    cidadao_nome = serializers.CharField(source="cidadao.nome", read_only=True)
+    cidadao_cpf = serializers.CharField(source="cidadao.cpf", read_only=True)
+    profissional_nome = serializers.CharField(source="profissional.nome_completo", read_only=True)
+
+    class Meta:
+        model = Receita
+        fields = [
+            "id",
+            "agendamento",
+            "cidadao",
+            "cidadao_nome",
+            "cidadao_cpf",
+            "profissional",
+            "profissional_nome",
+            "data_emissao",
+            "diagnostico",
+            "observacoes",
+            "medicamentos",
+        ]
+        read_only_fields = ["id", "data_emissao", "cidadao", "cidadao_nome", "cidadao_cpf", "profissional", "profissional_nome"]
+
+    def create(self, validated_data):
+        medicamentos_data = validated_data.pop("medicamentos")
+        agendamento = validated_data["agendamento"]
+        validated_data["cidadao"] = agendamento.cidadao
+        validated_data.setdefault("profissional", self.context["request"].user if self.context.get("request") else None)
+        receita = Receita.objects.create(**validated_data)
+        for med in medicamentos_data:
+            ReceitaMedicamento.objects.create(receita=receita, **med)
+        return receita
