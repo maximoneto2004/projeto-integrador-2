@@ -42,7 +42,7 @@ from prontuario.models import (
 )
 from cidadaos.models import Cidadao
 from app.serializers import BairroSerializer
-from unidade_cras.serializers import UnidadeCrasSerializerDetail
+from unidade_posto.serializers import UnidadePostoSerializerDetail
 
 
 class CidadaoPessoaReferenciaSerializer(serializers.ModelSerializer):

@@ -37,5 +37,4 @@ export const ACCESS = {
   dashboardGestor: [ROLES.GESTOR],
   dashboardAtendente: [ROLES.ATENDENTE],
   monitorUnidade: [ROLES.GESTOR, ROLES.ADMIN],
-  relatorio: [ROLES.GESTOR, ROLES.COORDENADOR, ROLES.ADMIN]
 };

@@ -8,13 +8,13 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('cidadaos', '0006_alter_cidadao_telefone'),
-        ('unidade_cras', '0005_unidadecras_bairros_abrangencia'),
+        ('unidade_posto', '0005_unidadeposto_bairros_abrangencia'),
     ]
 
     operations = [
         migrations.AddField(
             model_name='cidadao',
             name='unidade_origem',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, to='unidade_cras.unidadecras', verbose_name='Unidade Cras de acompanhamento'),
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, to='unidade_posto.unidadeposto', verbose_name='Unidade Posto de acompanhamento'),
         ),
     ]

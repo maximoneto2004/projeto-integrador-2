@@ -69,7 +69,7 @@ export type ServicoUnidadeResumo = {
   is_active?: boolean;
 };
 
-export type UnidadeCras = {
+export type UnidadePosto = {
   id: string;
   nome: string;
   logradouro: string;
@@ -129,7 +129,7 @@ export type ServicoDetalhado = {
   is_active?: boolean;
 };
 
-export type ServicoUnidadeCras = {
+export type ServicoUnidadePosto = {
   id: string;
   unidade: string;
   servico: string;
@@ -251,7 +251,7 @@ export type AgendamentoResponse = {
   cidadao: Cidadao;
   atendente: Usuario | null;
   servico: Servico;
-  unidade: UnidadeCras;
+  unidade: UnidadePosto;
   data: string; // date
   horario: string; // time
   situacao: Situacao;
@@ -259,7 +259,6 @@ export type AgendamentoResponse = {
   observacoes_gerais?: string | null;
   final_atendimento?: string | null;
   motivo_territorio?: string | null;
-  avaliacao?: { nota: number; comentario: string | null };
 };
 
 export type Agendamento = {
@@ -267,7 +266,7 @@ export type Agendamento = {
   cidadao: Cidadao;
   usuario: Usuario; // se precisar, defina abaixo
   servico: Servico;
-  unidade: UnidadeCras;
+  unidade: UnidadePosto;
   data: string; // date
   horario: string; // time
   situacao: Situacao;
@@ -297,7 +296,7 @@ export type FilaEsperaResponse = {
   id: string;
   cidadao: Cidadao;
   servico: Servico;
-  unidade: UnidadeCras;
+  unidade: UnidadePosto;
   prioridade: Prioridade;
   status: Situacao;
   urgencia: UrgenciaAtendimento;

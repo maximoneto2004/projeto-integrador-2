@@ -199,22 +199,6 @@ export interface AvaliacaoAcompanhamento {
   descricaoResultados: string;
 }
 
-export interface Encaminhamento {
-  id: string;
-  cpfReferencia: string;
-  codigoArea: string;
-  orgaoUnidadeDestino: string;
-  objetivoMotivo: string;
-  resumoAcompanhamento: string;
-  dataRegistro: string;
-  profissionalRegistro: string;
-  unidadeOrigem: string;
-  telefoneContatoOrigem?: string;
-  unidadeDestino?: string;
-  profissionalDestino?: string;
-  observacoes?: string;
-}
-
 export interface ServicoAtendimento {
   id: string;
   servico: string;
@@ -314,6 +298,5 @@ export interface Prontuario {
   acolhimentos: AcolhimentoInstitucional[];
   evolucoes: EvolucaoAcompanhamento[];
   servicosAtendimento: ServicoAtendimento[];
-  encaminhamentos: Encaminhamento[];
   descumprimentosCondicionalidades: DescumprimentoCondicionalidade[];
 }

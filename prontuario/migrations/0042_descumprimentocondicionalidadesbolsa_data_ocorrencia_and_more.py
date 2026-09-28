@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('prontuario', '0041_beneficioseventuais'),
-        ('unidade_cras', '0006_unidadecras_latitude_unidadecras_longitude'),
+        ('unidade_posto', '0006_unidadeposto_latitude_unidadeposto_longitude'),
     ]
 
     operations = [
@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
                 ('data_inicio', models.DateField(verbose_name='Data de Início')),
                 ('membro', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='prontuario.membrocomposicao', verbose_name='Membro da Família')),
                 ('prontuario', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='prontuario.prontuario', verbose_name='Prontuário')),
-                ('unidade_inicial', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='unidade_cras.unidadecras', verbose_name='Unidade de realização')),
+                ('unidade_inicial', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='unidade_posto.unidadeposto', verbose_name='Unidade de realização')),
             ],
             options={
                 'verbose_name': 'Convivenvia e Fortalecimento de Vínculo',

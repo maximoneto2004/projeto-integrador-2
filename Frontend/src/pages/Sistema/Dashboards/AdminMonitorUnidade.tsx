@@ -11,7 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { useDashboardMonitorUnidade } from "@/hooks/sistema/useDashboardMonitorUnidade";
-import { useUnidadesCras } from "@/hooks/useUnidadesCras";
+import { useUnidadesPosto } from "@/hooks/useUnidadesPosto";
 import { MonitorUnidadeTooltip } from "@/components/dashboard-monitor-unidade/charts/MonitorUnidadeTooltip";
 import { MonitorUnidadeCardsGrid } from "@/components/dashboard-monitor-unidade/cards/MonitorUnidadeCardsGrid";
 import { FilaPorStatusSection } from "@/components/dashboard-monitor-unidade/sections/FilaPorStatusSection";
@@ -32,7 +32,7 @@ const AdminMonitorUnidade = () => {
     from: new Date(),
     to: new Date(),
   });
-  const { unidades, loading: loadingUnidades, error: unidadesError, fetchUnidades } = useUnidadesCras("");
+  const { unidades, loading: loadingUnidades, error: unidadesError, fetchUnidades } = useUnidadesPosto("");
 
   useEffect(() => {
     void fetchUnidades();

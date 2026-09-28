@@ -15,8 +15,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getApiErrorMessage } from "@/lib/notifications";
 import { beneficioService, type BeneficioSocial } from "@/services/prontuario/beneficioService";
-import { encaminhamentoService } from "@/services/prontuario/encaminhamentoService";
-import { useBeneficiosSociaisAdmin, useCodigoAreasAdmin } from "@/hooks/prontuario/useAdminProntuarioCampos";
+import { useBeneficiosSociaisAdmin } from "@/hooks/prontuario/useAdminProntuarioCampos";
 import {
   useAtivarUnidadeProntuario,
   useCreateUnidadeProntuario,
@@ -33,13 +32,12 @@ const parseItem = <T,>(payload: unknown): T | null => {
   return null;
 };
 
-type AbaCamposProntuario = "unidades" | "beneficios" | "codigos-area";
+type AbaCamposProntuario = "unidades" | "beneficios";
 
 type LinhaTabela = {
   id: string;
   nome: string;
   ativo: boolean;
-  codigo?: number;
 };
 
 export default function AdminProntuarioCamposPage() {
@@ -51,35 +49,31 @@ export default function AdminProntuarioCamposPage() {
   const [salvando, setSalvando] = useState(false);
   const [formUnidade, setFormUnidade] = useState({ unidade: "", ativo: true });
   const [formBeneficio, setFormBeneficio] = useState({ nome: "", ativo: true });
-  const [formCodigoArea, setFormCodigoArea] = useState({ nome: "", codigo: "", ativo: true });
 
   const pageSize = 10;
 
   const unidadesState = useUnidadesProntuarioAdmin(aba === "unidades" ? filtro : "", pageSize);
   const beneficiosState = useBeneficiosSociaisAdmin(aba === "beneficios" ? filtro : "", pageSize);
-  const codigosAreaState = useCodigoAreasAdmin(aba === "codigos-area" ? filtro : "", pageSize);
   const createUnidadeMutation = useCreateUnidadeProntuario();
   const updateUnidadeMutation = useUpdateUnidadeProntuario();
   const ativarUnidadeMutation = useAtivarUnidadeProntuario();
   const desativarUnidadeMutation = useDesativarUnidadeProntuario();
 
-  const paginaAtual = aba === "unidades" ? unidadesState.page : aba === "beneficios" ? beneficiosState.page : codigosAreaState.page;
-  const setPaginaAtual = aba === "unidades" ? unidadesState.setPage : aba === "beneficios" ? beneficiosState.setPage : codigosAreaState.setPage;
-  const totalItens = aba === "unidades" ? unidadesState.total : aba === "beneficios" ? beneficiosState.total : codigosAreaState.total;
+  const paginaAtual = aba === "unidades" ? unidadesState.page : beneficiosState.page;
+  const setPaginaAtual = aba === "unidades" ? unidadesState.setPage : beneficiosState.setPage;
+  const totalItens = aba === "unidades" ? unidadesState.total : beneficiosState.total;
   const linhas = useMemo<LinhaTabela[]>(
     () =>
       aba === "unidades"
         ? unidadesState.items.map((item) => ({ id: item.id, nome: item.unidade, ativo: item.ativo }))
-        : aba === "beneficios"
-          ? beneficiosState.items.map((item) => ({ id: item.id, nome: item.nome, ativo: item.ativo }))
-          : codigosAreaState.items.map((item) => ({ id: item.id, nome: item.nome, ativo: item.ativo, codigo: item.codigo })),
-    [aba, beneficiosState.items, codigosAreaState.items, unidadesState.items],
+        : beneficiosState.items.map((item) => ({ id: item.id, nome: item.nome, ativo: item.ativo })),
+    [aba, beneficiosState.items, unidadesState.items],
   );
   const totalPaginas = Math.max(1, Math.ceil(totalItens / pageSize));
   const paginaInicio = totalItens ? (paginaAtual - 1) * pageSize + 1 : 0;
   const paginaFim = Math.min(paginaAtual * pageSize, totalItens);
 
-  const carregarAtual = aba === "unidades" ? unidadesState.refresh : aba === "beneficios" ? beneficiosState.refresh : codigosAreaState.refresh;
+  const carregarAtual = aba === "unidades" ? unidadesState.refresh : beneficiosState.refresh;
 
   useEffect(() => {
     setPaginaAtual(1);
@@ -89,7 +83,6 @@ export default function AdminProntuarioCamposPage() {
     setEditandoId(null);
     setFormUnidade({ unidade: "", ativo: true });
     setFormBeneficio({ nome: "", ativo: true });
-    setFormCodigoArea({ nome: "", codigo: "", ativo: true });
     setModalForm(true);
   };
 
@@ -98,12 +91,9 @@ export default function AdminProntuarioCamposPage() {
     if (aba === "unidades") {
       const item = unidadesState.items.find((x) => x.id === id);
       if (item) setFormUnidade({ unidade: item.unidade, ativo: item.ativo });
-    } else if (aba === "beneficios") {
+    } else {
       const item = beneficiosState.items.find((x) => x.id === id);
       if (item) setFormBeneficio({ nome: item.nome, ativo: item.ativo });
-    } else {
-      const item = codigosAreaState.items.find((x) => x.id === id);
-      if (item) setFormCodigoArea({ nome: item.nome, codigo: String(item.codigo), ativo: item.ativo });
     }
     setModalForm(true);
   };
@@ -126,7 +116,7 @@ export default function AdminProntuarioCamposPage() {
           await createUnidadeMutation.mutateAsync(payload);
         }
         await carregarAtual();
-      } else if (aba === "beneficios") {
+      } else {
         if (!formBeneficio.nome.trim()) {
           toast.error("Informe o nome do benefício.");
           return;
@@ -139,30 +129,6 @@ export default function AdminProntuarioCamposPage() {
           ? await beneficioService.atualizarBeneficioSocial(editandoId, payload)
           : await beneficioService.criarBeneficioSocial(payload);
         const item = parseItem<BeneficioSocial>(data);
-        if (!item?.id) {
-          await carregarAtual();
-        } else {
-          await carregarAtual();
-        }
-      } else {
-        if (!formCodigoArea.nome.trim()) {
-          toast.error("Informe o nome do código de área.");
-          return;
-        }
-        const codigoNumero = Number(formCodigoArea.codigo);
-        if (!Number.isInteger(codigoNumero) || codigoNumero < 0) {
-          toast.error("Informe um código numérico válido.");
-          return;
-        }
-        const payload = {
-          nome: formCodigoArea.nome.trim(),
-          codigo: codigoNumero,
-          is_active: formCodigoArea.ativo,
-        };
-        const { data } = editandoId
-          ? await encaminhamentoService.atualizarCodigoArea(editandoId, payload)
-          : await encaminhamentoService.criarCodigoArea(payload);
-        const item = parseItem<{ id?: string }>(data);
         if (!item?.id) {
           await carregarAtual();
         } else {
@@ -186,10 +152,8 @@ export default function AdminProntuarioCamposPage() {
         } else {
           await desativarUnidadeMutation.mutateAsync(id);
         }
-      } else if (aba === "beneficios") {
-        await beneficioService.atualizarBeneficioSocial(id, { is_active: proximoAtivo });
       } else {
-        await encaminhamentoService.atualizarCodigoArea(id, { is_active: proximoAtivo });
+        await beneficioService.atualizarBeneficioSocial(id, { is_active: proximoAtivo });
       }
       await carregarAtual();
       toast.success(proximoAtivo ? "Registro ativado." : "Registro desativado.");
@@ -223,14 +187,13 @@ export default function AdminProntuarioCamposPage() {
             <TabsList>
               <TabsTrigger value="unidades">Unidades de encaminhamento</TabsTrigger>
               <TabsTrigger value="beneficios">Benefícios sociais</TabsTrigger>
-              <TabsTrigger value="codigos-area">Códigos de área</TabsTrigger>
             </TabsList>
 
             <TabsContent value={aba} className="space-y-4">
               <Card>
                 <CardHeader>
                   <CardTitle>
-                    {aba === "unidades" ? "Unidades cadastradas" : aba === "beneficios" ? "Benefícios cadastrados" : "Códigos de área cadastrados"}
+                    {aba === "unidades" ? "Unidades cadastradas" : "Benefícios cadastrados"}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -262,7 +225,7 @@ export default function AdminProntuarioCamposPage() {
                 <Table>
                   <TableHeader className="bg-secondary">
                     <TableRow>
-                      <TableHead className="px-6 py-4">{aba === "codigos-area" ? "Código e nome" : "Nome"}</TableHead>
+                      <TableHead className="px-6 py-4">Nome</TableHead>
                       <TableHead className="px-6 py-4">Status</TableHead>
                       <TableHead className="px-6 py-4 text-right">Ações</TableHead>
                     </TableRow>
@@ -270,9 +233,7 @@ export default function AdminProntuarioCamposPage() {
                   <TableBody>
                     {linhas.map((item, idx) => (
                       <TableRow key={item.id} className={idx % 2 === 0 ? "bg-background" : "bg-muted/30"}>
-                        <TableCell className="px-6 py-4 font-medium">
-                          {aba === "codigos-area" ? `${String(item.codigo ?? "").padStart(2, "0")} - ${item.nome}` : item.nome}
-                        </TableCell>
+                        <TableCell className="px-6 py-4 font-medium">{item.nome}</TableCell>
                         <TableCell className="px-6 py-4">
                           <Badge variant={item.ativo ? "default" : "secondary"}>{item.ativo ? "Ativo" : "Inativo"}</Badge>
                         </TableCell>
@@ -305,7 +266,7 @@ export default function AdminProntuarioCamposPage() {
 
               {totalItens > 0 && (
                 <div className="flex items-center justify-between mt-4">
-                  <span className="text-sm text-muted-foregragendamento CRAS ound">
+                  <span className="text-sm text-muted-foreground">
                     Mostrando {paginaInicio} - {paginaFim} de {totalItens}
                   </span>
                   <div className="flex items-center gap-2">
@@ -339,7 +300,7 @@ export default function AdminProntuarioCamposPage() {
           <DialogHeader>
             <DialogTitle>
               {editandoId ? "Editar" : !editandoId && aba === "unidades" ? "Nova" : "Novo"}{" "}
-              {aba === "unidades" ? "unidade" : aba === "beneficios" ? "benefício" : "código de área"}
+              {aba === "unidades" ? "unidade" : "benefício"}
             </DialogTitle>
           </DialogHeader>
           {aba === "unidades" ? (
@@ -353,7 +314,7 @@ export default function AdminProntuarioCamposPage() {
                 <Switch id="u-ativo" checked={formUnidade.ativo} onCheckedChange={(c) => setFormUnidade((v) => ({ ...v, ativo: c }))} />
               </div>
             </div>
-          ) : aba === "beneficios" ? (
+          ) : (
             <div className="space-y-3">
               <div>
                 <Label>Nome *</Label>
@@ -362,28 +323,6 @@ export default function AdminProntuarioCamposPage() {
               <div className="flex items-center justify-between border rounded p-3">
                 <Label htmlFor="b-ativo">Ativo</Label>
                 <Switch id="b-ativo" checked={formBeneficio.ativo} onCheckedChange={(c) => setFormBeneficio((v) => ({ ...v, ativo: c }))} />
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              <div>
-                <Label>Nome *</Label>
-                <Input value={formCodigoArea.nome} onChange={(e) => setFormCodigoArea((v) => ({ ...v, nome: e.target.value }))} />
-              </div>
-              <div>
-                <Label>Codigo *</Label>
-                <Input
-                  type="number"
-                  inputMode="numeric"
-                  min={0}
-                  step={1}
-                  value={formCodigoArea.codigo}
-                  onChange={(e) => setFormCodigoArea((v) => ({ ...v, codigo: e.target.value }))}
-                />
-              </div>
-              <div className="flex items-center justify-between border rounded p-3">
-                <Label htmlFor="c-ativo">Ativo</Label>
-                <Switch id="c-ativo" checked={formCodigoArea.ativo} onCheckedChange={(c) => setFormCodigoArea((v) => ({ ...v, ativo: c }))} />
               </div>
             </div>
           )}

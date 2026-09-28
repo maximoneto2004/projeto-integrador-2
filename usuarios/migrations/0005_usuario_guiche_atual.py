@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('unidade_cras', '0003_guiche'),
+        ('unidade_posto', '0003_guiche'),
         ('usuarios', '0004_remove_usuario_servicos_ofertados_and_more'),
     ]
 
@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='usuario',
             name='guiche_atual',
-            field=models.ForeignKey(blank=True, help_text='Informe o posto de atendimento em que o atendente está no momento.', null=True, on_delete=django.db.models.deletion.PROTECT, to='unidade_cras.guiche', verbose_name='Guichê/Sala atual'),
+            field=models.ForeignKey(blank=True, help_text='Informe o posto de atendimento em que o atendente está no momento.', null=True, on_delete=django.db.models.deletion.PROTECT, to='unidade_posto.guiche', verbose_name='Guichê/Sala atual'),
         ),
     ]

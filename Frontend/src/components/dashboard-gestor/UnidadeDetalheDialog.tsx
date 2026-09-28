@@ -15,7 +15,6 @@ import {
   AlertCircle,
   Building2,
   UserCheck,
-  User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -32,7 +31,6 @@ import { Bar, CartesianGrid, ComposedChart, Legend, Line, LineChart, ResponsiveC
 
 import type {
   ServicoMetrica,
-  UnidadeAvaliacao,
   UnidadeMapa,
   UnidadeMetricas,
   UnidadeProfissional,
@@ -47,8 +45,6 @@ type UnidadeDetalheDialogProps = {
   metricas: UnidadeMetricas | null;
   servicosMetricas: ServicoMetrica[] | null;
   servicosLoading: boolean;
-  avaliacoes: UnidadeAvaliacao[];
-  avaliacoesLoading: boolean;
   seriePontos: UnidadeSeriePonto[] | null;
   serieLoading: boolean;
   serieError: string | null;
@@ -67,21 +63,11 @@ const formatDateBr = (isoDate?: string | null) => {
   return format(parsed, "dd/MM/yyyy");
 };
 
-const formatNota = (v: number) => (v > 0 ? v.toFixed(1) : "-");
 const formatCargoLabel = (value?: string | null) => {
   const texto = String(value ?? "").trim();
   if (!texto) return "-";
   const normalizado = texto.toLocaleLowerCase("pt-BR");
   return normalizado.charAt(0).toLocaleUpperCase("pt-BR") + normalizado.slice(1);
-};
-
-const getFaixaAvaliacao = (nota: number) => {
-  if (!Number.isFinite(nota) || nota <= 0) return "Sem avaliações";
-  if (nota >= 4.5) return "Excelente";
-  if (nota >= 4) return "Muito bom";
-  if (nota >= 3) return "Bom";
-  if (nota >= 2) return "Regular";
-  return "Precisa melhorar";
 };
 
 const getSlaLabel = (tempoMedioAtendimentoMin: number, tempoMetaPadraoMin: number) => {
@@ -146,7 +132,6 @@ function InfoRow({ label, value, icon: Icon }: { label: string; value: ReactNode
   );
 }
 
-const AVALIACOES_POR_PAGINA = 6;
 const SERVICOS_POR_PAGINA = 10;
 
 const getSlaStatus = (tempo: number, meta: number) => {
@@ -182,8 +167,6 @@ export function UnidadeDetalheDialog({
   metricas,
   servicosMetricas,
   servicosLoading,
-  avaliacoes,
-  avaliacoesLoading,
   seriePontos,
   serieLoading,
   serieError,
@@ -204,18 +187,8 @@ export function UnidadeDetalheDialog({
   const esperadoComumLabel = formatMinutesCard(metricas?.tempoMedioEsperadoComumMin);
   const esperadoEspecialLabel = formatMinutesCard(metricas?.tempoMedioEsperadoEspecializadoMin);
   const equipeSorted = useMemo(() => [...(metricas?.profissionais ?? [])].sort((a, b) => a.nome.localeCompare(b.nome)), [metricas]);
-  const avaliacoesSorted = useMemo(
-    () => [...(avaliacoes ?? [])].sort((a, b) => String(b.createdAt ?? "").localeCompare(String(a.createdAt ?? ""))),
-    [avaliacoes],
-  );
   const [tempoMedioView, setTempoMedioView] = useState<TempoMedioView>("geral");
-  const [paginaAvaliacoes, setPaginaAvaliacoes] = useState(1);
   const [paginaServicos, setPaginaServicos] = useState(1);
-  const totalPaginasAvaliacoes = Math.max(1, Math.ceil(avaliacoesSorted.length / AVALIACOES_POR_PAGINA));
-  const avaliacoesPaginadas = useMemo(() => {
-    const inicio = (paginaAvaliacoes - 1) * AVALIACOES_POR_PAGINA;
-    return avaliacoesSorted.slice(inicio, inicio + AVALIACOES_POR_PAGINA);
-  }, [avaliacoesSorted, paginaAvaliacoes]);
 
   const listaServicos = useMemo(() => servicosMetricas ?? [], [servicosMetricas]);
   const totalPaginasServicos = Math.max(1, Math.ceil(listaServicos.length / SERVICOS_POR_PAGINA));
@@ -237,16 +210,9 @@ export function UnidadeDetalheDialog({
   const todayMaxDate = format(new Date(), "yyyy-MM-dd");
   useEffect(() => {
     if (!open) return;
-    setPaginaAvaliacoes(1);
     setPaginaServicos(1);
     setTempoMedioView("geral");
   }, [unidade?.id, open]);
-
-  useEffect(() => {
-    if (paginaAvaliacoes > totalPaginasAvaliacoes) {
-      setPaginaAvaliacoes(totalPaginasAvaliacoes);
-    }
-  }, [paginaAvaliacoes, totalPaginasAvaliacoes]);
 
   useEffect(() => {
     if (paginaServicos > totalPaginasServicos) {
@@ -322,14 +288,6 @@ export function UnidadeDetalheDialog({
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="text-right hidden sm:block">
-                <p className="text-[10px] uppercase font-bold ">Avaliação Geral</p>
-                <div className="flex items-center gap-1.5 justify-end">
-                  <span className="text-2xl font-black">{formatNota(metricas.notaAvaliacao)}</span>
-                  <Star className="h-5 w-5 fill-amber-400 text-amber-400" />
-                </div>
-              </div>
-              <Separator orientation="vertical" className="h-10 bg-0 mx-2" />
               <Badge className={`${statusSla.color} border-none px-4 py-2 flex gap-2 text-sm`}>
                 <statusSla.icon className="h-4 w-4" />
                 {statusSla.label}
@@ -353,12 +311,6 @@ export function UnidadeDetalheDialog({
                 className="h-14 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none font-bold text-muted-foreground data-[state=active]:text-foreground"
               >
                 <Users className="h-4 w-4 mr-2" /> Equipe
-              </TabsTrigger>
-              <TabsTrigger
-                value="avaliacao"
-                className="h-14 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none font-bold text-muted-foreground data-[state=active]:text-foreground"
-              >
-                <Star className="h-4 w-4 mr-2" /> Avaliações
               </TabsTrigger>
               <TabsTrigger
                 value="informacoes"
@@ -640,138 +592,6 @@ export function UnidadeDetalheDialog({
                     </Table>
                   </CardContent>
                 </Card>
-              </TabsContent>
-
-              {/* --- ABA AVALIAÇÃO --- */}
-              <TabsContent value="avaliacao" className="mt-0 outline-none space-y-6">
-                {/* Banner de Resumo Horizontal - Substitui o Card da Esquerda */}
-                <div className="flex flex-col md:flex-row items-center justify-between gap-6 p-6 rounded-2xl bg-slate-50 border border-slate-100 shadow-sm">
-                  <div className="flex items-center gap-6">
-                    <div className="flex flex-col items-center justify-center bg-white p-4 rounded-xl shadow-sm border border-slate-100 min-w-[120px]">
-                      <span className="text-4xl font-black text-slate-800 tabular-nums">{formatNota(metricas.notaAvaliacao)}</span>
-                      <div className="flex gap-0.5 mt-1">
-                        {[1, 2, 3, 4, 5].map((s) => (
-                          <Star
-                            key={s}
-                            className={`h-3 w-3 ${s <= Math.round(metricas.notaAvaliacao) ? "fill-amber-400 text-amber-400" : "text-slate-200"}`}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold text-slate-800">Satisfação Geral</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Média baseada em <span className="font-semibold text-slate-700">{avaliacoesSorted.length} avaliações</span> no período
-                        selecionado.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Mini Indicadores Rápidos */}
-                  <div className="flex gap-4 w-full md:w-auto">
-                    <div className="flex-1 md:flex-none px-4 py-2 bg-white rounded-lg border border-slate-100">
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Comentários</p>
-                      <p className="text-lg font-bold text-primary">{avaliacoesSorted.filter((a) => a.comentario).length}</p>
-                    </div>
-                    <div className="flex-1 md:flex-none px-4 py-2 bg-white rounded-lg border border-slate-100">
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Nota Máxima</p>
-                      <p className="text-lg font-bold text-emerald-500">{avaliacoesSorted.filter((a) => a.nota === 5).length}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Lista de Avaliações Estilo "Timeline" */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h4 className="text-sm font-bold text-slate-500 uppercase tracking-widest px-1">Feedbacks Detalhados</h4>
-                  </div>
-
-                  <ScrollArea className="h-[450px] pr-4">
-                    <div className="space-y-3">
-                      {avaliacoesLoading ? (
-                        Array(3)
-                          .fill(0)
-                          .map((_, i) => (
-                            <div key={i} className="p-4 rounded-xl border border-slate-100 space-y-2">
-                              <Skeleton className="h-4 w-32" />
-                              <Skeleton className="h-10 w-full" />
-                            </div>
-                          ))
-                      ) : avaliacoesSorted.length === 0 ? (
-                        <div className="text-center py-20 bg-slate-50/50 rounded-2xl border-2 border-dashed">
-                          <p className="text-slate-400 text-sm">Nenhum feedback encontrado para este período.</p>
-                        </div>
-                      ) : (
-                        avaliacoesPaginadas.map((av) => (
-                          <div
-                            key={av.id}
-                            className="group p-5 rounded-xl border border-slate-100 bg-white hover:border-primary/20 hover:shadow-sm transition-all relative overflow-hidden"
-                          >
-                            {/* Indicador lateral de nota */}
-                            <div
-                              className={`absolute left-0 top-0 bottom-0 w-1 ${av.nota >= 4 ? "bg-emerald-400" : av.nota >= 3 ? "bg-amber-400" : "bg-rose-400"}`}
-                            />
-
-                            <div className="flex justify-between items-start mb-3">
-                              <div className="flex items-center gap-3">
-                                <div className="flex items-center gap-1 bg-slate-50 px-2 py-1 rounded-md border border-slate-100">
-                                  <span className="text-sm font-bold text-slate-700">{av.nota}</span>
-                                  <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                                </div>
-                                <span className="text-xs font-medium text-slate-400">{formatDateBr(av.createdAt)}</span>
-                              </div>
-                              <Badge variant="outline" className="text-[10px] font-normal text-slate-400 border-slate-100">
-                                ID: #{av.id.substring(0, 5)}
-                              </Badge>
-                            </div>
-
-                            <p className="text-sm text-slate-600 leading-relaxed mb-4 pl-1">
-                              {av.comentario || <span className="text-slate-300 italic">Sem comentário registrado.</span>}
-                            </p>
-
-                            <div className="flex items-center justify-between pt-3 border-t border-slate-50">
-                              <div className="flex items-center gap-2">
-                                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                                  <User className="h-3 w-3 text-primary" />
-                                </div>
-                                <span className="text-xs text-slate-500 italic">
-                                  Atendido por <span className="font-semibold text-slate-700 not-italic">{av.atendente?.nome || "Equipe Geral"}</span>
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </ScrollArea>
-
-                  {/* Paginação Compacta */}
-                  {avaliacoesSorted.length > 0 && (
-                    <div className="flex items-center justify-center gap-4 pt-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="hover:bg-slate-100 text-slate-500"
-                        onClick={() => setPaginaAvaliacoes((p) => Math.max(1, p - 1))}
-                        disabled={paginaAvaliacoes <= 1}
-                      >
-                        Anterior
-                      </Button>
-                      <span className="text-xs font-bold text-slate-400">
-                        {paginaAvaliacoes} / {totalPaginasAvaliacoes}
-                      </span>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="hover:bg-slate-100 text-slate-500"
-                        onClick={() => setPaginaAvaliacoes((p) => Math.min(totalPaginasAvaliacoes, p + 1))}
-                        disabled={paginaAvaliacoes >= totalPaginasAvaliacoes}
-                      >
-                        Próxima
-                      </Button>
-                    </div>
-                  )}
-                </div>
               </TabsContent>
 
               {/* --- ABA INFORMAÇÕES --- */}

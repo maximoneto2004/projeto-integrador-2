@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('unidade_cras', '0003_guiche'),
+        ('unidade_posto', '0003_guiche'),
     ]
 
     operations = [
@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 ('updated_at', models.DateTimeField(auto_now=True, verbose_name='Atualizado em')),
                 ('is_active', models.BooleanField(default=True, verbose_name='Ativo')),
                 ('numero', models.CharField(max_length=200, unique=True, verbose_name='Prontuário')),
-                ('unidade_inicial', models.ForeignKey(editable=False, on_delete=django.db.models.deletion.PROTECT, to='unidade_cras.unidadecras', verbose_name='Unidade Inicial')),
+                ('unidade_inicial', models.ForeignKey(editable=False, on_delete=django.db.models.deletion.PROTECT, to='unidade_posto.unidadeposto', verbose_name='Unidade Inicial')),
             ],
             options={
                 'abstract': False,

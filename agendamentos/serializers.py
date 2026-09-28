@@ -6,9 +6,8 @@ from usuarios.models import EscalaTrabalho
 from cidadaos.serializers import CidadaoSerializer
 
 from servicos.serializers import ServicoListDetailSerializer
-from unidade_cras.serializers import UnidadeCrasSerializerDetail
+from unidade_posto.serializers import UnidadePostoSerializerDetail
 from usuarios.serializers import UsuarioListDetailSerializer
-from avaliacao.serializers import AvaliacaoSerializer
 from prontuario.serializers import ProntuarioSerializer
 
 from prontuario.models import MembroComposicao
@@ -83,9 +82,8 @@ class AgendamentoSerializer(serializers.ModelSerializer):
 class AgendamentoDetailSerializer(serializers.ModelSerializer):
     cidadao = CidadaoSerializer()
     servico = ServicoListDetailSerializer()
-    unidade = UnidadeCrasSerializerDetail()
+    unidade = UnidadePostoSerializerDetail()
     atendente = UsuarioListDetailSerializer()
-    avaliacao = serializers.SerializerMethodField()
     prontuario = serializers.SerializerMethodField()
 
 
@@ -105,15 +103,9 @@ class AgendamentoDetailSerializer(serializers.ModelSerializer):
             "final_atendimento",
             "observacoes_gerais",
             "servicos_adicionais",
-            "avaliacao",
             "prontuario"
         ]
-    def get_avaliacao(self, obj):
-     avaliacao = obj.avaliacao_set.first()
-     if avaliacao:
-        return AvaliacaoSerializer(avaliacao).data
-     return None
-    
+
     def get_prontuario(self, obj):
         try:
             membro = MembroComposicao.objects.get(cidadao=obj.cidadao)

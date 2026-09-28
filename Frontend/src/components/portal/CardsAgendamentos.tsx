@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Eye, Edit, Trash2, CalendarIcon, Star, LayoutGrid, List, MapPin, Clock, Plus, CircleX, Pen } from "lucide-react";
+import { Eye, Edit, Trash2, CalendarIcon, LayoutGrid, List, MapPin, Clock, Plus, CircleX, Pen } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Appointment } from "@/types/agenda";
@@ -7,13 +7,10 @@ import { format } from "date-fns";
 import ViewAgendamentoModal from "@/components/portal/modais/ViewAgendamentoModal";
 import EditAgendamentoModal from "@/components/portal/modais/EditAgendamentoModal";
 import CancelAgendamentoModal from "@/components/portal/modais/CancelAgendamentoModal";
-import AvaliacaoAgendamentoModal from "@/components/portal/modais/AvaliacaoAgendamentoModal";
 import {
   fetchFortalezaDigitalAgendamentos,
   fetchFortalezaDigitalAgendamentoById,
   patchFortalezaDigitalAgendamento,
-  updateFortalezaDigitalAvaliacao,
-  createFortalezaDigitalAvaliacao,
 } from "@/services/portal/fortalezaDigital";
 import type { AgendamentoRequest, AgendamentoResponse, Situacao } from "@/types/api";
 import { usePortalAuth } from "@/contexts/PortalAuthContext";
@@ -32,11 +29,8 @@ const CardsAgendamentos = () => {
   const [viewModal, setViewModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
   const [cancelModal, setCancelModal] = useState(false);
-  const [avaliacaoModal, setAvaliacaoModal] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-  const [notaAvaliacao, setNotaAvaliacao] = useState(0);
-  const [comentarioAvaliacao, setComentarioAvaliacao] = useState("");
   const { accessToken, initializing } = usePortalAuth();
 
   const mapSituacaoToStatus = (situacao?: Situacao): Appointment["status"] => (situacao && SITUACAO_PARA_STATUS[situacao]) || "Aguardando";
@@ -66,7 +60,6 @@ const CardsAgendamentos = () => {
       atendente: item.atendente?.nome_completo || item.atendente?.nome || undefined,
       guiche: typeof item.atendente?.guiche_atual === "string" ? item.atendente?.guiche_atual : item.atendente?.guiche_atual?.nome,
       motivoOutraUnidade: item.motivo_territorio || undefined,
-      avaliacao: item.avaliacao,
     }));
 
   const mapAgendamento = (item: AgendamentoResponse): Appointment => ({
@@ -93,7 +86,6 @@ const CardsAgendamentos = () => {
     atendente: item.atendente?.nome_completo || item.atendente?.nome || undefined,
     guiche: typeof item.atendente?.guiche_atual === "string" ? item.atendente?.guiche_atual : item.atendente?.guiche_atual?.nome,
     motivoOutraUnidade: item.motivo_territorio || undefined,
-    avaliacao: item.avaliacao,
   });
 
   const formatHora = (hora?: string | null) => {
@@ -172,12 +164,6 @@ const CardsAgendamentos = () => {
     setSelectedAppointment(appointment);
     setCancelModal(true);
   };
-  const handleAvaliarClick = (appointment: Appointment) => {
-    setSelectedAppointment(appointment);
-    setNotaAvaliacao(appointment.avaliacao?.nota || 0);
-    setComentarioAvaliacao(appointment.avaliacao?.comentario || "");
-    setAvaliacaoModal(true);
-  };
 
   const handleConfirmEdit = async (params: { servicoId?: string; vagaId?: string }) => {
     if (selectedAppointment && params.vagaId) {
@@ -225,37 +211,6 @@ const CardsAgendamentos = () => {
       setActionLoading(false);
       setCancelModal(false);
     }
-  };
-
-  const handleSalvarAvaliacao = async () => {
-    if (!selectedAppointment || notaAvaliacao <= 0) return;
-    if (actionLoading) return;
-
-    setActionLoading(true);
-
-    if (accessToken) {
-      const payload = {
-        agendamento: selectedAppointment.id,
-        nota: notaAvaliacao,
-        comentario: comentarioAvaliacao || undefined,
-      };
-
-      if (selectedAppointment.avaliacao?.id) {
-        await updateFortalezaDigitalAvaliacao(accessToken, selectedAppointment.avaliacao.id, payload);
-      } else {
-        await createFortalezaDigitalAvaliacao(accessToken, payload);
-      }
-
-      const data = await fetchFortalezaDigitalAgendamentoById(accessToken, selectedAppointment.id);
-      if (data) {
-        const mapped = mapAgendamento(data);
-        setAppointments((current) => current.map((item) => (item.id === mapped.id ? mapped : item)));
-        setSelectedAppointment(mapped);
-      }
-    }
-
-    setActionLoading(false);
-    setAvaliacaoModal(false);
   };
 
   const getStatusBadge = (status: string) => {
@@ -367,14 +322,6 @@ const CardsAgendamentos = () => {
                                 <CircleX size={20} />
                               </button>
                             </>
-                          )}
-                          {appointment.status === "Finalizado" && (
-                            <button
-                              onClick={() => handleAvaliarClick(appointment)}
-                              className={`p-2 ${appointment.avaliacao ? "text-yellow-500" : "text-slate-400 hover:text-yellow-500"}`}
-                            >
-                              <Star size={20} className={appointment.avaliacao ? "fill-current" : ""} />
-                            </button>
                           )}
                         </div>
                       </div>
@@ -501,16 +448,6 @@ const CardsAgendamentos = () => {
         onOpenChange={setCancelModal}
         selectedAppointment={selectedAppointment}
         onConfirm={handleConfirmCancel}
-      />
-      <AvaliacaoAgendamentoModal
-        open={avaliacaoModal}
-        onOpenChange={setAvaliacaoModal}
-        selectedAppointment={selectedAppointment}
-        notaAvaliacao={notaAvaliacao}
-        setNotaAvaliacao={setNotaAvaliacao}
-        comentarioAvaliacao={comentarioAvaliacao}
-        setComentarioAvaliacao={setComentarioAvaliacao}
-        onSalvar={handleSalvarAvaliacao}
       />
     </div>
   );

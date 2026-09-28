@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("agendamentos", "0020_alter_agendavaga_options"),
-        ("unidade_cras", "0008_alter_unidadecras_nome"),
+        ("unidade_posto", "0008_alter_unidadeposto_nome"),
     ]
 
     operations = [
@@ -78,7 +78,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.PROTECT,
                         related_name="chamadas_painel",
-                        to="unidade_cras.unidadecras",
+                        to="unidade_posto.unidadeposto",
                         verbose_name="Unidade",
                     ),
                 ),

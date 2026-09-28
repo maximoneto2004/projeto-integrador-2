@@ -9,7 +9,7 @@ class ServicoFilter(filters.FilterSet):
     tipo_servico_id = django_filters.CharFilter(field_name="tipo_servico_id")
     nome = django_filters.CharFilter(field_name="nome", lookup_expr="icontains")
     unidade = django_filters.UUIDFilter(
-        field_name="unidades_cras__unidade__id", lookup_expr="exact"
+        field_name="unidades_posto__unidade__id", lookup_expr="exact"
     )
 
     class Meta:
@@ -20,7 +20,7 @@ class ServicoFilter(filters.FilterSet):
 class ClasseServicoFilter(filters.FilterSet):
     nome = django_filters.CharFilter(field_name="nome", lookup_expr="icontains")
     unidade = django_filters.UUIDFilter(
-        field_name="servico__unidades_cras__unidade__id",
+        field_name="servico__unidades_posto__unidade__id",
         lookup_expr="exact",
         distinct=True,
     )

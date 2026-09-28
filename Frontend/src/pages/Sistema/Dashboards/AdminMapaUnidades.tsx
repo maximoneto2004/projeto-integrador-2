@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 import { getApiErrorMessage } from "@/lib/notifications";
 import { toast } from "@/lib/sonner";
 import { api } from "@/services/api";
@@ -33,7 +32,6 @@ export type ServicoMetrica = {
 };
 
 export type UnidadeMetricas = {
-  notaAvaliacao: number;
   atendimentosMensaisTotal: number;
   atendimentosMensaisComum: number;
   atendimentosMensaisEspecializado: number;
@@ -104,7 +102,6 @@ type MapaUnidadeApi = {
   longitude: string | number | null;
   bairros_abrangencia?: Array<{ id: string; nome: string }> | null;
   metricas?: {
-    nota_avaliacao_media?: number | null;
     atendimentos_total?: number | null;
     atendimentos_comum_30d?: number | null;
     atendimentos_especializado_30d?: number | null;
@@ -158,19 +155,6 @@ export type UnidadeSeriePonto = {
   tempoMedioEsperadoMin: number | null;
   tempoExcedenteMedioMin: number | null;
   pctAcimaEsperado: number | null;
-  notaAvaliacaoMedia: number | null;
-  notaAvaliacaoTotal: number;
-};
-
-export type UnidadeAvaliacao = {
-  id: string;
-  nota: number;
-  comentario: string;
-  createdAt: string | null;
-  atendente?: {
-    id: string;
-    nome: string;
-  } | null;
 };
 
 type MapaUnidadesApiResponse = {
@@ -183,10 +167,6 @@ type MapaUnidadesApiResponse = {
   };
 };
 
-type MapaUnidadeDetalheApi = MapaUnidadeApi & {
-  avaliacoes?: unknown[] | null;
-};
-
 type MapaUnidadeSerieApiItem = {
   data?: string | null;
   atendimentos_total?: number | string | null;
@@ -196,8 +176,6 @@ type MapaUnidadeSerieApiItem = {
   tempo_medio_esperado_min?: number | string | null;
   tempo_excedente_medio_min?: number | string | null;
   pct_acima_esperado?: number | string | null;
-  nota_avaliacao_media?: number | string | null;
-  nota_avaliacao_total?: number | string | null;
 };
 
 type MapaUnidadeSeriesApiResponse = {
@@ -211,7 +189,7 @@ type MapaUnidadeSeriesApiResponse = {
   };
 };
 
-type UnidadeCrasListApiItem = {
+type UnidadePostoListApiItem = {
   id: string;
   nome: string;
   created_at?: string | null;
@@ -263,7 +241,6 @@ const toRecord = (value: unknown): Record<string, unknown> | null => (value && t
 const TEMPO_META_PADRAO_MIN = 20;
 
 const EMPTY_METRICAS: UnidadeMetricas = {
-  notaAvaliacao: 0,
   atendimentosMensaisTotal: 0,
   atendimentosMensaisComum: 0,
   atendimentosMensaisEspecializado: 0,
@@ -330,45 +307,6 @@ const parseLatLng = (rawLatitude: unknown, rawLongitude: unknown): { latitude: n
 };
 
 const formatPct = (v: number) => `${v}%`;
-const formatNota = (v: number) => (v > 0 ? v.toFixed(1) : "-");
-
-type NotaAvaliacaoTone = "sem-dados" | "excelente" | "muito-bom" | "regular" | "critico";
-
-const NOTA_MARKER_CONFIG: Record<NotaAvaliacaoTone, { markerClass: string; legendClass: string; label: string }> = {
-  "sem-dados": {
-    markerClass: "cras-house-marker__bubble--sem-dados",
-    legendClass: "bg-slate-500",
-    label: "Sem dados",
-  },
-  excelente: {
-    markerClass: "cras-house-marker__bubble--excelente",
-    legendClass: "bg-green-600",
-    label: "Nota >= 4.5",
-  },
-  "muito-bom": {
-    markerClass: "cras-house-marker__bubble--muito-bom",
-    legendClass: "bg-yellow-500",
-    label: "Nota 4.0-4.4",
-  },
-  regular: {
-    markerClass: "cras-house-marker__bubble--regular",
-    legendClass: "bg-orange-500",
-    label: "Nota 3.0-3.9",
-  },
-  critico: {
-    markerClass: "cras-house-marker__bubble--critico",
-    legendClass: "bg-red-600",
-    label: "Nota < 3.0",
-  },
-};
-
-const getNotaAvaliacaoTone = (notaAvaliacao: number): NotaAvaliacaoTone => {
-  if (!Number.isFinite(notaAvaliacao) || notaAvaliacao <= 0) return "sem-dados";
-  if (notaAvaliacao >= 4.5) return "excelente";
-  if (notaAvaliacao >= 4.0) return "muito-bom";
-  if (notaAvaliacao >= 3.0) return "regular";
-  return "critico";
-};
 
 const houseSvg = (fill: string) => `
 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${fill}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -378,11 +316,11 @@ const houseSvg = (fill: string) => `
 </svg>
 `;
 
-const createHouseIcon = (tone: NotaAvaliacaoTone) =>
+const createHouseIcon = () =>
   L.divIcon({
     className: "cras-house-marker",
     html: `
-      <div class="cras-house-marker__bubble ${NOTA_MARKER_CONFIG[tone].markerClass}">
+      <div class="cras-house-marker__bubble">
         ${houseSvg("#ffffff")}
       </div>
     `,
@@ -473,7 +411,6 @@ const parseUnidadeMetricas = (raw: MapaUnidadeApi["metricas"] | null | undefined
   const origem = parseOrigemAtendimentos(raw.origem_atendimentos);
 
   return {
-    notaAvaliacao: toNumber(raw.nota_avaliacao_media, 0),
     atendimentosMensaisTotal: toNumber(raw.atendimentos_total, 0),
     atendimentosMensaisComum: toNumber(raw.atendimentos_comum_30d, 0),
     atendimentosMensaisEspecializado: toNumber(raw.atendimentos_especializado_30d, 0),
@@ -527,7 +464,7 @@ const parseUnidadeMapa = (raw: MapaUnidadeApi): UnidadeMapa => {
   };
 };
 
-const parseUnidadeCard = (raw: UnidadeCrasListApiItem): UnidadeMapa => {
+const parseUnidadeCard = (raw: UnidadePostoListApiItem): UnidadeMapa => {
   const bairroId = typeof raw?.bairro === "string" ? raw.bairro : String(raw?.bairro?.id ?? "");
   const bairroNome = typeof raw?.bairro === "object" && raw?.bairro ? String(raw.bairro.nome ?? "") : "";
   const coords = parseLatLng(raw?.latitude, raw?.longitude);
@@ -551,32 +488,6 @@ const parseUnidadeCard = (raw: UnidadeCrasListApiItem): UnidadeMapa => {
   };
 };
 
-const parseListaAvaliacoes = (raw: unknown): UnidadeAvaliacao[] => {
-  if (!Array.isArray(raw)) return [];
-  return raw
-    .map((item) => {
-      const obj = toRecord(item);
-      if (!obj) return null;
-      const id = String(obj.id ?? "");
-      if (!id) return null;
-      return {
-        id,
-        nota: toNumber(obj.nota, 0),
-        comentario: String(obj.comentario ?? "").trim(),
-        createdAt: obj.created_at ? String(obj.created_at) : null,
-        atendente: (() => {
-          const atendenteObj = toRecord(obj.atendente);
-          if (!atendenteObj) return null;
-          const atendenteId = String(atendenteObj.id ?? "").trim();
-          const atendenteNome = String(atendenteObj.nome ?? "").trim();
-          if (!atendenteId && !atendenteNome) return null;
-          return { id: atendenteId, nome: atendenteNome };
-        })(),
-      } as UnidadeAvaliacao;
-    })
-    .filter((x): x is UnidadeAvaliacao => Boolean(x));
-};
-
 const parseSeriePontos = (payload: unknown): UnidadeSeriePonto[] => {
   const obj = toRecord(payload);
   const results = toRecord(obj?.results);
@@ -597,11 +508,6 @@ const parseSeriePontos = (payload: unknown): UnidadeSeriePonto[] => {
         tempoMedioEsperadoMin: toNumber(row?.tempo_medio_esperado_min, 0),
         tempoExcedenteMedioMin: toNumber(row?.tempo_excedente_medio_min, 0),
         pctAcimaEsperado: toNumber(row?.pct_acima_esperado, 0),
-        notaAvaliacaoMedia: (() => {
-          const nota = toNumber(row?.nota_avaliacao_media, 0);
-          return nota > 0 ? nota : null;
-        })(),
-        notaAvaliacaoTotal: toNumber(row?.nota_avaliacao_total, 0),
       } as UnidadeSeriePonto;
     })
     .filter((item): item is UnidadeSeriePonto => Boolean(item));
@@ -638,19 +544,9 @@ function UnidadePopup({ unidade, metricas }: { unidade: UnidadeMapa; metricas: U
 
   return (
     <div className="min-w-[280px] space-y-2 text-sm">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="font-semibold leading-tight break-words">{unidade.nome || `Unidade ${unidade.id}`}</div>
-          <div className="text-xs text-muted-foreground">Últimos 30 dias • métricas via API</div>
-        </div>
-        <div className="flex flex-col items-end gap-1">
-          <Badge variant="secondary" className="whitespace-nowrap">
-            Nota {formatNota(metricas.notaAvaliacao)}/5
-          </Badge>
-          {/* <Badge variant="outline" className="whitespace-nowrap">
-            SLA {metricas.tempoMedioAtendimentoMin}m (meta {TEMPO_META_PADRAO_MIN}m)
-          </Badge> */}
-        </div>
+      <div className="min-w-0">
+        <div className="font-semibold leading-tight break-words">{unidade.nome || `Unidade ${unidade.id}`}</div>
+        <div className="text-xs text-muted-foreground">Últimos 30 dias • métricas via API</div>
       </div>
 
       <div className="grid grid-cols-2 gap-x-4 gap-y-1">
@@ -708,7 +604,6 @@ export default function AdminMapaUnidades() {
   const [busca, setBusca] = useState("");
   const [filtroDataInicio, setFiltroDataInicio] = useState(periodo30d.dataInicio);
   const [filtroDataFim, setFiltroDataFim] = useState(periodo30d.dataFim);
-  const [filtroNotaMin, setFiltroNotaMin] = useState("todas");
   const [filtroBairro, setFiltroBairro] = useState("todos");
   const [filtroUnidadeId, setFiltroUnidadeId] = useState("todas");
   const [unidadesCard, setUnidadesCard] = useState<UnidadeMapa[]>([]);
@@ -722,8 +617,6 @@ export default function AdminMapaUnidades() {
   const [serieError, setSerieError] = useState<string | null>(null);
   const [serieDataInicio, setSerieDataInicio] = useState(periodo30d.dataInicio);
   const [serieDataFim, setSerieDataFim] = useState(periodo30d.dataFim);
-  const [avaliacoesPorUnidadeId, setAvaliacoesPorUnidadeId] = useState<Map<string, UnidadeAvaliacao[]>>(new Map());
-  const [avaliacoesLoadingPorUnidadeId, setAvaliacoesLoadingPorUnidadeId] = useState<Map<string, boolean>>(new Map());
 
   const fetchMapaUnidades = useCallback(async () => {
     if (filtroDataInicio && filtroDataFim && filtroDataInicio > filtroDataFim) {
@@ -760,8 +653,8 @@ export default function AdminMapaUnidades() {
     setUnidadesCardError(null);
 
     try {
-      const { data } = await api.get("/unidade_cras_list/");
-      const lista = extractApiList<UnidadeCrasListApiItem>(data);
+      const { data } = await api.get("/unidade_posto_list/");
+      const lista = extractApiList<UnidadePostoListApiItem>(data);
       const parsed = lista.map(parseUnidadeCard).filter((u) => Boolean(u.id));
       setUnidadesCard(parsed);
     } catch (err) {
@@ -797,35 +690,27 @@ export default function AdminMapaUnidades() {
   const bairrosPorId = useMemo(() => new Map(bairros.map((b) => [b.id, b.nome])), [bairros]);
   const getBairroNome = useCallback((bairroId: string) => bairrosPorId.get(bairroId) || bairroId || "-", [bairrosPorId]);
 
-  const unidadesMapaPorId = useMemo(() => new Map(unidades.map((u) => [u.id, u])), [unidades]);
-
   const unidadesFiltradas = useMemo(() => {
     const term = busca.trim().toLowerCase();
-    const notaMin = filtroNotaMin === "todas" ? null : Number(filtroNotaMin);
 
     return unidadesCard.filter((u) => {
       if (term && !(u.nome || "").toLowerCase().includes(term)) return false;
       if (filtroBairro !== "todos" && u.bairroId !== filtroBairro) return false;
-      if (notaMin === null) return true;
-      const unidadeMapa = unidadesMapaPorId.get(u.id);
-      const nota = unidadeMapa?.metricas?.notaAvaliacao ?? null;
-      return nota !== null && nota >= notaMin;
+      return true;
     });
-  }, [busca, filtroBairro, filtroNotaMin, unidadesCard, unidadesMapaPorId]);
+  }, [busca, filtroBairro, unidadesCard]);
 
   const unidadesComCoords = useMemo(() => {
     const term = busca.trim().toLowerCase();
-    const notaMin = filtroNotaMin === "todas" ? null : Number(filtroNotaMin);
 
     return unidades.filter((u) => {
       if (u.latitude === null || u.longitude === null) return false;
       if (term && !(u.nome || "").toLowerCase().includes(term)) return false;
       if (filtroBairro !== "todos" && u.bairroId !== filtroBairro) return false;
-      if (notaMin !== null && (u.metricas?.notaAvaliacao ?? 0) < notaMin) return false;
       if (filtroUnidadeId !== "todas" && u.id !== filtroUnidadeId) return false;
       return true;
     });
-  }, [busca, filtroBairro, filtroNotaMin, filtroUnidadeId, unidades]);
+  }, [busca, filtroBairro, filtroUnidadeId, unidades]);
 
   const pontos = useMemo<[number, number][]>(() => unidadesComCoords.map((u) => [u.latitude as number, u.longitude as number]), [unidadesComCoords]);
 
@@ -833,15 +718,7 @@ export default function AdminMapaUnidades() {
     return new Map(unidades.map((u) => [u.id, u.metricas ?? EMPTY_METRICAS]));
   }, [unidades]);
 
-  const iconsByTone = useMemo(() => {
-    const tones: NotaAvaliacaoTone[] = ["sem-dados", "excelente", "muito-bom", "regular", "critico"];
-    return new Map(tones.map((tone) => [tone, createHouseIcon(tone)]));
-  }, []);
-
-  const getIcon = (metricas: UnidadeMetricas) => {
-    const tone = getNotaAvaliacaoTone(metricas.notaAvaliacao);
-    return iconsByTone.get(tone) || createHouseIcon(tone);
-  };
+  const houseIcon = useMemo(() => createHouseIcon(), []);
 
   const metricasSelecionada = useMemo(() => {
     if (!unidadeSelecionada) return null;
@@ -855,16 +732,6 @@ export default function AdminMapaUnidades() {
     if (!unidadeSelecionada) return "-";
     return bairrosPorId.get(unidadeSelecionada.bairroId) || unidadeSelecionada.bairroId || "-";
   }, [unidadeSelecionada, bairrosPorId]);
-
-  const avaliacoesSelecionada = useMemo(() => {
-    if (!unidadeSelecionada) return [];
-    return avaliacoesPorUnidadeId.get(unidadeSelecionada.id) ?? [];
-  }, [avaliacoesPorUnidadeId, unidadeSelecionada]);
-
-  const avaliacoesLoadingSelecionada = useMemo(() => {
-    if (!unidadeSelecionada) return false;
-    return avaliacoesLoadingPorUnidadeId.get(unidadeSelecionada.id) ?? false;
-  }, [avaliacoesLoadingPorUnidadeId, unidadeSelecionada]);
 
   const selectedPosition: [number, number] | null = useMemo(() => {
     if (!unidadeSelecionada || unidadeSelecionada.latitude === null || unidadeSelecionada.longitude === null) return null;
@@ -917,27 +784,6 @@ export default function AdminMapaUnidades() {
     [carregarDetalhesUnidade],
   );
 
-  const carregarAvaliacoesUnidade = useCallback(
-    async (unidadeId: string, dataInicio = filtroDataInicio, dataFim = filtroDataFim) => {
-      if (!unidadeId) return;
-
-      setAvaliacoesLoadingPorUnidadeId((prev) => new Map(prev).set(unidadeId, true));
-      try {
-        const { data } = await api.get<MapaUnidadesApiResponse>(`/mapa_unidades/${unidadeId}/`, {
-          params: { data_inicio: dataInicio, data_fim: dataFim },
-        });
-        const detalhe = extractApiItem<MapaUnidadeDetalheApi>(data);
-        const lista = parseListaAvaliacoes(detalhe?.avaliacoes);
-        setAvaliacoesPorUnidadeId((prev) => new Map(prev).set(unidadeId, lista));
-      } catch {
-        setAvaliacoesPorUnidadeId((prev) => new Map(prev).set(unidadeId, []));
-      } finally {
-        setAvaliacoesLoadingPorUnidadeId((prev) => new Map(prev).set(unidadeId, false));
-      }
-    },
-    [filtroDataFim, filtroDataInicio],
-  );
-
   const handleAtualizarSerie = useCallback(() => {
     if (!unidadeSelecionada) return;
     if (!serieDataInicio || !serieDataFim) {
@@ -948,9 +794,8 @@ export default function AdminMapaUnidades() {
       toast.error("Data início não pode ser maior que data fim.");
       return;
     }
-    void carregarAvaliacoesUnidade(unidadeSelecionada.id, serieDataInicio, serieDataFim);
     void carregarSerieUnidade(unidadeSelecionada.id, serieDataInicio, serieDataFim);
-  }, [carregarAvaliacoesUnidade, carregarSerieUnidade, serieDataFim, serieDataInicio, unidadeSelecionada]);
+  }, [carregarSerieUnidade, serieDataFim, serieDataInicio, unidadeSelecionada]);
 
   const handleSelecionarUnidade = (unidade: UnidadeMapa) => {
     setUnidadeSelecionada(unidade);
@@ -966,7 +811,6 @@ export default function AdminMapaUnidades() {
     setSerieDataFim(fim);
     setSeriePontos(null);
     setSerieError(null);
-    void carregarAvaliacoesUnidade(unidade.id, inicio, fim);
     void carregarSerieUnidade(unidade.id, inicio, fim);
   };
 
@@ -974,7 +818,6 @@ export default function AdminMapaUnidades() {
     setBusca("");
     setFiltroDataInicio(periodo30d.dataInicio);
     setFiltroDataFim(periodo30d.dataFim);
-    setFiltroNotaMin("todas");
     setFiltroBairro("todos");
     setFiltroUnidadeId("todas");
   };
@@ -983,10 +826,9 @@ export default function AdminMapaUnidades() {
     void fetchMapaUnidades();
     void fetchUnidadesCard();
     if (unidadeSelecionada?.id) {
-      void carregarAvaliacoesUnidade(unidadeSelecionada.id, serieDataInicio, serieDataFim);
       void carregarSerieUnidade(unidadeSelecionada.id, serieDataInicio, serieDataFim);
     }
-  }, [carregarAvaliacoesUnidade, carregarSerieUnidade, fetchMapaUnidades, fetchUnidadesCard, serieDataFim, serieDataInicio, unidadeSelecionada?.id]);
+  }, [carregarSerieUnidade, fetchMapaUnidades, fetchUnidadesCard, serieDataFim, serieDataInicio, unidadeSelecionada?.id]);
 
   useEffect(() => {
     const unidadeIdSelecionada = unidadeSelecionada?.id;
@@ -994,7 +836,6 @@ export default function AdminMapaUnidades() {
     const refresh = () => {
       void fetchMapaUnidades();
       if (dialogOpen && unidadeIdSelecionada) {
-        void carregarAvaliacoesUnidade(unidadeIdSelecionada, serieDataInicio, serieDataFim);
         void carregarSerieUnidade(unidadeIdSelecionada, serieDataInicio, serieDataFim);
       }
     };
@@ -1008,7 +849,7 @@ export default function AdminMapaUnidades() {
     return () => {
       window.clearInterval(intervalId);
     };
-  }, [carregarAvaliacoesUnidade, carregarSerieUnidade, dialogOpen, fetchMapaUnidades, serieDataFim, serieDataInicio, unidadeSelecionada?.id]);
+  }, [carregarSerieUnidade, dialogOpen, fetchMapaUnidades, serieDataFim, serieDataInicio, unidadeSelecionada?.id]);
 
   return (
     <SidebarProvider>
@@ -1056,24 +897,6 @@ export default function AdminMapaUnidades() {
                     min={filtroDataInicio || undefined}
                     onChange={(e) => setFiltroDataFim(e.target.value)}
                   />
-                </div>
-
-                <div className="space-y-1">
-                  <Label>Nota mínima</Label>
-                  <Select value={filtroNotaMin} onValueChange={setFiltroNotaMin}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="todas">Todas</SelectItem>
-                      <SelectItem value="0">0</SelectItem>
-                      <SelectItem value="1">1</SelectItem>
-                      <SelectItem value="2">2</SelectItem>
-                      <SelectItem value="3">3</SelectItem>
-                      <SelectItem value="4">4</SelectItem>
-                      <SelectItem value="5">5</SelectItem>
-                    </SelectContent>
-                  </Select>
                 </div>
 
                 <div className="space-y-1">
@@ -1131,19 +954,6 @@ export default function AdminMapaUnidades() {
             </aside>
 
             <section className="relative min-w-0 flex-1 overflow-hidden">
-              {!dialogOpen && (
-                <div className="absolute right-4 top-4 z-20 rounded-md border bg-background/95 p-3 shadow-sm">
-                  <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-                    {(["sem-dados", "excelente", "muito-bom", "regular", "critico"] as NotaAvaliacaoTone[]).map((tone) => (
-                      <span key={tone} className="inline-flex items-center gap-1">
-                        <span className={`inline-block h-3 w-3 rounded-full ${NOTA_MARKER_CONFIG[tone].legendClass}`} />
-                        {NOTA_MARKER_CONFIG[tone].label}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
               <div className="h-full w-full">
                 <MapContainer center={DEFAULT_POSITION} zoom={12} className="h-full w-full">
                   <TileLayer
@@ -1159,7 +969,7 @@ export default function AdminMapaUnidades() {
                       <Marker
                         key={unidade.id}
                         position={[unidade.latitude as number, unidade.longitude as number]}
-                        icon={getIcon(metricas)}
+                        icon={houseIcon}
                         eventHandlers={{
                           mouseover: (e) => {
                             (e.target as L.Marker).openPopup();
@@ -1201,8 +1011,6 @@ export default function AdminMapaUnidades() {
             metricas={metricasSelecionada}
             servicosMetricas={servicosMetricasSelecionada}
             servicosLoading={servicosMetricasLoadingSelecionada}
-            avaliacoes={avaliacoesSelecionada}
-            avaliacoesLoading={avaliacoesLoadingSelecionada}
             seriePontos={seriePontos}
             serieLoading={serieLoading}
             serieError={serieError}

@@ -30,8 +30,6 @@ export type AppointmentActionVisibility = {
   showRegistrarReceita: boolean;
   showFinalizarAtendimento: boolean;
   showServicosAtendimento: boolean;
-  showFichaAtendimento: boolean;
-  showEncaminhamento: boolean;
   showRegistrarPosAtendimento: boolean;
   showAssumirAguardando: boolean;
   showAssumirEmAtendimento: boolean;
@@ -81,12 +79,6 @@ export function getAppointmentActionVisibility({
     showRegistrarReceita: atendenteEspecializado && permissions.canRegister && appointment.status === "Atendimento" && canAct,
     showFinalizarAtendimento: permissions.canRegister && canAct && appointment.status === "Atendimento",
     showServicosAtendimento: isAtendente && appointment.status === "Finalizado",
-    showFichaAtendimento:
-      isAtendente &&
-      isEspecializado &&
-      permissions.canRegister &&
-      ["Atendimento", "Finalizado", "Atendido"].includes(appointment.status),
-    showEncaminhamento: permissions.canRegister && ["Atendimento", "Finalizado"].includes(appointment.status),
     showRegistrarPosAtendimento:
       permissions.canRegister &&
       appointment.status === "Finalizado" &&

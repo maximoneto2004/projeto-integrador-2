@@ -1,5 +1,5 @@
 import { api } from "@/services/api";
-import type { ServicoDetalhado, ServicoUnidadeCras } from "@/types/api";
+import type { ServicoDetalhado, ServicoUnidadePosto } from "@/types/api";
 
 type ApiEnvelope<T> = {
   success?: boolean;
@@ -17,7 +17,7 @@ type ApiPaginatedEnvelope<T> = {
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-type ServicoUnidadeCrasPayload = {
+type ServicoUnidadePostoPayload = {
   unidade: string;
   servico: string;
   dias_semana: string[];
@@ -30,7 +30,7 @@ type ServicoUnidadeCrasPayload = {
 };
 
 export type ServicosUnidadePaginados = {
-  items: ServicoUnidadeCras[];
+  items: ServicoUnidadePosto[];
   count: number;
   next: string | null;
   previous: string | null;
@@ -45,9 +45,9 @@ export const servicosConfigService = {
     return Array.isArray(data?.result) ? data.result : [];
   },
 
-  async listarServicosUnidade(params?: { unidade?: string }): Promise<ServicoUnidadeCras[]> {
-    const { data } = await api.get<ApiEnvelope<ServicoUnidadeCras[]>>(
-      `${API_URL}/servico_unidade_cras/`,
+  async listarServicosUnidade(params?: { unidade?: string }): Promise<ServicoUnidadePosto[]> {
+    const { data } = await api.get<ApiEnvelope<ServicoUnidadePosto[]>>(
+      `${API_URL}/servico_unidade_posto/`,
       { params },
     );
     if (data?.success === false) {
@@ -63,17 +63,17 @@ export const servicosConfigService = {
     offset?: string;
   }): Promise<ServicosUnidadePaginados> {
     const { data } = await api.get<
-      ApiEnvelope<ServicoUnidadeCras[]>
-      | ApiPaginatedEnvelope<ApiEnvelope<ServicoUnidadeCras[]>>
-      | ApiPaginatedEnvelope<ApiEnvelope<ServicoUnidadeCras[]> | ServicoUnidadeCras[]>
-    >(`${API_URL}/servico_unidade_cras/`, { params });
+      ApiEnvelope<ServicoUnidadePosto[]>
+      | ApiPaginatedEnvelope<ApiEnvelope<ServicoUnidadePosto[]>>
+      | ApiPaginatedEnvelope<ApiEnvelope<ServicoUnidadePosto[]> | ServicoUnidadePosto[]>
+    >(`${API_URL}/servico_unidade_posto/`, { params });
 
     const body = (data && typeof data === "object" ? (data as Record<string, unknown>) : {}) as Record<string, unknown>;
     const isPaginated = "count" in body && "results" in body;
 
     if (!isPaginated) {
-      const listaDireta = Array.isArray((data as ApiEnvelope<ServicoUnidadeCras[]>)?.data)
-        ? ((data as ApiEnvelope<ServicoUnidadeCras[]>).data as ServicoUnidadeCras[])
+      const listaDireta = Array.isArray((data as ApiEnvelope<ServicoUnidadePosto[]>)?.data)
+        ? ((data as ApiEnvelope<ServicoUnidadePosto[]>).data as ServicoUnidadePosto[])
         : [];
       return {
         items: listaDireta,
@@ -83,12 +83,12 @@ export const servicosConfigService = {
       };
     }
 
-    const payload = body.results as ApiEnvelope<ServicoUnidadeCras[]> | ServicoUnidadeCras[] | undefined;
-    let items: ServicoUnidadeCras[] = [];
+    const payload = body.results as ApiEnvelope<ServicoUnidadePosto[]> | ServicoUnidadePosto[] | undefined;
+    let items: ServicoUnidadePosto[] = [];
     if (Array.isArray(payload)) {
       items = payload;
-    } else if (payload && typeof payload === "object" && Array.isArray((payload as ApiEnvelope<ServicoUnidadeCras[]>).data)) {
-      items = ((payload as ApiEnvelope<ServicoUnidadeCras[]>).data as ServicoUnidadeCras[]) ?? [];
+    } else if (payload && typeof payload === "object" && Array.isArray((payload as ApiEnvelope<ServicoUnidadePosto[]>).data)) {
+      items = ((payload as ApiEnvelope<ServicoUnidadePosto[]>).data as ServicoUnidadePosto[]) ?? [];
     }
 
     return {
@@ -99,15 +99,15 @@ export const servicosConfigService = {
     };
   },
 
-  criarServicoUnidade(payload: ServicoUnidadeCrasPayload) {
-    return api.post<ApiEnvelope<ServicoUnidadeCras>>(`${API_URL}/servico_unidade_cras/`, payload);
+  criarServicoUnidade(payload: ServicoUnidadePostoPayload) {
+    return api.post<ApiEnvelope<ServicoUnidadePosto>>(`${API_URL}/servico_unidade_posto/`, payload);
   },
 
-  atualizarServicoUnidade(id: string, payload: Partial<ServicoUnidadeCrasPayload>) {
-    return api.patch<ApiEnvelope<ServicoUnidadeCras>>(`${API_URL}/servico_unidade_cras/${id}/`, payload);
+  atualizarServicoUnidade(id: string, payload: Partial<ServicoUnidadePostoPayload>) {
+    return api.patch<ApiEnvelope<ServicoUnidadePosto>>(`${API_URL}/servico_unidade_posto/${id}/`, payload);
   },
 
   removerServicoUnidade(id: string) {
-    return api.delete<ApiEnvelope<ServicoUnidadeCras>>(`${API_URL}/servico_unidade_cras/${id}/`);
+    return api.delete<ApiEnvelope<ServicoUnidadePosto>>(`${API_URL}/servico_unidade_posto/${id}/`);
   },
 };

@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('servicos', '0001_initial'),
-        ('unidade_cras', '0002_initial'),
+        ('unidade_posto', '0002_initial'),
     ]
 
     operations = [
@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
                 ('vagas', models.PositiveIntegerField(default=1, verbose_name='Profissionais disponíveis')),
                 ('vagas_ocupadas', models.PositiveIntegerField(default=0, verbose_name='Vagas ocupadas')),
                 ('servico', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='servicos.servico', verbose_name='Serviço')),
-                ('unidade', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='unidade_cras.unidadecras', verbose_name='Unidade Cras')),
+                ('unidade', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='unidade_posto.unidadeposto', verbose_name='Unidade Posto')),
             ],
             options={
                 'unique_together': {('unidade', 'servico', 'data', 'horario')},

@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 
 from agendamentos.models import Agendamento
-from unidade_cras.models import Guiche
+from unidade_posto.models import Guiche
 from app.permissions import DjangoModelPermissionsWithView
 from usuarios.filters import EscalaTrabalhoFilter, UsuarioFilter, GuicheFilter
 from usuarios.models import EscalaTrabalho, Usuario

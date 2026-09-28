@@ -44,7 +44,6 @@ from prontuario.models import (
     TransferenciaRenda,
 )
 from agendamentos.models import Agendamento
-from encaminhamentos.models import Encaminhamento
 
 
 class DashboardSupervisorSerializer(serializers.Serializer):
@@ -520,7 +519,6 @@ class PerfilFamiliarSerializer(serializers.Serializer):
     acolhimentos = serializers.SerializerMethodField()
     evolucoes = serializers.SerializerMethodField()
     servicosAtendimento = serializers.SerializerMethodField()
-    encaminhamentos = serializers.SerializerMethodField()
     descumprimentosCondicionalidades = serializers.SerializerMethodField()
 
     class Meta:
@@ -552,7 +550,6 @@ class PerfilFamiliarSerializer(serializers.Serializer):
             "acolhimentos",
             "evolucoes",
             "servicosAtendimento",
-            "encaminhamentos",
             "descumprimentosCondicionalidades",
         ]
 
@@ -703,11 +700,6 @@ class PerfilFamiliarSerializer(serializers.Serializer):
             .filter(cidadao__cpf__in=cpfs_familia)
             .order_by("-data", "-horario", "-created_at")[:60]
         ) if cpfs_familia else []
-        encaminhamentos = list(
-            Encaminhamento.objects.select_related("codigo_area", "agendamento", "agendamento__cidadao")
-            .filter(agendamento__cidadao__cpf__in=cpfs_familia)
-            .order_by("-created_at")[:40]
-        ) if cpfs_familia else []
         saude_geral = (
             CondicoesDeSaude.objects.filter(prontuario_id=prontuario_id).order_by("-created_at").first()
         )
@@ -736,7 +728,6 @@ class PerfilFamiliarSerializer(serializers.Serializer):
             "descumprimentos_condicionalidades_saude": descumprimentos_condicionalidades_saude,
             "descumprimentos_condicionalidades_educacao": descumprimentos_condicionalidades_educacao,
             "agendamentos_familia": agendamentos_familia,
-            "encaminhamentos": encaminhamentos,
         }
         return self._perfil_context
 
@@ -1218,32 +1209,6 @@ class PerfilFamiliarSerializer(serializers.Serializer):
                     "observacoes": item.observacoes_gerais or "",
                     "data": self._iso_date(item.data),
                     "membroNome": getattr(getattr(item, "cidadao", None), "nome", "") or "",
-                }
-            )
-        return result
-
-    def get_encaminhamentos(self, obj):
-        result = []
-        for item in self._build_context().get("encaminhamentos", []):
-            codigo_area = ""
-            if item.codigo_area:
-                codigo_area = f"{item.codigo_area.codigo} - {item.codigo_area.nome}"
-
-            result.append(
-                {
-                    "id": str(item.id),
-                    "cpfReferencia": getattr(getattr(item.agendamento, "cidadao", None), "cpf", "") or "",
-                    "codigoArea": codigo_area,
-                    "orgaoUnidadeDestino": item.unidade_destino or "",
-                    "objetivoMotivo": item.motivo or "",
-                    "resumoAcompanhamento": item.resumo or "",
-                    "dataRegistro": self._iso_date(item.created_at),
-                    "profissionalRegistro": item.profissional or "",
-                    "unidadeOrigem": item.unidade_origem or "",
-                    "telefoneContatoOrigem": "",
-                    "unidadeDestino": item.unidade_destino or "",
-                    "profissionalDestino": "",
-                    "observacoes": item.orientacoes or "",
                 }
             )
         return result

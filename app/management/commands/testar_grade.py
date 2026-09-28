@@ -4,7 +4,7 @@ from datetime import timedelta
 
 from usuarios.models import Usuario
 from servicos.models import TipoServico
-from unidade_cras.models import UnidadeCras, ServicoUnidadeCras
+from unidade_posto.models import UnidadePosto, ServicoUnidadePosto
 from app.gerar_grade import gerar_grade_tipo, salvar_grade_tipo
 
 MAPA_DIAS_NUM = {
@@ -39,18 +39,18 @@ class Command(BaseCommand):
 
         self.stdout.write("=== GERANDO VAGAS POR TIPO DE SERVIÇO ===\n")
 
-        unidades = UnidadeCras.objects.filter(is_active=True)
+        unidades = UnidadePosto.objects.filter(is_active=True)
         if not unidades.exists():
-            self.stdout.write("Nenhuma Unidade CRAS encontrada.")
+            self.stdout.write("Nenhuma Unidade Posto encontrada.")
             return
 
         for unidade in unidades:
             self.stdout.write("\n----------------------------------------")
-            self.stdout.write(f"UNIDADE CRAS: {unidade.nome}")
+            self.stdout.write(f"UNIDADE POSTO: {unidade.nome}")
             self.stdout.write("----------------------------------------\n")
 
             # Carrega todos os serviços configurados na unidade
-            su_list = ServicoUnidadeCras.objects.filter(unidade=unidade, is_active=True)
+            su_list = ServicoUnidadePosto.objects.filter(unidade=unidade, is_active=True)
             if not su_list.exists():
                 self.stdout.write("Nenhum serviço configurado para esta unidade.\n")
                 continue

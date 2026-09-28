@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ('agendamentos', '0002_alter_agendavaga_options_and_more'),
         ('servicos', '0002_remove_servico_tempo_atendimento_and_more'),
-        ('unidade_cras', '0002_initial'),
+        ('unidade_posto', '0002_initial'),
     ]
 
     operations = [

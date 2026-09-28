@@ -10,7 +10,7 @@ import { Search, Eye } from "lucide-react";
 import { toast } from "@/lib/sonner";
 import { useBuscarProntuario } from "@/hooks/prontuario/useProntuario";
 import { pessoaReferenciaService } from "@/services/prontuario/pessoaReferenciaService";
-import { unidadeCrasService } from "@/services/sistema/unidadeCrasService";
+import { unidadePostoService } from "@/services/sistema/unidadePostoService";
 import { formatCpf } from "@/utils/cpfFormater";
 
 const PAGE_SIZE = 10;
@@ -158,7 +158,7 @@ async function enrichResponseItems(data: unknown): Promise<BuscarResultadoItem[]
 
   if (needsUnidadeLookup) {
     try {
-      const unidades = await unidadeCrasService.listar();
+      const unidades = await unidadePostoService.listar();
       unidades.forEach((u) => {
         if (!u?.id) return;
         unidadeById.set(String(u.id), u.nome || "");

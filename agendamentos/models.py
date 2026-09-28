@@ -2,7 +2,7 @@ from django.db import models
 from django.utils import timezone
 
 from app.mixins import BaseModel
-from unidade_cras.models import UnidadeCras
+from unidade_posto.models import UnidadePosto
 from servicos.models import Servico, TipoServico
 from cidadaos.models import Cidadao
 from app.static_data import SITUACAO_AGENDAMENTO_CHOICES, ORIGEM_CHOICES, STATUS_FINAL_ATENDIMENTO_CHOICES
@@ -10,7 +10,7 @@ from usuarios.models import Usuario
 
 
 class AgendaVaga(BaseModel):
-    unidade = models.ForeignKey(UnidadeCras, verbose_name="Unidade Cras", on_delete=models.PROTECT)
+    unidade = models.ForeignKey(UnidadePosto, verbose_name="Unidade Posto", on_delete=models.PROTECT)
     tipo_servico = models.ForeignKey(TipoServico, verbose_name="Tipo de Serviço", on_delete=models.PROTECT, null=True)
     data = models.DateField(verbose_name="Data")
     horario = models.TimeField(verbose_name="Horário")
@@ -45,7 +45,7 @@ class Agendamento(BaseModel):
         limit_choices_to={"groups__name__in": ["Atendente", "Supervisor"],},
         on_delete=models.PROTECT,
     )
-    unidade = models.ForeignKey(UnidadeCras, verbose_name="Unidade", on_delete=models.PROTECT, related_name="agendamentos")
+    unidade = models.ForeignKey(UnidadePosto, verbose_name="Unidade", on_delete=models.PROTECT, related_name="agendamentos")
     servico = models.ForeignKey(Servico, verbose_name="Serviço", on_delete=models.PROTECT, related_name="agendamentos")
     vaga = models.ForeignKey(AgendaVaga, verbose_name="Vaga", on_delete=models.PROTECT, related_name="agendamentos", null=True, blank=True)
     data = models.DateField(verbose_name="Data do agendamento", editable=False)
@@ -202,7 +202,7 @@ class ChamadaPainel(BaseModel):
         related_name="chamadas_painel",
     )
     unidade = models.ForeignKey(
-        UnidadeCras,
+        UnidadePosto,
         verbose_name="Unidade",
         on_delete=models.PROTECT,
         related_name="chamadas_painel",

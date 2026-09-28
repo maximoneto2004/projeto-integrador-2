@@ -4,7 +4,7 @@ from app.validators import validate_CPF
 from app.static_data import SEXO_CHOICES, ORIGEM_CHOICES, SIGLA_ESTADO_CHOICES
 from app.models import Bairro
 import re
-from unidade_cras.models import UnidadeCras
+from unidade_posto.models import UnidadePosto
 
 
 def normalize_nome(value):
@@ -46,7 +46,7 @@ class Cidadao(BaseModel):
     cep = models.CharField(verbose_name="CEP", max_length=10, blank=True)
     complemento = models.CharField(verbose_name="Complemento", max_length=150, blank=True, null=True)
     origem = models.CharField(verbose_name='Origem do agendamento', choices=ORIGEM_CHOICES, max_length=50, null=True, blank=True)
-    unidade_origem = models.ForeignKey(UnidadeCras, verbose_name="Unidade Cras de acompanhamento", null=True, on_delete=models.PROTECT)
+    unidade_origem = models.ForeignKey(UnidadePosto, verbose_name="Unidade Posto de acompanhamento", null=True, on_delete=models.PROTECT)
 
 
     class Meta:

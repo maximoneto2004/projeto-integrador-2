@@ -1,6 +1,6 @@
 import django_filters
 from .models import Usuario, EscalaTrabalho
-from unidade_cras.models import Guiche
+from unidade_posto.models import Guiche
 
 
 class UsuarioFilter(django_filters.FilterSet):

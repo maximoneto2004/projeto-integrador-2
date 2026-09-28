@@ -48,14 +48,14 @@ def _marcar_ausencia_job():
 def _gerar_vagas_job():
     """Job para gerar vagas para os próximos dias com base nos horários das unidades e tipos de serviço ativos.
         Agora o fluxo de busca é:
-        1 - busca todas as unidades CRAS ativas, usando o Prefetch
+        1 - busca todas as unidades Postos ativas, usando o Prefetch
         2 - busca todos os serviços e tipos de serviços vinculados a cada unidade, usando o related_name="servicos_unidade"
         3 - armazena tudo em memória e gera as vagas para os próximos dias, evitando consultas repetidas.
         4 - adiciona um pequeno delay entre as unidades para evitar sobrecarga do banco.
     """
     from datetime import timedelta
     from django.utils.timezone import localdate
-    from unidade_cras.models import UnidadeCras, ServicoUnidadeCras
+    from unidade_posto.models import UnidadePosto, ServicoUnidadePosto
     from app.gerar_grade import salvar_grade_tipo
     import time
     from django.db.models import Prefetch
@@ -71,9 +71,9 @@ def _gerar_vagas_job():
             offset += 1
         total_vagas = 0
 
-        unidades = UnidadeCras.objects.filter(is_active=True).prefetch_related(Prefetch(
+        unidades = UnidadePosto.objects.filter(is_active=True).prefetch_related(Prefetch(
             "servicos_unidade",
-            queryset=ServicoUnidadeCras.objects.filter(is_active=True).select_related("servico__tipo_servico"),
+            queryset=ServicoUnidadePosto.objects.filter(is_active=True).select_related("servico__tipo_servico"),
             to_attr="servicos_ativos"))
         for unidade in unidades:
             tipos_vistos = set()

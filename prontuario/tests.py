@@ -32,13 +32,13 @@ from prontuario.serializers import (
     ExclusaoMembroComposicaoSerializer,
     MembroComposicaoSerializer,
 )
-from unidade_cras.models import UnidadeCras
+from unidade_posto.models import UnidadePosto
 
 
 class RegistroDesligamentoModelTest(TestCase):
     def setUp(self):
         self.bairro = Bairro.objects.create(nome="Centro")
-        self.unidade = UnidadeCras.objects.create(
+        self.unidade = UnidadePosto.objects.create(
             nome="CRAS Centro",
             logradouro="Rua A",
             numero="100",
@@ -78,7 +78,7 @@ class RegistroDesligamentoModelTest(TestCase):
 class ExclusaoMembroComposicaoSerializerTest(TestCase):
     def setUp(self):
         self.bairro = Bairro.objects.create(nome="Centro")
-        self.unidade = UnidadeCras.objects.create(
+        self.unidade = UnidadePosto.objects.create(
             nome="CRAS Centro",
             logradouro="Rua A",
             numero="100",
@@ -331,7 +331,7 @@ class MembroComposicaoApiAtivosTest(APITestCase):
         self.client.force_authenticate(self.user)
 
         bairro = Bairro.objects.create(nome="Centro API")
-        unidade = UnidadeCras.objects.create(
+        unidade = UnidadePosto.objects.create(
             nome="CRAS API",
             logradouro="Rua A",
             numero="100",

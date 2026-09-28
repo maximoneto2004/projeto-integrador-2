@@ -3,8 +3,8 @@ from django.utils import timezone
 
 from cidadaos.models import Cidadao, normalize_nome
 from app.serializers import BairroSerializer
-from unidade_cras.serializers import UnidadeCrasIdNomeSerializer
-from unidade_cras.models import UnidadeCras
+from unidade_posto.serializers import UnidadePostoIdNomeSerializer
+from unidade_posto.models import UnidadePosto
 
 
 class CidadaoSerializer(serializers.ModelSerializer):
@@ -41,7 +41,7 @@ class CidadaoSerializer(serializers.ModelSerializer):
         if not unidade_origem:
             if bairro:
                 unidade = (
-                    UnidadeCras.objects.filter(bairros_abrangencia=bairro, is_active=True)
+                    UnidadePosto.objects.filter(bairros_abrangencia=bairro, is_active=True)
                     .order_by("id")
                     .first()
                 )
@@ -58,7 +58,7 @@ class CidadaoSerializer(serializers.ModelSerializer):
 class CidadaoListDetailSerializer(serializers.ModelSerializer):
 
     bairro = BairroSerializer()
-    unidade_origem = UnidadeCrasIdNomeSerializer(read_only=True)
+    unidade_origem = UnidadePostoIdNomeSerializer(read_only=True)
     agendamentos = serializers.SerializerMethodField()
     # territorio = serializers.SerializerMethodField()
 

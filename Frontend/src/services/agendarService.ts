@@ -53,7 +53,7 @@ export const getUnidadesFromResponse = (data: unknown): UnidadeOption[] => {
 export const agendarService = {
   listarUnidades() {
     return api.get<{ success?: boolean; result?: UnidadeOption[] | string } | UnidadeOption[]>(
-      "/unidade_cras_list/",
+      "/unidade_posto_list/",
     );
   },
 

@@ -518,19 +518,6 @@ const AdminAgendamentos = () => {
     }
   };
 
-  const onAbrirFichaAtendimento = (appointment: Appointment) => {
-    navigate(`/sistema/ficha-atendimento?id=${appointment.id}&cpf=${appointment.cpfCidadao || ""}`);
-  };
-
-  const onAbrirEncaminhamento = (appointment: Appointment) => {
-    const cpf = appointment.cpfCidadao || "";
-    if (!cpf) {
-      toast.error("Informe o CPF para acessar o encaminhamento.");
-      return;
-    }
-    navigate(`/sistema/encaminhamento-prontuario?agendamento=${appointment.id}&cpf=${cpf}`);
-  };
-
   const onChamarProximo = async () => {
     try {
       const appointmentApi = await chamarProximoFila();
@@ -661,8 +648,6 @@ const AdminAgendamentos = () => {
             onRegistrarReceita={abrirModalRegistrarReceita}
             onAssumir={abrirModalAssumir}
             onFinalizar={onFinalizarAtendimento}
-            onAbrirFicha={onAbrirFichaAtendimento}
-            onAbrirEncaminhamento={onAbrirEncaminhamento}
             onAbrirServicos={abrirModalServicos}
             podeExibirBotaoChamar={podeExibirBotaoChamar}
             renderStatusBadge={getStatusBadge}

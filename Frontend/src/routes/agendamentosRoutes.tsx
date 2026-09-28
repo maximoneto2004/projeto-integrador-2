@@ -4,7 +4,6 @@ import { ACCESS } from "@/security/acess";
 import AdminAgendamentos from "@/pages/Sistema/Agendamentos/AdminAgendamentos";
 import AdminFilaEspera from "@/pages/Sistema/Agendamentos/AdminFilaEspera";
 import AdminConfirmarChegada from "@/pages/Sistema/Agendamentos/AdminConfirmarChegada";
-import AdminFichaAtendimento from "@/pages/Sistema/Atendimentos/AdminFichaAtendimento";
 // import AdminRegistrarServicosPage from "@/pages/Indefinidos/sistemaRegistrarServicosPage";
 import AdminCadastroCidadao from "@/pages/Sistema/Cadastros/AdminCadastroCidadao";
 import AdminAgendarCidadao from "@/pages/Indefinidos/AdminAgendarCidadao";
@@ -24,10 +23,6 @@ export const agendamentosRoutes: RouteObject[] = [
     path: "/sistema/confirmar-chegada",
     element: guard(<AdminConfirmarChegada />, { allowedRoles: ACCESS.confirmarChegada }),
   },
-  // {
-  //   path: "/sistema/ficha-atendimento",
-  //   element: guard(<AdminFichaAtendimento />, { withGuiche: true, allowedRoles: ACCESS.prontuario }),
-  // },
   // {
   //   path: "/sistema/registrar-servicos",
   //   element: guard(<AdminRegistrarServicosPage />, { withGuiche: true, allowedRoles: ACCESS.registrarServicos }),

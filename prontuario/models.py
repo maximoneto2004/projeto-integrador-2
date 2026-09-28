@@ -1,7 +1,7 @@
 ﻿from django.db import models, transaction
 from app.mixins import BaseModel
 from django.core.exceptions import ValidationError
-from unidade_cras.models import UnidadeCras
+from unidade_posto.models import UnidadePosto
 from cidadaos.models import Cidadao
 from app.static_data import (
     TIPO_RESIDENCIA_CHOICES,
@@ -42,7 +42,7 @@ class Prontuario(BaseModel):
     sequencial = models.PositiveIntegerField(unique=True, editable=False, null=True)
     numero = models.CharField(verbose_name="Prontuário", unique=True, max_length=200, editable=False)
     unidade_inicial = models.ForeignKey(
-        UnidadeCras, verbose_name="Unidade Inicial", on_delete=models.PROTECT
+        UnidadePosto, verbose_name="Unidade Inicial", on_delete=models.PROTECT
     )
 
     def __str__(self):
@@ -552,7 +552,7 @@ class ConvivenviaFortalecimento(BaseModel):
     data_inicio = models.DateField(verbose_name="Data de Início")
     unidade_realizacao = models.CharField(verbose_name="Unidade de realização", choices=UNIDADE_REALIZACAO_CHOICES, null=True, blank=True)
     # unidade_inicial = models.ForeignKey(
-    #     UnidadeCras, verbose_name="Unidade de realização", on_delete=models.PROTECT
+    #     UnidadePosto, verbose_name="Unidade de realização", on_delete=models.PROTECT
     # )
 
     class Meta:

@@ -5,7 +5,6 @@ import AdminProntuarioPage from "@/pages/Sistema/Prontuário/AdminProntuarioPage
 import AdminHistoricoProntuario from "@/pages/Sistema/Prontuário/AdminHistoricoProntuario";
 import AdminBuscarProntuario from "@/pages/Sistema/Prontuário/AdminBuscarProntuario";
 import AdminBuscarReceitas from "@/pages/Sistema/Prontuário/AdminBuscarReceitas";
-import AdminEncaminhamentoProntuario from "@/pages/Sistema/Prontuário/AdminEncaminhamentoProntuario";
 import AdminPerfilFamiliar from "@/pages/Sistema/Prontuário/AdminPerfilFamiliar";
 
 export const prontuarioRoutes: RouteObject[] = [
@@ -24,10 +23,6 @@ export const prontuarioRoutes: RouteObject[] = [
   {
     path: "/sistema/buscar-receitas",
     element: guard(<AdminBuscarReceitas />, { withGuiche: true, allowedRoles: ACCESS.prontuario }),
-  },
-  {
-    path: "/sistema/encaminhamento-prontuario",
-    element: guard(<AdminEncaminhamentoProntuario />, { withGuiche: true, allowedRoles: ACCESS.prontuario }),
   },
   {
     path: "/sistema/perfil-familiar",

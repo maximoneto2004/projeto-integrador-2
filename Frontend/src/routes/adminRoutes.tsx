@@ -21,7 +21,6 @@ import AdminMapaUnidades from "@/pages/Sistema/Dashboards/AdminMapaUnidades";
 import AdminLogin from "@/pages/Sistema/AdminLogin";
 import AlterarSenha from "@/pages/Sistema/AlterarSenha";
 import PainelPublico from "@/pages/PainelPublico";
-import Relatorio from "@/pages/Sistema/Relatorio";
 
 export const adminRoutes: RouteObject[] = [
   {
@@ -104,8 +103,4 @@ export const adminRoutes: RouteObject[] = [
     path: "/sistema/administrador/duvidas", 
     element: guard(<AdminPerguntaFrequentesPage />, { allowedRoles: ACCESS.adminPerguntas }) 
   },
-  {
-    path: "/sistema/relatorio",
-    element: guard(<Relatorio />, { allowedRoles: ACCESS.relatorio})
-  }
 ];

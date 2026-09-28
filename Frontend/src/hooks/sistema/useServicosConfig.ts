@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { servicosConfigService } from "@/services/sistema/servicosConfigService";
-import type { ServicoDetalhado, ServicoUnidadeCras } from "@/types/api";
+import type { ServicoDetalhado, ServicoUnidadePosto } from "@/types/api";
 
 const queryKeys = {
   servicos: ["servicos"] as const,
@@ -17,7 +17,7 @@ export function useServicosDisponiveis(enabled = true) {
 }
 
 export function useServicosUnidade(unidadeId?: string, enabled = true) {
-  return useQuery<ServicoUnidadeCras[]>({
+  return useQuery<ServicoUnidadePosto[]>({
     queryKey: unidadeId ? queryKeys.servicosUnidade(unidadeId) : ["servicos-unidade", "sem-unidade"],
     queryFn: () => servicosConfigService.listarServicosUnidade({ unidade: unidadeId }),
     enabled: Boolean(unidadeId) && enabled,
@@ -54,7 +54,7 @@ export function useCriarServicoUnidade() {
       if (data?.success === false) {
         throw new Error((data as unknown as { result?: string }).result || "Falha ao criar serviço");
       }
-      return (data?.data ?? data?.result) as ServicoUnidadeCras;
+      return (data?.data ?? data?.result) as ServicoUnidadePosto;
     },
     onSuccess: (data) => {
       if (data?.unidade) {
@@ -69,12 +69,12 @@ export function useAtualizarServicoUnidade() {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, payload }: { id: string; payload: Partial<ServicoUnidadeCras> }) => {
+    mutationFn: async ({ id, payload }: { id: string; payload: Partial<ServicoUnidadePosto> }) => {
       const { data } = await servicosConfigService.atualizarServicoUnidade(id, payload);
       if (data?.success === false) {
         throw new Error((data as unknown as { result?: string }).result || "Falha ao atualizar serviço");
       }
-      return (data?.data ?? data?.result) as ServicoUnidadeCras;
+      return (data?.data ?? data?.result) as ServicoUnidadePosto;
     },
     onSuccess: (data) => {
       if (data?.unidade) {

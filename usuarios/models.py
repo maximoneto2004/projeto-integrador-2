@@ -8,7 +8,7 @@ from app.mixins import BaseModel
 from app.static_data import DIA_SEMANA_CHOICES
 from app.validators import validate_CPF
 from servicos.models import Servico, TipoServico
-from unidade_cras.models import Guiche, UnidadeCras
+from unidade_posto.models import Guiche, UnidadePosto
 
 
 class Usuario(AbstractUser, BaseModel):
@@ -23,7 +23,7 @@ class Usuario(AbstractUser, BaseModel):
         validators=[RegexValidator(r"^\d{10,15}$")],
     )
     unidades_lotacao = models.ManyToManyField(
-        UnidadeCras, verbose_name="Unidade Cras", blank=True
+        UnidadePosto, verbose_name="Unidade Posto", blank=True
     )
     tipo_ofertados = models.ManyToManyField(
         TipoServico, verbose_name="Tipo de Serviço", blank=True
@@ -69,7 +69,7 @@ class EscalaTrabalho(BaseModel):
     )
 
     unidade = models.ForeignKey(
-        UnidadeCras, on_delete=models.PROTECT, related_name="escalas"
+        UnidadePosto, on_delete=models.PROTECT, related_name="escalas"
     )
 
     dias_semana = models.JSONField(

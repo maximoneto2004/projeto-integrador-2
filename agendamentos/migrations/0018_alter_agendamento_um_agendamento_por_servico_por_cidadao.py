@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
         ('agendamentos', '0017_alter_agendamento_final_atendimento'),
         ('cidadaos', '0007_cidadao_unidade_origem'),
         ('servicos', '0002_remove_servico_tempo_atendimento_and_more'),
-        ('unidade_cras', '0006_unidadecras_latitude_unidadecras_longitude'),
+        ('unidade_posto', '0006_unidadeposto_latitude_unidadeposto_longitude'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 

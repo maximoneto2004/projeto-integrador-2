@@ -1,7 +1,6 @@
 import { api } from "@/services/api";
 
 export type MapaUnidadeMetricasApi = {
-  nota_avaliacao_media?: number | null;
   atendimentos_total?: number | null;
   atendimentos_comum_30d?: number | null;
   atendimentos_especializado_30d?: number | null;

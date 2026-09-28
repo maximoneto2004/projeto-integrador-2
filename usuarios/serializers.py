@@ -12,12 +12,10 @@ from django.utils.encoding import force_bytes
 from django.utils.html import strip_tags
 from django.utils.http import urlsafe_base64_encode
 from rest_framework import serializers
-from avaliacao.models import Avaliacao
-from unidade_cras.models import Guiche, UnidadeCras
+from unidade_posto.models import Guiche, UnidadePosto
 from usuarios.models import Usuario, EscalaTrabalho
 from servicos.serializers import TipoServicoSerializer
 from utils.email import send_email_in_thread
-from django.db.models import Avg
 
 
 logger = logging.getLogger(__name__)
@@ -30,9 +28,9 @@ class GroupSimpleSerializer(serializers.ModelSerializer):
         fields = ("id", "name")
 
 
-class UnidadeCrasSimpleSerializer(serializers.ModelSerializer):
+class UnidadePostoSimpleSerializer(serializers.ModelSerializer):
     class Meta:
-        model = UnidadeCras
+        model = UnidadePosto
         fields = ("id", "nome")
 
 
@@ -155,7 +153,7 @@ class UsuarioListDetailSerializer(serializers.ModelSerializer):
 
 class EscalaTrabalhoListDetailSerializer(serializers.ModelSerializer):
     profissional = UsuarioListDetailSerializer(read_only=True)
-    unidade = UnidadeCrasSimpleSerializer(read_only=True)
+    unidade = UnidadePostoSimpleSerializer(read_only=True)
 
     class Meta:
         model = EscalaTrabalho
@@ -173,7 +171,7 @@ class EscalaTrabalhoListDetailSerializer(serializers.ModelSerializer):
 
 
 class GuicheSerializer(serializers.ModelSerializer):
-    unidade = UnidadeCrasSimpleSerializer(read_only=True)
+    unidade = UnidadePostoSimpleSerializer(read_only=True)
     ocupado = serializers.SerializerMethodField()
 
     class Meta:
@@ -199,7 +197,7 @@ class GroupSerializer(serializers.ModelSerializer):
 
 
 class UsuarioSerializer(serializers.ModelSerializer):
-    unidades = UnidadeCrasSimpleSerializer(
+    unidades = UnidadePostoSimpleSerializer(
         many=True,
         read_only=True,
         source="unidades_lotacao",
@@ -274,16 +272,6 @@ def _send_user_reset_email(user):
         logger.exception("Falha ao enviar e-mail de redefinição para %s", user.email)
 
 class SimplesUserSerializer(serializers.ModelSerializer):
-    nota_media_atendente = serializers.SerializerMethodField()
-
     class Meta:
         model = Usuario
-        fields = ["id", "nome_completo", "nota_media_atendente"]
-
-    def get_nota_media_atendente(self, obj):
-        media = (
-            Avaliacao.objects
-            .filter(agendamento__atendente=obj)
-            .aggregate(media=Avg("nota"))["media"]
-        )
-        return round(float(media), 1) if media is not None else None
+        fields = ["id", "nome_completo"]

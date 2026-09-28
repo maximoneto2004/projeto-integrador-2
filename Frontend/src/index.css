@@ -280,30 +280,11 @@ All colors MUST be HSL.
   align-items: center;
   justify-content: center;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+  background: #2563eb;
 }
 
 .cras-house-marker__bubble svg {
   display: block;
-}
-
-.cras-house-marker__bubble--sem-dados {
-  background: #64748b;
-}
-
-.cras-house-marker__bubble--excelente {
-  background: #16a34a;
-}
-
-.cras-house-marker__bubble--muito-bom {
-  background: #eab308;
-}
-
-.cras-house-marker__bubble--regular {
-  background: #f97316;
-}
-
-.cras-house-marker__bubble--critico {
-  background: #dc2626;
 }
 
 body.vlibras-hidden-route [vw],

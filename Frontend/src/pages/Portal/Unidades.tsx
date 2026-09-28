@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Header } from "@/components/portal/Header";
 import { FaleConosco } from "@/components/portal/FaleConosco";
 import { IntroSection } from "@/components/portal/IntroSection";
-import { useUnidadesCras } from "@/hooks/useUnidadesCras";
+import { useUnidadesPosto } from "@/hooks/useUnidadesPosto";
 import { useServicosDisponiveis } from "@/hooks/sistema/useServicosConfig";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Eye } from "lucide-react";
@@ -100,13 +100,13 @@ const formatDias = (diasSemana: string[]) => {
   return ordenados.map((dia) => DIA_LABEL[dia] || dia).join(", ");
 };
 
-const UnidadesCras = () => {
+const UnidadesPosto = () => {
   const [selectedId, setSelectedId] = useState("");
   const [search, setSearch] = useState("");
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_LOAD);
   const [servicesPage, setServicesPage] = useState(1);
   const [servicesModalOpen, setServicesModalOpen] = useState(false);
-  const { unidades, loading, error, fetchUnidades } = useUnidadesCras("");
+  const { unidades, loading, error, fetchUnidades } = useUnidadesPosto("");
   const { data: servicosCatalogo = [] } = useServicosDisponiveis();
 
   useEffect(() => {
@@ -436,4 +436,4 @@ const UnidadesCras = () => {
   );
 };
 
-export default UnidadesCras;
+export default UnidadesPosto;

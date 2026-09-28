@@ -38,7 +38,7 @@ const extractUnidades = (payload: unknown): Unidade[] => {
 
 export const unidadeService = {
   async listar(): Promise<Unidade[]> {
-    const res = await api.get("/unidade_cras_list/");
+    const res = await api.get("/unidade_posto_list/");
     return extractUnidades(res.data);
   },
 };

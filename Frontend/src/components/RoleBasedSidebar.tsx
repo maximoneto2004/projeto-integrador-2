@@ -248,18 +248,6 @@ const menuGroups: MenuGroup[] = [
   },
 
   // {
-  //   label: "Relatórios",
-  //   items: [
-  //     {
-  //       title: "Geração de relatórioss",
-  //       url: "/sistema/relatorio",
-  //       icon: FileDown,
-  //       roles: ["admin", "gestor", "coordenador"],
-  //     },
-  //   ]
-  // },
-
-  // {
   //   label: "Portal",
   //   items: [{ title: "DÃƒÆ’Ã‚Âºvidas frequentes", url: "/sistema/administrador/duvidas", icon: CircleHelp, roles: ["admin"] }],
   // },

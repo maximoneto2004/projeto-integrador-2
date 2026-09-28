@@ -27,7 +27,7 @@ from agendamentos.serializers import (
 from cidadaos.models import Cidadao
 from cidadaos.requests_fd import check_auth_sso, get_valid_token_or_none
 from servicos.models import Servico, TipoServico
-from unidade_cras.models import ServicoUnidadeCras, UnidadeCras
+from unidade_posto.models import ServicoUnidadePosto, UnidadePosto
 from app.permissions import DjangoModelPermissionsWithView
 from cidadaos.authentication import SSOAuthentication
 from cidadaos.serializers import CidadaoSerializer
@@ -134,14 +134,14 @@ class TelaAgendamentoView(TemplateView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx["unidades"] = UnidadeCras.objects.all()
+        ctx["unidades"] = UnidadePosto.objects.all()
         return ctx
 
 
 def ajax_carregar_tipos(request, unidade_id):
     # Buscar todos os tipos atendidos nessa unidade
     tipos_ids = (
-        ServicoUnidadeCras.objects.filter(unidade_id=unidade_id)
+        ServicoUnidadePosto.objects.filter(unidade_id=unidade_id)
         .values_list("servico__tipo_servico_id", flat=True)
         .distinct()
     )
@@ -173,7 +173,7 @@ def ajax_carregar_vagas(request, unidade_id, tipo_id, data):
 
 
 def ajax_carregar_servicos_por_tipo(request, unidade_id, tipo_id):
-    su = ServicoUnidadeCras.objects.filter(
+    su = ServicoUnidadePosto.objects.filter(
         unidade_id=unidade_id, servico__tipo_servico_id=tipo_id
     ).select_related("servico")
 

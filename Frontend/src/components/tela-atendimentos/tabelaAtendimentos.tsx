@@ -1,5 +1,5 @@
 ﻿import type { Appointment } from "@/types/agenda";
-import { Eye, Edit, Phone, UserCheck, FileText, CircleX, ClipboardList, CheckCircle2, ReceiptText } from "lucide-react";
+import { Eye, Edit, Phone, UserCheck, CircleX, ClipboardList, CheckCircle2, ReceiptText } from "lucide-react";
 import { getAppointmentActionVisibility } from "./appointmentActionRules";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -29,8 +29,6 @@ interface TabelaAtendimentosProps {
   onRegistrarReceita: (a: Appointment) => void;
   onAssumir: (a: Appointment) => void;
   onFinalizar: (a: Appointment) => void;
-  onAbrirFicha: (a: Appointment) => void;
-  onAbrirEncaminhamento: (a: Appointment) => void;
   onAbrirServicos: (a: Appointment) => void;
 
   podeExibirBotaoChamar: (a: Appointment) => boolean;
@@ -62,8 +60,6 @@ export function TabelaAtendimentos({
   onRegistrarReceita,
   onAssumir,
   onFinalizar,
-  onAbrirFicha,
-  onAbrirEncaminhamento,
   onAbrirServicos,
   podeExibirBotaoChamar,
   renderStatusBadge,
@@ -168,26 +164,6 @@ export function TabelaAtendimentos({
                           onClick={() => onAbrirServicos(appointment)}
                         >
                           <ClipboardList className="w-5 h-5 text-sky-700" />
-                        </button>
-                      )}
-
-                      {/* {actions.showFichaAtendimento && (
-                        <button
-                          className="p-2 hover:bg-blue-50 rounded-full"
-                          title="Ficha de atendimento"
-                          onClick={() => onAbrirFicha(appointment)}
-                        >
-                          <ClipboardList className="w-5 h-5 text-sky-700" />
-                        </button>
-                      )} */}
-
-                      {actions.showEncaminhamento && (
-                        <button
-                          className="p-2 hover:bg-amber-50 rounded-full"
-                          title="Encaminhamento"
-                          onClick={() => onAbrirEncaminhamento(appointment)}
-                        >
-                          <FileText className="w-5 h-5 text-amber-700" />
                         </button>
                       )}
 

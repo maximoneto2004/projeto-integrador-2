@@ -3,7 +3,7 @@ from django.utils.timezone import localdate
 from django.db.models import Q
 
 from usuarios.models import Usuario
-from unidade_cras.models import ServicoUnidadeCras, BloqueioHorario
+from unidade_posto.models import ServicoUnidadePosto, BloqueioHorario
 from agendamentos.models import AgendaVaga
 
 MAPA_DIAS_NUM = {
@@ -32,7 +32,7 @@ def gerar_grade_tipo(unidade, tipo_servico, data):
     # BUSCA TODOS os serviços da unidade + tipo
     # (sem filtrar por JSONField no banco!)
     # ============================================
-    su_queryset = ServicoUnidadeCras.objects.filter(
+    su_queryset = ServicoUnidadePosto.objects.filter(
         is_active=True,
         unidade=unidade,
         servico__tipo_servico=tipo_servico
@@ -115,7 +115,7 @@ def gerar_grade_tipo(unidade, tipo_servico, data):
     # ==================================================
     bloqueios = BloqueioHorario.objects.filter(
         is_active=True,
-        cras=unidade
+        unidades=unidade
     ).filter(
         Q(data=data, data_final__isnull=True) |
         Q(data__lte=data, data_final__gte=data)

@@ -6,13 +6,13 @@ from cidadaos.models import Cidadao
 from servicos.models import Servico
 from agendamentos.models import Agendamento
 from app.static_data import PRIORIDADE_CHOICES, SITUACAO_AGENDAMENTO_CHOICES, URGENCIA_ATENDIMENTO_CHOICES
-from unidade_cras.models import UnidadeCras
+from unidade_posto.models import UnidadePosto
 
 
 class FilaEspera(BaseModel):
     cidadao = models.ForeignKey(Cidadao, verbose_name="Cidadão", on_delete=models.PROTECT)
     servico = models.ForeignKey(Servico, verbose_name='Serviço', on_delete=models.PROTECT)
-    unidade = models.ForeignKey(UnidadeCras, verbose_name='Unidade Cras', on_delete=models.PROTECT)
+    unidade = models.ForeignKey(UnidadePosto, verbose_name='Unidade Posto', on_delete=models.PROTECT)
     prioridade = models.CharField(verbose_name='Prioridade', choices=PRIORIDADE_CHOICES, max_length=50)
     status = models.CharField(verbose_name='Status', choices=SITUACAO_AGENDAMENTO_CHOICES, max_length=50, default='AGUARDANDO_FILA')
     urgencia = models.CharField(verbose_name='Urgência do atendimento', choices=URGENCIA_ATENDIMENTO_CHOICES, default="NORMAL", max_length=50)

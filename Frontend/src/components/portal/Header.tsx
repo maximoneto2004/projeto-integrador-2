@@ -28,7 +28,7 @@ export const Header = () => {
     { label: "Início", to: "/" },
     { label: "Sobre", to: "#sobre" },
     { label: "Agendamento", to: "#agendamentoOnline" },
-    { label: "Unidades", to: "/unidades-cras" },
+    { label: "Unidades", to: "/unidades-postos" },
     { label: "Dúvidas frequentes", to: "/duvidas-frequentes" },
   ];
 

@@ -597,7 +597,7 @@ export default function AdminPerfilFamiliar() {
                     </AccordionItem>
 
                     <AccordionItem value="servicos">
-                      <AccordionTrigger>Serviços, benefícios e encaminhamentos</AccordionTrigger>
+                      <AccordionTrigger>Serviços e benefícios</AccordionTrigger>
                       <AccordionContent className="space-y-4">
                         <div className="grid gap-4 md:grid-cols-2">
                           <Card>
@@ -610,21 +610,6 @@ export default function AdminPerfilFamiliar() {
                                   <p className="text-sm font-medium">{s.servico || "-"}</p>
                                   <p className="text-xs text-muted-foreground">
                                     {s.membroNome || "-"} • {formatDate(s.dataInicio)} • {s.unidadeRealizacao || "Unidade não informada"}
-                                  </p>
-                                </div>
-                              ))}
-                            </CardContent>
-                          </Card>
-                          <Card>
-                            <CardHeader className="py-3">
-                              <CardTitle className="text-base">Encaminhamentos</CardTitle>
-                            </CardHeader>
-                            <CardContent className="py-0">
-                              {(prontuario.encaminhamentos || []).slice(0, 8).map((e) => (
-                                <div key={e.id} className="py-2 border-b last:border-b-0">
-                                  <p className="text-sm font-medium">{e.codigoArea || "Sem código"}</p>
-                                  <p className="text-xs text-muted-foreground">
-                                    {e.unidadeOrigem || "-"} → {e.unidadeDestino || "-"} • {formatDate(e.dataRegistro)}
                                   </p>
                                 </div>
                               ))}

@@ -5,8 +5,8 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { servicoAdminService } from "@/services/sistema/servicoAdminService";
-import { unidadeCrasService } from "@/services/sistema/unidadeCrasService";
-import type { ClasseServicoResumo, ServicoDetalhado, UnidadeCras } from "@/types/api";
+import { unidadePostoService } from "@/services/sistema/unidadePostoService";
+import type { ClasseServicoResumo, ServicoDetalhado, UnidadePosto } from "@/types/api";
 import { toast } from "@/lib/sonner";
 import { ArrowRight, Check, ClipboardCheck, ChevronsUpDown, LayoutGrid, MapPin } from "lucide-react";
 
@@ -46,10 +46,10 @@ export const AgendarSolicitacao = ({ className }: AgendarSolicitacaoProps) => {
   useEffect(() => {
     const carregar = async () => {
       try {
-        const listaUnidades = await unidadeCrasService.listar();
+        const listaUnidades = await unidadePostoService.listar();
         const unidadesAtivas = (listaUnidades || [])
-          .filter((unidade: UnidadeCras) => unidade.is_active !== false)
-          .map((unidade: UnidadeCras) => ({ id: String(unidade.id), nome: unidade.nome }));
+          .filter((unidade: UnidadePosto) => unidade.is_active !== false)
+          .map((unidade: UnidadePosto) => ({ id: String(unidade.id), nome: unidade.nome }));
 
         setUnidades(unidadesAtivas);
       } catch (err) {

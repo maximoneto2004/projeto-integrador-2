@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ('cidadaos', '0003_alter_cidadao_complemento'),
         ('servicos', '0002_remove_servico_tempo_atendimento_and_more'),
-        ('unidade_cras', '0003_guiche'),
+        ('unidade_posto', '0003_guiche'),
     ]
 
     operations = [
@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
                 ('status', models.CharField(choices=[('AGENDADO', 'Atendimento Agendado'), ('CANCELADO_CIDADAO', 'Cancelado pelo Cidadão'), ('CANCELADO_CRAS', 'Cancelado pelo Cras'), ('AUSENCIA_CIDADAO', 'Ausência do Cidadão'), ('ATIVADO', 'Ativado'), ('ATENDIMENTO', 'Em Atendimento'), ('CHAMANDO', 'Chamando'), ('ATIVADO_AUSENTE', 'Ativado, mas não compareceu')], max_length=50, verbose_name='Status')),
                 ('cidadao', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='cidadaos.cidadao', verbose_name='Cidadão')),
                 ('servico', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='servicos.servico', verbose_name='Serviço')),
-                ('unidade', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='unidade_cras.unidadecras', verbose_name='Unidade Cras')),
+                ('unidade', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='unidade_posto.unidadeposto', verbose_name='Unidade Posto')),
             ],
             options={
                 'verbose_name': 'Filas de Espera',

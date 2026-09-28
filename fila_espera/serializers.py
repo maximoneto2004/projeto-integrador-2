@@ -3,7 +3,7 @@ from fila_espera.models import FilaEspera
 
 from cidadaos.serializers import CidadaoSerializer
 from servicos.serializers import ServicoSerializer
-from unidade_cras.serializers import UnidadeCrasSerializer
+from unidade_posto.serializers import UnidadePostoSerializer
 
 
 class FilaEsperaSerializer(serializers.ModelSerializer):
@@ -22,7 +22,7 @@ class FilaEsperaSerializer(serializers.ModelSerializer):
 class FilaEsperaDetailSerializer(serializers.ModelSerializer):
     cidadao = CidadaoSerializer()
     servico = ServicoSerializer()
-    unidade = UnidadeCrasSerializer()
+    unidade = UnidadePostoSerializer()
 
     class Meta:
         model = FilaEspera

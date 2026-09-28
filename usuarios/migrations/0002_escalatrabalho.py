@@ -9,7 +9,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('unidade_cras', '0002_initial'),
+        ('unidade_posto', '0002_initial'),
         ('usuarios', '0001_initial'),
     ]
 
@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
                 ('turno2_inicio', models.TimeField(blank=True, null=True)),
                 ('turno2_fim', models.TimeField(blank=True, null=True)),
                 ('profissional', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='escalas', to=settings.AUTH_USER_MODEL)),
-                ('unidade', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='escalas', to='unidade_cras.unidadecras')),
+                ('unidade', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='escalas', to='unidade_posto.unidadeposto')),
             ],
             options={
                 'abstract': False,

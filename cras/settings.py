@@ -61,7 +61,7 @@ INSTALLED_APPS = [\
     "django.contrib.staticfiles",
     "app",
     "servicos",
-    "unidade_cras",
+    "unidade_posto",
     "cidadaos",
     "usuarios",
     "fila_espera",
@@ -73,12 +73,8 @@ INSTALLED_APPS = [\
     "rest_framework_simplejwt.token_blacklist",
     "drf_spectacular",
     "corsheaders",
-    "atendimento_familiar",
     "django.contrib.postgres",
     "duvidas_frequentes",
-    "avaliacao",
-    "encaminhamentos",
-    "relatorios",
     # "csp",
 ]
 

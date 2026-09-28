@@ -284,7 +284,7 @@ const Index = () => {
               apoio necessário para você e sua família.
             </p>
             <div className="flex justify-center align-items-center mt-4 lg:justify-end py-8">
-              <Button onClick={() => navigate("/unidades-cras")} size="lg" className="mt-8 rounded-none mx-4">
+              <Button onClick={() => navigate("/unidades-postos")} size="lg" className="mt-8 rounded-none mx-4">
                 Unidades
               </Button>
               <img src={logoSdhdsCor} alt="logo sdhds" className=" w-[195px] object-contain mt-4 portal-image dark:hidden" />

@@ -16,7 +16,7 @@ import type { LogRegistro } from "@/services/prontuario/logsService";
 import { prontuarioService } from "@/services/prontuario/prontuarioService";
 import { pessoaReferenciaService } from "@/services/prontuario/pessoaReferenciaService";
 import { cidadaoService } from "@/services/sistema/cidadaoService";
-import { unidadeCrasService } from "@/services/sistema/unidadeCrasService";
+import { unidadePostoService } from "@/services/sistema/unidadePostoService";
 
 type HistoricoTipo = "criacao" | "atualizacao" | "exclusao";
 
@@ -547,15 +547,15 @@ export default function AdminHistoricoProntuario() {
 
     const carregarInfoCard = async () => {
       try {
-        const [prontuarioRes, pessoaRefRes, unidadesCras] = await Promise.all([
+        const [prontuarioRes, pessoaRefRes, unidadesPosto] = await Promise.all([
           prontuarioService.obter(prontuarioIdFiltro),
           pessoaReferenciaService.listar({ prontuario: prontuarioIdFiltro }),
-          unidadeCrasService.listar(),
+          unidadePostoService.listar(),
         ]);
 
         const prontuarioRaw = parseApiList(prontuarioRes.data)[0] || {};
         const pessoaRefItem = parseApiList(pessoaRefRes.data)[0] || {};
-        const unidades = Array.isArray(unidadesCras) ? (unidadesCras.map((item) => asRecord(item)).filter(Boolean) as Record<string, unknown>[]) : [];
+        const unidades = Array.isArray(unidadesPosto) ? (unidadesPosto.map((item) => asRecord(item)).filter(Boolean) as Record<string, unknown>[]) : [];
 
         const unidadeInicial = asRecord(prontuarioRaw.unidade_inicial);
         const unidadeInicialId = asString(unidadeInicial?.id) || asString(prontuarioRaw.unidade_inicial);

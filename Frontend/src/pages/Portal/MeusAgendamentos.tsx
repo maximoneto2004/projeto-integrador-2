@@ -19,8 +19,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Textarea } from "@/components/ui/textarea";
-import { Eye, Edit, Trash2, CalendarIcon, Star } from "lucide-react";
+import { Eye, Edit, Trash2, CalendarIcon } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { appointmentStore, horariosDisponiveis } from "@/lib/appointmentStore";
@@ -40,12 +39,9 @@ const MeusAgendamentos = () => {
   const [viewModal, setViewModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
   const [cancelModal, setCancelModal] = useState(false);
-  const [avaliacaoModal, setAvaliacaoModal] = useState(false);
 
   const [editData, setEditData] = useState<Date>();
   const [editHora, setEditHora] = useState("");
-  const [notaAvaliacao, setNotaAvaliacao] = useState(0);
-  const [comentarioAvaliacao, setComentarioAvaliacao] = useState("");
 
   useEffect(() => {
     setAppointments(appointmentStore.getAppointments());
@@ -84,27 +80,6 @@ const MeusAgendamentos = () => {
       appointmentStore.cancelAppointment(selectedAppointment.id);
       setAppointments(appointmentStore.getAppointments());
       setCancelModal(false);
-    }
-  };
-
-  const handleAvaliarClick = (appointment: Appointment) => {
-    setSelectedAppointment(appointment);
-    setNotaAvaliacao(appointment.avaliacao?.nota || 0);
-    setComentarioAvaliacao(appointment.avaliacao?.comentario || "");
-    setAvaliacaoModal(true);
-  };
-
-  const handleSalvarAvaliacao = () => {
-    if (selectedAppointment && notaAvaliacao > 0) {
-      appointmentStore.addAvaliacao(
-        selectedAppointment.id,
-        notaAvaliacao,
-        comentarioAvaliacao,
-      );
-      setAppointments(appointmentStore.getAppointments());
-      setAvaliacaoModal(false);
-      setNotaAvaliacao(0);
-      setComentarioAvaliacao("");
     }
   };
 
@@ -247,21 +222,6 @@ const MeusAgendamentos = () => {
                                 <Trash2 className="w-5 h-5 text-destructive" />
                               </button>
                             </>
-                          )}
-                          {appointment.status === "Finalizado" && (
-                            <button
-                              onClick={() => handleAvaliarClick(appointment)}
-                              className="p-2 hover:bg-muted rounded-full"
-                              title={
-                                appointment.avaliacao
-                                  ? "Ver avaliação"
-                                  : "Avaliar atendimento"
-                              }
-                            >
-                              <Star
-                                className={`w-5 h-5 ${appointment.avaliacao ? "fill-warning text-warning" : "text-muted-foreground"}`}
-                              />
-                            </button>
                           )}
                         </div>
                       </td>
@@ -496,88 +456,6 @@ const MeusAgendamentos = () => {
                   Cancelar
                 </Button>
               </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* Avaliação Modal */}
-      <Dialog open={avaliacaoModal} onOpenChange={setAvaliacaoModal}>
-        <DialogContent className="sm:max-w-md bg-card">
-          <button
-            onClick={() => setAvaliacaoModal(false)}
-            className="absolute right-4 top-4 text-foreground text-2xl font-bold hover:opacity-70"
-          >
-            ×
-          </button>
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-center mb-4">
-              {selectedAppointment?.avaliacao
-                ? "Sua Avaliação"
-                : "Avaliar Atendimento"}
-            </DialogTitle>
-          </DialogHeader>
-
-          {selectedAppointment && (
-            <div className="space-y-6">
-              <div>
-                <p className="text-center text-muted-foreground mb-4">
-                  Como foi seu atendimento?
-                </p>
-                <div className="flex justify-center gap-2">
-                  {[1, 2, 3, 4, 5].map((nota) => (
-                    <button
-                      key={nota}
-                      onClick={() => setNotaAvaliacao(nota)}
-                      disabled={!!selectedAppointment.avaliacao}
-                      className="transition-transform hover:scale-110 disabled:cursor-not-allowed"
-                    >
-                      <Star
-                        className={`w-10 h-10 ${nota <= notaAvaliacao ? "fill-warning text-warning" : "text-muted-foreground"}`}
-                      />
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-foreground mb-2 block">
-                  Comentário (opcional)
-                </label>
-                <Textarea
-                  value={comentarioAvaliacao}
-                  onChange={(e) => setComentarioAvaliacao(e.target.value)}
-                  disabled={!!selectedAppointment.avaliacao}
-                  placeholder="Compartilhe sua experiência..."
-                  className="min-h-[100px] resize-none"
-                />
-              </div>
-
-              {!selectedAppointment.avaliacao ? (
-                <div className="flex gap-4">
-                  <Button
-                    variant="outline"
-                    onClick={() => setAvaliacaoModal(false)}
-                    className="flex-1 rounded-full"
-                  >
-                    Cancelar
-                  </Button>
-                  <Button
-                    onClick={handleSalvarAvaliacao}
-                    disabled={notaAvaliacao === 0}
-                    className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full"
-                  >
-                    Enviar Avaliação
-                  </Button>
-                </div>
-              ) : (
-                <Button
-                  onClick={() => setAvaliacaoModal(false)}
-                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-full"
-                >
-                  Fechar
-                </Button>
-              )}
             </div>
           )}
         </DialogContent>

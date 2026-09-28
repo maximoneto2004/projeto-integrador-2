@@ -19,7 +19,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useBairros } from "@/hooks/sistema/useBairros";
 import { useGuiches, type GuicheItem } from "@/hooks/sistema/useGuiches";
 import { useAtualizarServicoUnidade, useCriarServicoUnidade, useServicosDisponiveis, useServicosUnidade } from "@/hooks/sistema/useServicosConfig";
-import { useUnidadesCras, type UnidadeForm } from "@/hooks/useUnidadesCras";
+import { useUnidadesPosto, type UnidadeForm } from "@/hooks/useUnidadesPosto";
 import { getApiErrorMessage } from "@/lib/notifications";
 
 type Unidade = {
@@ -87,7 +87,7 @@ export default function AdminUnidadesPage() {
     fetchUnidades,
     createUnidade,
     updateUnidade,
-  } = useUnidadesCras(filtroBusca, { page: paginaAtual, pageSize: 10, serverPagination: true });
+  } = useUnidadesPosto(filtroBusca, { page: paginaAtual, pageSize: 10, serverPagination: true });
   const [modalVisualizarAberto, setModalVisualizarAberto] = useState(false);
   const [modalFormAberto, setModalFormAberto] = useState(false);
   const [modalGuichesAberto, setModalGuichesAberto] = useState(false);

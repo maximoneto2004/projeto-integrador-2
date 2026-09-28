@@ -8,7 +8,7 @@ from pathlib import Path
 
 from django.conf import settings
 from django.core.cache import cache
-from django.db.models import Avg, Count, Prefetch
+from django.db.models import Count, Prefetch
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import permissions, serializers
@@ -19,9 +19,8 @@ from rest_framework import generics
 from agendamentos.models import Agendamento
 from app.models import Bairro
 from app.permissions import DjangoModelPermissionsWithView
-from avaliacao.models import Avaliacao
 from prontuario.models import Prontuario
-from unidade_cras.models import UnidadeCras
+from unidade_posto.models import UnidadePosto
 from usuarios.models import Usuario
 
 from .filters import DashboardGestorFilter, DashboardMonitorUnidadeFilter, DashboardSupervisorFilter
@@ -199,7 +198,7 @@ def _parse_lat_lon(latitude_raw: str | float | int | None, longitude_raw: str | 
 
 class MapaUnidadesAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated, DjangoModelPermissionsWithView]
-    queryset = UnidadeCras.objects.all()
+    queryset = UnidadePosto.objects.all()
 
     def get(self, request):
         params = MapaUnidadesQuerySerializer(data=request.query_params)
@@ -226,7 +225,7 @@ class MapaUnidadesAPIView(APIView):
             return Response(cached)
 
         unidades = list(
-            UnidadeCras.objects.filter(is_active=True)
+            UnidadePosto.objects.filter(is_active=True)
             .select_related("bairro")
             .only(
                 "id",
@@ -287,21 +286,6 @@ class MapaUnidadesAPIView(APIView):
         )
         profissionais_por_unidade = {str(r["unidades_lotacao"]): int(r["total"] or 0) for r in profissionais_rows}
 
-      
-        avaliacao_rows = (
-            Avaliacao.objects.filter(
-                agendamento__unidade_id__in=unidade_ids,
-                agendamento__data__range=(data_inicio, data_fim),
-            )
-            .values("agendamento__unidade_id")
-            .annotate(media=Avg("nota"), total=Count("id"))
-        )
-        avaliacao_por_unidade = {
-            str(r["agendamento__unidade_id"]): {"media": float(r["media"] or 0), "total": int(r["total"] or 0)}
-            for r in avaliacao_rows
-        }
-
-       
         def minutes(t):
             if not t:
                 return None
@@ -385,7 +369,6 @@ class MapaUnidadesAPIView(APIView):
         for u in unidades:
             uid = str(u.id)
             latitude, longitude = _parse_lat_lon(u.latitude, u.longitude)
-            avaliacao_info = avaliacao_por_unidade.get(uid, {"media": 0, "total": 0})
             dur_count = cont_duracao_por_unidade.get(uid, 0) or 0
             espera_count = cont_espera_por_unidade.get(uid, 0) or 0
 
@@ -418,8 +401,6 @@ class MapaUnidadesAPIView(APIView):
                     "metricas": {
                         "atendimentos_total": total_por_unidade.get(uid, 0),
                         "profissionais_total": profissionais_por_unidade.get(uid, 0),
-                        "nota_avaliacao_media": round(float(avaliacao_info.get("media") or 0), 1),
-                        "nota_avaliacao_total": int(avaliacao_info.get("total") or 0),
                         "tempo_medio_atendimento_min": round(tempo_medio_atendimento, 1),
                         "tempo_medio_esperado_min": round(tempo_medio_esperado, 1),
                         "tempo_medio_espera_min": round(tempo_medio_espera, 1),
@@ -457,14 +438,14 @@ class MapaUnidadeSeriesQuerySerializer(serializers.Serializer):
 
 class MapaUnidadeSeriesAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated, DjangoModelPermissionsWithView]
-    queryset = UnidadeCras.objects.all()
+    queryset = UnidadePosto.objects.all()
 
     def get(self, request):
         params = MapaUnidadeSeriesQuerySerializer(data=request.query_params)
         params.is_valid(raise_exception=True)
 
         unidade_id = str(params.validated_data["unidade_id"])
-        unidade = UnidadeCras.objects.filter(id=unidade_id, is_active=True).only("id", "created_at").first()
+        unidade = UnidadePosto.objects.filter(id=unidade_id, is_active=True).only("id", "created_at").first()
         if not unidade:
             return Response({"success": False, "error": "Unidade não encontrada."}, status=404)
 
@@ -517,8 +498,6 @@ class MapaUnidadeSeriesAPIView(APIView):
                 "tempo_medio_esperado_min": 0,
                 "tempo_excedente_medio_min": 0,
                 "pct_acima_esperado": 0,
-                "nota_avaliacao_media": 0,
-                "nota_avaliacao_total": 0,
             }
             for d in days
         }
@@ -533,21 +512,6 @@ class MapaUnidadeSeriesAPIView(APIView):
             d = r.get("data")
             if d in serie:
                 serie[d]["atendimentos_total"] = int(r.get("total") or 0)
-
-        # Avaliação por dia (nota 1-5) baseada na data do agendamento
-        avaliacao_rows = (
-            Avaliacao.objects.filter(
-                agendamento__unidade_id=unidade_id,
-                agendamento__data__range=(data_inicio, data_fim),
-            )
-            .values("agendamento__data")
-            .annotate(media=Avg("nota"), total=Count("id"))
-        )
-        for r in avaliacao_rows:
-            d = r.get("agendamento__data")
-            if d in serie:
-                serie[d]["nota_avaliacao_media"] = round(float(r.get("media") or 0), 1)
-                serie[d]["nota_avaliacao_total"] = int(r.get("total") or 0)
 
         # Métricas de tempo por dia (somente FINALIZADO)
         finalizados_qs = (
@@ -683,7 +647,7 @@ def _load_bairros_geojson_enriched() -> dict:
 
 class MapaBairrosGeojsonAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated, DjangoModelPermissionsWithView]
-    queryset = UnidadeCras.objects.all()
+    queryset = UnidadePosto.objects.all()
 
     def get(self, request):
         try:

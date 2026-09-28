@@ -7,7 +7,7 @@ import Styleguide from "@/pages/Portal/Styleguide";
 import Perfil from "@/pages/Portal/Perfil";
 import CadastroDigital from "@/pages/Portal/CadastroDigital";
 import DuvidasFrequentes from "@/pages/Portal/DuvidasFrequentes";
-import UnidadesCras from "@/pages/Portal/Unidades";
+import UnidadesPosto from "@/pages/Portal/Unidades";
 import ValidarCadastro from "@/pages/Portal/CompletarCadastro"
 import Selo from "@/pages/Portal/Selo"
 import { ProtectedPortalRoute } from "@/components/ProtectedPortalRoute";
@@ -21,7 +21,7 @@ export const portalRoutes: RouteObject[] = [
   { path: "/perfil", element: <ProtectedPortalRoute><Perfil /></ProtectedPortalRoute> },
   { path: "/cadastro-digital", element: <CadastroDigital /> },
   { path: "/duvidas-frequentes", element: <DuvidasFrequentes /> },
-  { path: "/unidades-cras", element: <UnidadesCras /> },
+  { path: "/unidades-postos", element: <UnidadesPosto /> },
   { path: "/termos-uso", element: <TermoDeUso/>},
   { path: "/styleguide", element: <Styleguide /> },
   { path: "/validar-cadastro", element: <ProtectedPortalRoute skipCidadaoCheck><ValidarCadastro /></ProtectedPortalRoute> },

@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
         ('agendamentos', '0003_alter_agendavaga_unique_together'),
         ('cidadaos', '0001_initial'),
         ('servicos', '0002_remove_servico_tempo_atendimento_and_more'),
-        ('unidade_cras', '0002_initial'),
+        ('unidade_posto', '0002_initial'),
     ]
 
     operations = [
@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
                 ('situacao', models.CharField(choices=[('AGENDADO', 'Atendimento Agendado'), ('CANCELADO_CIDADAO', 'Cancelado pelo Cidadão'), ('CANCELADO_CRAS', 'Cancelado pelo Cras'), ('AUSENCIA_CIDADAO', 'Ausência do Cidadão'), ('ATIVADO', 'Ativado'), ('ATIVADO_AUSENTE', 'Ativado, mas não compareceu')], default='AGENDADO', max_length=20, verbose_name='Situação do agendamento')),
                 ('cidadao', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='agendamentos', to='cidadaos.cidadao', verbose_name='Cidadão')),
                 ('servico', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='agendamentos', to='servicos.servico', verbose_name='Serviço')),
-                ('unidade', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='agendamentos', to='unidade_cras.unidadecras', verbose_name='Unidade')),
+                ('unidade', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='agendamentos', to='unidade_posto.unidadeposto', verbose_name='Unidade')),
                 ('vaga', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='agendamentos', to='agendamentos.agendavaga', verbose_name='Vaga')),
             ],
             options={

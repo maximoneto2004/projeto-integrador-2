@@ -17,21 +17,19 @@ from app.static_data import (
     STATUS_FINAL_ATENDIMENTO_CHOICES,
     URGENCIA_ATENDIMENTO_CHOICES,
 )
-from avaliacao.models import Avaliacao
 from cidadaos.models import Cidadao
-from encaminhamentos.models import CodigoArea, Encaminhamento
 from fila_espera.models import FilaEspera
 from prontuario.models import MembroComposicao, PessoaReferencia, Prontuario
 from servicos.models import Servico
-from unidade_cras.models import Guiche, UnidadeCras
+from unidade_posto.models import Guiche, UnidadePosto
 from usuarios.models import EscalaTrabalho, Usuario
 
 
 class Command(BaseCommand):
     help = (
         "Popula dados para testes de dashboards/performance: profissionais, "
-        "cidadaos, prontuarios, grupos familiares, agendamentos historicos, "
-        "fila de espera, encaminhamentos e avaliacoes."
+        "cidadaos, prontuarios, grupos familiares, agendamentos historicos "
+        "e fila de espera."
     )
 
     TAG = "[SEED_PERF]"
@@ -43,8 +41,6 @@ class Command(BaseCommand):
         parser.add_argument("--profissionais-por-unidade", type=int, default=6)
         parser.add_argument("--agendamentos", type=int, default=3000)
         parser.add_argument("--fila-aguardando", type=int, default=800)
-        parser.add_argument("--avaliacoes", type=int, default=1200)
-        parser.add_argument("--encaminhamentos", type=int, default=900)
         parser.add_argument("--dias-passado", type=int, default=90)
         parser.add_argument("--vagas-por-slot", type=int, default=12)
         parser.add_argument("--seed", type=int, default=42)
@@ -67,10 +63,10 @@ class Command(BaseCommand):
             self.stdout.write(self.style.ERROR("Parametros invalidos: membros-min/membros-max"))
             return
 
-        unidades = list(UnidadeCras.objects.filter(is_active=True))
+        unidades = list(UnidadePosto.objects.filter(is_active=True))
         servicos = list(Servico.objects.filter(is_active=True).select_related("tipo_servico"))
         if not unidades:
-            self.stdout.write(self.style.ERROR("Nenhuma UnidadeCras ativa encontrada."))
+            self.stdout.write(self.style.ERROR("Nenhuma UnidadePosto ativa encontrada."))
             return
         if not servicos:
             self.stdout.write(self.style.ERROR("Nenhum Servico ativo encontrado."))
@@ -79,14 +75,6 @@ class Command(BaseCommand):
         bairros = list(Bairro.objects.filter(is_active=True))
         if not bairros:
             bairros = [Bairro.objects.create(nome=f"{self.TAG} Bairro")]
-
-        codigos_area = list(CodigoArea.objects.filter(is_active=True))
-        if not codigos_area:
-            codigos_area = [
-                CodigoArea.objects.create(nome=f"{self.TAG} Assistencia Social", codigo=1000),
-                CodigoArea.objects.create(nome=f"{self.TAG} Saude", codigo=2000),
-                CodigoArea.objects.create(nome=f"{self.TAG} Educacao", codigo=3000),
-            ]
 
         self.stdout.write(self.style.NOTICE("Criando profissionais/guiches/escalas..."))
         profissionais_por_unidade = self._criar_profissionais(
@@ -130,27 +118,12 @@ class Command(BaseCommand):
             dias_passado=options["dias_passado"],
         )
 
-        self.stdout.write(self.style.NOTICE("Criando encaminhamentos..."))
-        qtd_enc = self._criar_encaminhamentos(
-            quantidade=options["encaminhamentos"],
-            agendamentos=agendamentos,
-            codigos_area=codigos_area,
-            unidades=unidades,
-        )
-
-        self.stdout.write(self.style.NOTICE("Criando avaliacoes..."))
-        qtd_av = self._criar_avaliacoes(
-            quantidade=options["avaliacoes"],
-            agendamentos=agendamentos,
-        )
-
         total_profissionais = sum(len(v) for v in profissionais_por_unidade.values())
         self.stdout.write(self.style.SUCCESS("Seed concluido com sucesso."))
         self.stdout.write(
             self.style.SUCCESS(
                 f"Resumo: profissionais={total_profissionais}, cidadaos={len(cidadaos)}, "
-                f"agendamentos={len(agendamentos)}, fila={qtd_fila}, "
-                f"encaminhamentos={qtd_enc}, avaliacoes={qtd_av}"
+                f"agendamentos={len(agendamentos)}, fila={qtd_fila}"
             )
         )
 
@@ -420,62 +393,6 @@ class Command(BaseCommand):
 
         return len(criados)
 
-    def _criar_encaminhamentos(self, quantidade, agendamentos, codigos_area, unidades):
-        base = [a for a in agendamentos if a.situacao == "FINALIZADO"]
-        random.shuffle(base)
-        criados = 0
-
-        with transaction.atomic():
-            for ag in base:
-                if criados >= quantidade:
-                    break
-                if Encaminhamento.objects.filter(agendamento=ag).exists():
-                    continue
-
-                u_origem = ag.unidade.nome if ag.unidade_id else random.choice(unidades).nome
-                u_destino = random.choice(unidades).nome
-                if len(unidades) > 1:
-                    tentativas = 0
-                    while u_destino == u_origem and tentativas < 10:
-                        u_destino = random.choice(unidades).nome
-                        tentativas += 1
-                if u_destino == u_origem:
-                    u_destino = f"{u_destino} - Destino"
-
-                Encaminhamento.objects.create(
-                    codigo_area=random.choice(codigos_area),
-                    unidade_origem=u_origem,
-                    unidade_destino=u_destino,
-                    agendamento=ag,
-                    motivo=f"{self.TAG} Encaminhamento para continuidade de atendimento.",
-                    resumo=f"{self.TAG} Resumo automatico para carga.",
-                    profissional="Tecnico Seed",
-                    orientacoes="Levar documentos basicos e comprovante de residencia.",
-                )
-                criados += 1
-
-        return criados
-
-    def _criar_avaliacoes(self, quantidade, agendamentos):
-        base = [a for a in agendamentos if a.situacao == "FINALIZADO"]
-        random.shuffle(base)
-        criados = 0
-
-        with transaction.atomic():
-            for ag in base:
-                if criados >= quantidade:
-                    break
-                if Avaliacao.objects.filter(agendamento=ag).exists():
-                    continue
-                Avaliacao.objects.create(
-                    agendamento=ag,
-                    nota=random.randint(1, 5),
-                    comentario=f"{self.TAG} Avaliacao automatica para teste de dashboard.",
-                )
-                criados += 1
-
-        return criados
-
     def _limpar(self):
         self.stdout.write(self.style.WARNING("Removendo dados marcados pelo seed..."))
 
@@ -483,11 +400,7 @@ class Command(BaseCommand):
             FilaEspera.objects.filter(cidadao__nome__startswith=self.TAG).delete()
 
             ag_qs = Agendamento.objects.filter(observacoes_gerais__startswith=self.TAG)
-            ag_ids = list(ag_qs.values_list("id", flat=True))
-            if ag_ids:
-                Avaliacao.objects.filter(agendamento_id__in=ag_ids).delete()
-                Encaminhamento.objects.filter(agendamento_id__in=ag_ids).delete()
-                ag_qs.delete()
+            ag_qs.delete()
 
             membros_qs = MembroComposicao.objects.filter(cidadao__nome__startswith=self.TAG)
             prontuario_ids = list(membros_qs.values_list("prontuario_id", flat=True).distinct())

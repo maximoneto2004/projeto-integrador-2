@@ -147,7 +147,7 @@ def main() -> int:
 
     rng = random.Random(args.seed)
 
-    unidades_fixture = load_fixture(base_dir / "Collection" / "unidades_cras_db.json")
+    unidades_fixture = load_fixture(base_dir / "Collection" / "unidades_posto_db.json")
     bairros_fixture = load_fixture(base_dir / "Collection" / "bairros_db.json")
     servicos_fixture = load_fixture(base_dir / "Collection" / "servicos.json")
     tipos_fixture = load_fixture(base_dir / "Collection" / "tipos_servico.json")
@@ -185,15 +185,12 @@ def main() -> int:
     situacoes = ["FINALIZADO", "CANCELADO_CIDADAO", "CANCELADO_CRAS", "AUSENCIA_CIDADAO"]
     situacao_weights = [0.78, 0.07, 0.07, 0.08]
 
-    eval_prob = 0.38
-
     write_obj, close = fixture_writer(out_path)
 
     total_written = 0
     count_users = 0
     count_cidadaos = 0
     count_agendamentos = 0
-    count_avaliacoes = 0
 
     # Usuarios
     for i in range(args.usuarios):
@@ -341,34 +338,6 @@ def main() -> int:
             total_written += 1
             count_agendamentos += 1
 
-            if situacao == "FINALIZADO" and rng.random() < eval_prob:
-                score = 5.0
-                if inicio:
-                    wait_m = (inicio.hour * 60 + inicio.minute) - (horario.hour * 60 + horario.minute)
-                    score -= 0.035 * max(0, wait_m)
-                if inicio and fim:
-                    dur_m = (fim.hour * 60 + fim.minute) - (inicio.hour * 60 + inicio.minute)
-                    score -= 0.020 * max(0, dur_m - servico.tempo_esperado_min)
-                score += rng.gauss(0.0, 0.45)
-                nota = clamp_int(score, 1, 5)
-
-                write_obj(
-                    {
-                        "model": "avaliacao.avaliacao",
-                        "pk": str(uuid.uuid4()),
-                        "fields": {
-                            "created_at": iso_z(created),
-                            "updated_at": iso_z(created),
-                            "is_active": True,
-                            "agendamento": pk,
-                            "nota": nota,
-                            "comentario": None,
-                        },
-                    }
-                )
-                total_written += 1
-                count_avaliacoes += 1
-
     close()
 
     print("OK")
@@ -377,7 +346,6 @@ def main() -> int:
     print(f"usuarios.usuario: {count_users}")
     print(f"cidadaos.cidadao: {count_cidadaos}")
     print(f"agendamentos.agendamento: {count_agendamentos}")
-    print(f"avaliacao.avaliacao: {count_avaliacoes}")
     return 0
 
 

@@ -1019,7 +1019,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/api/v1/unidade_cras_list/",
+              "raw": "http://localhost:8080/api/v1/unidade_posto_list/",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -1028,7 +1028,7 @@
               "path": [
                 "api",
                 "v1",
-                "unidade_cras_list",
+                "unidade_posto_list",
                 ""
               ],
               "query": [
@@ -1058,7 +1058,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/api/v1/servico_unidade_cras/",
+              "raw": "http://localhost:8080/api/v1/servico_unidade_posto/",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -1067,7 +1067,7 @@
               "path": [
                 "api",
                 "v1",
-                "servico_unidade_cras",
+                "servico_unidade_posto",
                 ""
               ],
               "query": [
@@ -5032,7 +5032,7 @@
                       "type": "text"
                     },
                     {
-                      "key": "unidade_cras",
+                      "key": "unidade_posto",
                       "value": "0bd32165-0c4c-42d7-bd72-1d60af30492f",
                       "type": "text",
                       "disabled": true
@@ -5105,7 +5105,7 @@
                       "type": "text"
                     },
                     {
-                      "key": "unidade_cras",
+                      "key": "unidade_posto",
                       "value": "0bd32165-0c4c-42d7-bd72-1d60af30492f",
                       "type": "text",
                       "disabled": true

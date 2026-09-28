@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { beneficioService, type BeneficioSocial } from "@/services/prontuario/beneficioService";
-import { encaminhamentoService } from "@/services/prontuario/encaminhamentoService";
 import { unidadeProntuarioService, type UnidadeProntuario } from "@/services/prontuario/unidadeProntuarioService";
-import type { CodigoArea } from "@/types/encaminhamento";
 
 type ListEnvelope<T> = {
   count?: number;
@@ -20,13 +18,6 @@ export type UnidadeAdminItem = {
 export type BeneficioAdminItem = {
   id: string;
   nome: string;
-  ativo: boolean;
-};
-
-export type CodigoAreaAdminItem = {
-  id: string;
-  nome: string;
-  codigo: number;
   ativo: boolean;
 };
 
@@ -91,23 +82,6 @@ const parseBeneficios = (payload: unknown): PaginatedListResult<BeneficioAdminIt
   };
 };
 
-const parseCodigoAreas = (payload: unknown): PaginatedListResult<CodigoAreaAdminItem> => {
-  const list = extractItems<CodigoArea | string>(payload)
-    .filter((item): item is CodigoArea => typeof item === "object" && item !== null)
-    .map((item) => ({
-      id: String(item.id || ""),
-      nome: String(item.nome || ""),
-      codigo: Number(item.codigo || 0),
-      ativo: item.is_active ?? true,
-    }))
-    .filter((item) => item.id);
-
-  return {
-    items: list,
-    total: extractTotal(payload, list.length),
-  };
-};
-
 export function useUnidadesProntuarioAdmin(search: string, pageSize = 10) {
   const [items, setItems] = useState<UnidadeAdminItem[]>([]);
   const [total, setTotal] = useState(0);
@@ -154,41 +128,6 @@ export function useBeneficiosSociaisAdmin(search: string, pageSize = 10) {
     try {
       const { data } = await beneficioService.listarBeneficiosSociais({ search: search.trim() || undefined, limit: pageSize, offset });
       const parsed = parseBeneficios(data);
-      setItems(parsed.items);
-      setTotal(parsed.total);
-    } catch (err) {
-      setError(err);
-    } finally {
-      setLoading(false);
-    }
-  }, [offset, pageSize, search]);
-
-  useEffect(() => {
-    void fetchData();
-  }, [fetchData]);
-
-  return { items, total, page, setPage, loading, error, refresh: fetchData };
-}
-
-export function useCodigoAreasAdmin(search: string, pageSize = 10) {
-  const [items, setItems] = useState<CodigoAreaAdminItem[]>([]);
-  const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<unknown>(null);
-
-  const offset = useMemo(() => (page - 1) * pageSize, [page, pageSize]);
-
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const { data } = await encaminhamentoService.listarCodigoAreas({
-        search: search.trim() || undefined,
-        limit: pageSize,
-        offset,
-      });
-      const parsed = parseCodigoAreas(data);
       setItems(parsed.items);
       setTotal(parsed.total);
     } catch (err) {

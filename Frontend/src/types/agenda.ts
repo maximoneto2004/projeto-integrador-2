@@ -61,10 +61,5 @@ export interface Appointment {
   atendenteQueRealizouChamada?: string;
   tentativasChamada?: number;
   registrosPosAtendimento?: number;
-  avaliacao?: {
-    id?: string;
-    nota: number;
-    comentario: string;
-  };
   prontuario?: unknown;
 }

@@ -179,10 +179,6 @@ class AppointmentStore {
     return this.appointments.find((a) => a.id === id);
   }
 
-  addAvaliacao(id: string, nota: number, comentario: string) {
-    this.updateAppointment(id, { avaliacao: { nota, comentario } });
-  }
-
   chamarAgendamento(id: string, atendente: string) {
     const now = new Date();
     const data = now.toISOString().split('T')[0];

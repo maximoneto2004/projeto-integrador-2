@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('prontuario', '0002_beneficiosocial_formaingresso_and_more'),
-        ('unidade_cras', '0003_guiche'),
+        ('unidade_posto', '0003_guiche'),
     ]
 
     operations = [
@@ -20,6 +20,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='prontuario',
             name='unidade_inicial',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='unidade_cras.unidadecras', verbose_name='Unidade Inicial'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='unidade_posto.unidadeposto', verbose_name='Unidade Inicial'),
         ),
     ]

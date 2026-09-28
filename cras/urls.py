@@ -36,24 +36,20 @@ urlpatterns = [
     re_path(r"^sistema/.*$", TemplateView.as_view(template_name="index.html")),
 
     # Portal SPA routes (React Router)
-    re_path(r"^(agendar(?:/.*)?|meus-agendamentos(?:/.*)?|perfil(?:/.*)?|cadastro-digital(?:/.*)?|duvidas-frequentes(?:/.*)?|unidades-cras(?:/.*)?|styleguide(?:/.*)?|teste(?:/.*)?|selo(?:/.*)?|validar-cadastro(?:/.*))$", TemplateView.as_view(template_name="index.html")),
+    re_path(r"^(agendar(?:/.*)?|meus-agendamentos(?:/.*)?|perfil(?:/.*)?|cadastro-digital(?:/.*)?|duvidas-frequentes(?:/.*)?|unidades-postos(?:/.*)?|styleguide(?:/.*)?|teste(?:/.*)?|selo(?:/.*)?|validar-cadastro(?:/.*))$", TemplateView.as_view(template_name="index.html")),
     path("api/v1/", include("app.urls")),
     path("agendamentos/", include("agendamentos.web_urls")),
     path("api/v1/", include("authentication.urls")),
-    path("api/v1/", include("unidade_cras.urls")),
+    path("api/v1/", include("unidade_posto.urls")),
     path("api/v1/", include("cidadaos.urls")),
     path("api/v1/", include("usuarios.urls")),
     path("api/v1/", include("agendamentos.urls")),
     path("api/v1/", include("dashboard.urls")),
-    path("api/v1/", include("relatorios.urls")),
     path("api/v1/", include("fila_espera.urls")),
-    
+
     path("api/v1/",include("duvidas_frequentes.urls")),
     path("api/v1/",include("historico.urls")),
     path("api/prontuario/", include("prontuario.urls")),
-    path("api/v1/", include("atendimento_familiar.urls")),
-    path("api/v1/", include("encaminhamentos.urls")),
-    path("api/v1/",include("avaliacao.urls")),
     # esses endpoints são para o fortd
     path("auth-sso", requests_fd.check_auth_sso, name="auth_sso_root"),
     path("login-sso", requests_fd.login_sso, name="login_sso_root"),
@@ -62,7 +58,6 @@ urlpatterns = [
     path("api/v1/", include("servicos.urls")),
     path("api/sso/", include("cidadaos.urls_sso")),
     path("api/sso/", include("agendamentos.urls_sso")),
-    path("api/sso/", include("avaliacao.urls_sso")),
 ]
 
 """
