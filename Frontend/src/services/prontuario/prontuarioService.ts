@@ -1,4 +1,4 @@
-import { api } from "@/services/api";
+import { api, urlServidorApi } from "@/services/api";
 import type { Receita } from "@/services/prontuario/receitaService";
 
 export type ClassificacaoRisco = "VERMELHO" | "LARANJA" | "AMARELO" | "VERDE" | "AZUL";
@@ -68,11 +68,7 @@ export type ProntuarioPaciente = {
 
 type Envelope<T> = { success?: boolean; result: T };
 
-const BASE = (import.meta.env.VITE_API_URL || "")
-  .replace(/\/api\/v1\/?$/, "")
-  .replace(/\/$/, "");
-
-const url = (path: string) => (BASE ? `${BASE}${path}` : path);
+const url = urlServidorApi;
 
 export const prontuarioService = {
   async buscarRegistroDoAgendamento(agendamentoId: string): Promise<RegistroAtendimento | null> {

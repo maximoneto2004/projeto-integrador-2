@@ -13,10 +13,8 @@ export type DashboardMonitorUnidadeParams = {
     data_fim: string;
 }
 
-const API_URL = import.meta.env.VITE_API_URL;
-
 export const dashboardMonitorUnidadeService = {
     obter(params: DashboardMonitorUnidadeParams) {
-        return api.get<DashboardMonitorUnidadeResponse>(`${API_URL}/dashboard-monitor-unidade/`, { params });
+        return api.get<DashboardMonitorUnidadeResponse>(`/dashboard-monitor-unidade/`, { params });
     },
 };

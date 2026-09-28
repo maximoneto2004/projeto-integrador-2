@@ -15,8 +15,6 @@ type ApiPaginatedEnvelope<T> = {
   results?: T;
 };
 
-const API_URL = import.meta.env.VITE_API_URL;
-
 type ServicoUnidadePostoPayload = {
   unidade: string;
   servico: string;
@@ -38,7 +36,7 @@ export type ServicosUnidadePaginados = {
 
 export const servicosConfigService = {
   async listarServicos(): Promise<ServicoDetalhado[]> {
-    const { data } = await api.get<ApiEnvelope<ServicoDetalhado[]>>(`${API_URL}/servico/`);
+    const { data } = await api.get<ApiEnvelope<ServicoDetalhado[]>>(`/servico/`);
     if (data?.success === false) {
       return [];
     }
@@ -47,7 +45,7 @@ export const servicosConfigService = {
 
   async listarServicosUnidade(params?: { unidade?: string }): Promise<ServicoUnidadePosto[]> {
     const { data } = await api.get<ApiEnvelope<ServicoUnidadePosto[]>>(
-      `${API_URL}/servico_unidade_posto/`,
+      `/servico_unidade_posto/`,
       { params },
     );
     if (data?.success === false) {
@@ -66,7 +64,7 @@ export const servicosConfigService = {
       ApiEnvelope<ServicoUnidadePosto[]>
       | ApiPaginatedEnvelope<ApiEnvelope<ServicoUnidadePosto[]>>
       | ApiPaginatedEnvelope<ApiEnvelope<ServicoUnidadePosto[]> | ServicoUnidadePosto[]>
-    >(`${API_URL}/servico_unidade_posto/`, { params });
+    >(`/servico_unidade_posto/`, { params });
 
     const body = (data && typeof data === "object" ? (data as Record<string, unknown>) : {}) as Record<string, unknown>;
     const isPaginated = "count" in body && "results" in body;
@@ -100,14 +98,14 @@ export const servicosConfigService = {
   },
 
   criarServicoUnidade(payload: ServicoUnidadePostoPayload) {
-    return api.post<ApiEnvelope<ServicoUnidadePosto>>(`${API_URL}/servico_unidade_posto/`, payload);
+    return api.post<ApiEnvelope<ServicoUnidadePosto>>(`/servico_unidade_posto/`, payload);
   },
 
   atualizarServicoUnidade(id: string, payload: Partial<ServicoUnidadePostoPayload>) {
-    return api.patch<ApiEnvelope<ServicoUnidadePosto>>(`${API_URL}/servico_unidade_posto/${id}/`, payload);
+    return api.patch<ApiEnvelope<ServicoUnidadePosto>>(`/servico_unidade_posto/${id}/`, payload);
   },
 
   removerServicoUnidade(id: string) {
-    return api.delete<ApiEnvelope<ServicoUnidadePosto>>(`${API_URL}/servico_unidade_posto/${id}/`);
+    return api.delete<ApiEnvelope<ServicoUnidadePosto>>(`/servico_unidade_posto/${id}/`);
   },
 };

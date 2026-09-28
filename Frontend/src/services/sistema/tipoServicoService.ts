@@ -10,11 +10,9 @@ type ApiEnvelope<T> = {
   mensagem?: string;
 };
 
-const API_URL = import.meta.env.VITE_API_URL;
-
 export const tipoServicoService = {
   async listar(params?: ClasseServicoListParams): Promise<TipoServicoResumo[]> {
-    const { data } = await api.get<ApiEnvelope<TipoServicoResumo[]> | TipoServicoResumo[]>(`${API_URL}/tipo-servico/`, { params });
+    const { data } = await api.get<ApiEnvelope<TipoServicoResumo[]> | TipoServicoResumo[]>(`/tipo-servico/`, { params });
 
     if (Array.isArray(data)) {
       return data;
@@ -28,7 +26,7 @@ export const tipoServicoService = {
     return Array.isArray(payload) ? payload : [];
   },
   criar(payload: { nome: string; descricao?: string | null; tempo_atendimento?: number; is_active?: boolean }) {
-    return api.post<ApiEnvelope<TipoServicoResumo>>(`${API_URL}/tipo-servico/`, payload);
+    return api.post<ApiEnvelope<TipoServicoResumo>>(`/tipo-servico/`, payload);
   },
   atualizar(
     id: string,
@@ -39,9 +37,9 @@ export const tipoServicoService = {
       is_active?: boolean;
     }
   ) {
-    return api.patch<ApiEnvelope<TipoServicoResumo>>(`${API_URL}/tipo-servico/${id}`, payload);
+    return api.patch<ApiEnvelope<TipoServicoResumo>>(`/tipo-servico/${id}`, payload);
   },
   remover(id: string) {
-    return api.delete<ApiEnvelope<unknown>>(`${API_URL}/tipo-servico/${id}`);
+    return api.delete<ApiEnvelope<unknown>>(`/tipo-servico/${id}`);
   },
 };

@@ -12,6 +12,14 @@ export const api = axios.create({
   withCredentials: true,
 });
 
+/**
+ * URL absoluta para rotas fora de /api/v1 (ex.: "/api/prontuario/..."), no mesmo servidor da API.
+ * Absoluta de propósito: o axios só ignora o baseURL quando recebe uma URL absoluta.
+ */
+export function urlServidorApi(caminho: string): string {
+  return new URL(caminho, new URL(API_URL, window.location.origin)).toString();
+}
+
 let accessToken: string | null = null;
 let logoutHandler: (() => void) | null = null;
 let tokenListener: ((token: string | null) => void) | null = null;

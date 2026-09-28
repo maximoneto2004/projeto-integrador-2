@@ -13,10 +13,8 @@ export type DashboardSupervisorParams = {
   data_fim: string;
 };
 
-const API_URL = import.meta.env.VITE_API_URL;
-
 export const dashboardSupervisorService = {
   obter(params: DashboardSupervisorParams) {
-    return api.get<DashboardSupervisorResponse>(`${API_URL}/dashboard-supervisor/`, { params });
+    return api.get<DashboardSupervisorResponse>(`/dashboard-supervisor/`, { params });
   },
 };

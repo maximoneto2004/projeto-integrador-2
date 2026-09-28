@@ -82,50 +82,49 @@ export type Alertas = {
 type ApiEnvelope<T> = { success?: boolean; result: T };
 type Filtros = Record<string, string | number | boolean | undefined>;
 
-const API_URL = import.meta.env.VITE_API_URL;
 const limpar = (params?: Filtros) =>
   Object.fromEntries(Object.entries(params ?? {}).filter(([, v]) => v !== undefined && v !== ""));
 
 export const estoqueService = {
   async listarLotes(params?: Filtros): Promise<Lote[]> {
-    const { data } = await api.get<ApiEnvelope<Lote[]>>(`${API_URL}/estoque/lote/`, { params: limpar(params) });
+    const { data } = await api.get<ApiEnvelope<Lote[]>>(`/estoque/lote/`, { params: limpar(params) });
     return data.result ?? [];
   },
 
   async criarLote(payload: LotePayload): Promise<Lote> {
-    const { data } = await api.post<ApiEnvelope<Lote>>(`${API_URL}/estoque/lote/`, payload);
+    const { data } = await api.post<ApiEnvelope<Lote>>(`/estoque/lote/`, payload);
     return data.result;
   },
 
   async atualizarLote(id: string, payload: LoteEdicaoPayload): Promise<Lote> {
-    const { data } = await api.patch<ApiEnvelope<Lote>>(`${API_URL}/estoque/lote/${id}`, payload);
+    const { data } = await api.patch<ApiEnvelope<Lote>>(`/estoque/lote/${id}`, payload);
     return data.result;
   },
 
   async listarMovimentacoes(params?: Filtros): Promise<Movimentacao[]> {
-    const { data } = await api.get<ApiEnvelope<Movimentacao[]>>(`${API_URL}/estoque/movimentacao/`, {
+    const { data } = await api.get<ApiEnvelope<Movimentacao[]>>(`/estoque/movimentacao/`, {
       params: limpar(params),
     });
     return data.result ?? [];
   },
 
   async movimentar(payload: MovimentacaoPayload): Promise<Movimentacao> {
-    const { data } = await api.post<ApiEnvelope<Movimentacao>>(`${API_URL}/estoque/movimentacao/`, payload);
+    const { data } = await api.post<ApiEnvelope<Movimentacao>>(`/estoque/movimentacao/`, payload);
     return data.result;
   },
 
   async dispensar(payload: DispensacaoPayload): Promise<Movimentacao[]> {
-    const { data } = await api.post<ApiEnvelope<Movimentacao[]>>(`${API_URL}/estoque/dispensar/`, payload);
+    const { data } = await api.post<ApiEnvelope<Movimentacao[]>>(`/estoque/dispensar/`, payload);
     return data.result;
   },
 
   async saldo(params?: Filtros): Promise<Saldo[]> {
-    const { data } = await api.get<ApiEnvelope<Saldo[]>>(`${API_URL}/estoque/saldo/`, { params: limpar(params) });
+    const { data } = await api.get<ApiEnvelope<Saldo[]>>(`/estoque/saldo/`, { params: limpar(params) });
     return data.result ?? [];
   },
 
   async alertas(params?: Filtros): Promise<Alertas> {
-    const { data } = await api.get<ApiEnvelope<Alertas>>(`${API_URL}/estoque/alertas/`, { params: limpar(params) });
+    const { data } = await api.get<ApiEnvelope<Alertas>>(`/estoque/alertas/`, { params: limpar(params) });
     return data.result;
   },
 };

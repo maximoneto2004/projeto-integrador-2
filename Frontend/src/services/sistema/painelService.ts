@@ -7,8 +7,6 @@ type ApiEnvelope<T> = {
   mensagem?: string;
 };
 
-const API_URL = import.meta.env.VITE_API_URL;
-
 export const painelService = {
   ultimasChamadas(params?: { unidadeId?: string; limite?: number }) {
     const query = {
@@ -17,7 +15,7 @@ export const painelService = {
     };
 
     return api.get<ApiEnvelope<PainelChamada[]>>(
-      `${API_URL}/painel/ultimas-chamadas/`,
+      `/painel/ultimas-chamadas/`,
       { params: query },
     );
   },

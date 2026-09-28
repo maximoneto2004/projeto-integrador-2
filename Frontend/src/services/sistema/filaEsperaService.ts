@@ -26,25 +26,23 @@ type FilaEsperaChamadaResponse = {
   horario_chamada: string;
 };
 
-const API_URL = import.meta.env.VITE_API_URL;
-
 export const filaEsperaService = {
   listar(params?: FilaEsperaListParams) {
     return api.get<ApiEnvelope<FilaEsperaResponse[]> | PaginatedResponse<ApiEnvelope<FilaEsperaResponse[]>>>(
-      `${API_URL}/fila-espera/`,
+      `/fila-espera/`,
       { params },
     );
   },
 
   criar(payload: FilaEsperaPayload): Promise<AxiosResponse<ApiEnvelope<FilaEsperaResponse>>> {
-    return api.post<ApiEnvelope<FilaEsperaResponse>>(`${API_URL}/fila-espera/`, payload);
+    return api.post<ApiEnvelope<FilaEsperaResponse>>(`/fila-espera/`, payload);
   },
 
   atualizar(
     id: string,
     payload: Partial<FilaEsperaPayload>,
   ): Promise<AxiosResponse<ApiEnvelope<FilaEsperaResponse>>> {
-    return api.patch<ApiEnvelope<FilaEsperaResponse>>(`${API_URL}/fila-espera/${id}/`, payload);
+    return api.patch<ApiEnvelope<FilaEsperaResponse>>(`/fila-espera/${id}/`, payload);
   },
 
   atualizarUrgencia(id: string, urgencia: UrgenciaAtendimento) {
@@ -52,10 +50,10 @@ export const filaEsperaService = {
   },
 
   deletar(id: string) {
-    return api.delete<{ success?: boolean; mensagem?: string }>(`${API_URL}/fila-espera/${id}/`);
+    return api.delete<{ success?: boolean; mensagem?: string }>(`/fila-espera/${id}/`);
   },
 
   chamarProximo() {
-    return api.post<ApiEnvelope<FilaEsperaChamadaResponse[]>>(`${API_URL}/fila-espera/chamar-proximo/`);
+    return api.post<ApiEnvelope<FilaEsperaChamadaResponse[]>>(`/fila-espera/chamar-proximo/`);
   },
 };

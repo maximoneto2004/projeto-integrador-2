@@ -30,13 +30,11 @@ export type AgendamentoListParams = Partial<{
   
 }>;
 
-const API_URL = import.meta.env.VITE_API_URL
-
 
 
 export const agendamentoService = {
   listarVagas(params: { data?: string; tipo_servico?: string; unidade?: string }) {
-    return api.get<ApiEnvelope<AgendaVaga[] | AgendaVagaListItem[]>>(`${API_URL}/vagas/`, {
+    return api.get<ApiEnvelope<AgendaVaga[] | AgendaVagaListItem[]>>(`/vagas/`, {
       params,
     });
   },
@@ -46,32 +44,32 @@ export const agendamentoService = {
 
     return api.get<
       ApiEnvelope<AgendamentoResponse[] | PaginatedResponse<AgendamentoResponse>>
-    >(`${API_URL}/agendamentos/`, {
+    >(`/agendamentos/`, {
       params: finalParams,
     });
   },
 
   criar(payload: AgendamentoRequest): Promise<AxiosResponse<ApiEnvelope<AgendamentoResponse>>> {
-    return api.post<ApiEnvelope<AgendamentoResponse>>(`${API_URL}/agendamentos/`, payload);
+    return api.post<ApiEnvelope<AgendamentoResponse>>(`/agendamentos/`, payload);
   },
 
   obter(id: string) {
-    return api.get<ApiEnvelope<AgendamentoResponse>>(`${API_URL}/agendamentos/${id}/`);
+    return api.get<ApiEnvelope<AgendamentoResponse>>(`/agendamentos/${id}/`);
   },
 
   atualizar(
     id: string,
     payload: Partial<AgendamentoRequest>,
   ): Promise<AxiosResponse<ApiEnvelope<AgendamentoResponse>>> {
-    return api.patch<ApiEnvelope<AgendamentoResponse>>(`${API_URL}/agendamentos/${id}/`, payload);
+    return api.patch<ApiEnvelope<AgendamentoResponse>>(`/agendamentos/${id}/`, payload);
   },
 
   ativarAusente(id: string) {
-    return api.post<{ detail: string }>(`${API_URL}/${id}/ativar-ausente/`, {});
+    return api.post<{ detail: string }>(`/${id}/ativar-ausente/`, {});
   },
 
   cancelarAgendamento(id: string) {
-    return api.patch<ApiEnvelope<AgendamentoResponse>>(`${API_URL}/agendamentos/${id}/`, {
+    return api.patch<ApiEnvelope<AgendamentoResponse>>(`/agendamentos/${id}/`, {
       situacao: "CANCELADO_CRAS",
     });
   },

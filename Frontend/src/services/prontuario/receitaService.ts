@@ -1,4 +1,4 @@
-import { api } from "@/services/api";
+import { api, urlServidorApi } from "@/services/api";
 
 export type StatusDispensacao = "PENDENTE" | "PARCIAL" | "DISPENSADO";
 
@@ -70,11 +70,7 @@ type ApiEnvelope<T> = {
   detail?: string;
 };
 
-const BASE = (import.meta.env.VITE_API_URL || "")
-  .replace(/\/api\/v1\/?$/, "")
-  .replace(/\/$/, "");
-
-const url = (path: string) => (BASE ? `${BASE}${path}` : path);
+const url = urlServidorApi;
 
 export const receitaService = {
   listar(params?: ReceitaListParams) {
