@@ -16,7 +16,10 @@ import {
   MapPin,
   CircleHelp,
   Map,
-  FileDown
+  FileDown,
+  Boxes,
+  PackageCheck,
+  Pill,
 } from "lucide-react";
 
 import { NavLink } from "./NavLink";
@@ -149,6 +152,18 @@ const menuGroups: MenuGroup[] = [
     label: "Medicamentos",
     items: [
       {
+        title: "Dispensação",
+        url: "/sistema/dispensacao",
+        icon: PackageCheck,
+        roles: ["supervisor"],
+      },
+      {
+        title: "Estoque",
+        url: "/sistema/estoque",
+        icon: Boxes,
+        roles: ["supervisor", "medico", "enfermeiro", "admin"],
+      },
+      {
         title: "Buscar Receitas",
         url: "/sistema/buscar-receitas",
         icon: FileText,
@@ -249,6 +264,12 @@ const menuGroups: MenuGroup[] = [
         title: "Bairros",
         url: "/sistema/administrador/bairros",
         icon: MapPin,
+        roles: ["admin"],
+      },
+      {
+        title: "Medicamentos",
+        url: "/sistema/administrador/medicamentos",
+        icon: Pill,
         roles: ["admin"],
       },
     ],

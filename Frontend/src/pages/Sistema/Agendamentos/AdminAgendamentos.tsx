@@ -651,6 +651,7 @@ const AdminAgendamentos = () => {
             onEditar={abrirEdicaoAgendamento}
             onRegistrarReceita={abrirModalRegistrarReceita}
             onRegistrarAtendimento={setAgendamentoRegistro}
+            onDispensar={(a) => navigate(`/sistema/dispensacao?cidadao=${a.cidadaoId ?? ""}`)}
             onAssumir={abrirModalAssumir}
             onFinalizar={onFinalizarAtendimento}
             onAbrirServicos={abrirModalServicos}

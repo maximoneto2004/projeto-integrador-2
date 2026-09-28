@@ -3,6 +3,7 @@ import { adminRoutes } from "./adminRoutes";
 import { agendamentosRoutes } from "./agendamentosRoutes";
 import { prontuarioRoutes } from "./prontuarioRoutes";
 import { dashboardRoutes } from "./dashboardRoutes";
+import { estoqueRoutes } from "./estoqueRoutes";
 import NotFound from "@/pages/NotFound";
 
 const groups: RouteObject[] = [
@@ -10,6 +11,7 @@ const groups: RouteObject[] = [
   ...agendamentosRoutes,
   ...prontuarioRoutes,
   ...dashboardRoutes,
+  ...estoqueRoutes,
 ];
 
 const renderRoutes = (routes: RouteObject[]) =>
