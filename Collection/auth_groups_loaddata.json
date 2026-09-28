@@ -6,31 +6,6 @@
       "name": "Médico",
       "permissions": [
         [
-          "add_abastecimentoagua",
-          "prontuario",
-          "abastecimentoagua"
-        ],
-        [
-          "add_acolhimentofamiliar",
-          "prontuario",
-          "acolhimentofamiliar"
-        ],
-        [
-          "add_acolhimentoinstitucional",
-          "prontuario",
-          "acolhimentoinstitucional"
-        ],
-        [
-          "add_acompanhamentocreas",
-          "prontuario",
-          "acompanhamentocreas"
-        ],
-        [
-          "add_acompanhamentolapsc",
-          "prontuario",
-          "acompanhamentolapsc"
-        ],
-        [
           "add_agendamento",
           "agendamentos",
           "agendamento"
@@ -46,84 +21,9 @@
           "guiche"
         ],
         [
-          "add_anotacaoplanejamento",
-          "prontuario",
-          "anotacaoplanejamento"
-        ],
-        [
-          "add_avaliacaoacompanhamentofamiliar",
-          "prontuario",
-          "avaliacaoacompanhamentofamiliar"
-        ],
-        [
-          "add_beneficioseventuais",
-          "prontuario",
-          "beneficioseventuais"
-        ],
-        [
-          "add_beneficiosocial",
-          "prontuario",
-          "beneficiosocial"
-        ],
-        [
-          "add_beneficiosservicos",
-          "prontuario",
-          "beneficiosservicos"
-        ],
-        [
-          "add_condicaoeducacional",
-          "prontuario",
-          "condicaoeducacional"
-        ],
-        [
-          "add_condicaoeducacionalmembro",
-          "prontuario",
-          "condicaoeducacionalmembro"
-        ],
-        [
-          "add_condicaohabitacional",
-          "prontuario",
-          "condicaohabitacional"
-        ],
-        [
-          "add_condicoesdesaude",
-          "prontuario",
-          "condicoesdesaude"
-        ],
-        [
-          "add_convivenciafamiliar",
-          "prontuario",
-          "convivenciafamiliar"
-        ],
-        [
-          "add_convivenviafortalecimento",
-          "prontuario",
-          "convivenviafortalecimento"
-        ],
-        [
-          "add_descumprimentocondicionalidadesbolsa",
-          "prontuario",
-          "descumprimentocondicionalidadesbolsa"
-        ],
-        [
-          "add_descumprimentoeducacional",
-          "prontuario",
-          "descumprimentoeducacional"
-        ],
-        [
           "add_encaminhamento",
           "encaminhamentos",
           "encaminhamento"
-        ],
-        [
-          "add_evolucaoacompanhamento",
-          "prontuario",
-          "evolucaoacompanhamento"
-        ],
-        [
-          "add_exclusaomembrocomposicao",
-          "prontuario",
-          "exclusaomembrocomposicao"
         ],
         [
           "add_fichaatendimentofamiliar",
@@ -136,29 +36,9 @@
           "filaespera"
         ],
         [
-          "add_formaingresso",
-          "prontuario",
-          "formaingresso"
-        ],
-        [
           "add_logentry",
           "admin",
           "logentry"
-        ],
-        [
-          "add_medidasocioeducativa",
-          "prontuario",
-          "medidasocioeducativa"
-        ],
-        [
-          "add_medidasocioeducativamembro",
-          "prontuario",
-          "medidasocioeducativamembro"
-        ],
-        [
-          "add_membrocomposicao",
-          "prontuario",
-          "membrocomposicao"
         ],
         [
           "add_membrofamiliar",
@@ -166,174 +46,14 @@
           "membrofamiliar"
         ],
         [
-          "add_novoingresso",
-          "prontuario",
-          "novoingresso"
-        ],
-        [
-          "add_orgaoorigemencaminhamento",
-          "prontuario",
-          "orgaoorigemencaminhamento"
-        ],
-        [
-          "add_parentesco",
-          "prontuario",
-          "parentesco"
-        ],
-        [
-          "add_pessoareferencia",
-          "prontuario",
-          "pessoareferencia"
-        ],
-        [
-          "add_prontuario",
-          "prontuario",
-          "prontuario"
-        ],
-        [
-          "add_registrodesligamento",
-          "prontuario",
-          "registrodesligamento"
-        ],
-        [
-          "add_saudecuidadosmembro",
-          "prontuario",
-          "saudecuidadosmembro"
-        ],
-        [
-          "add_situacaoviolencia",
-          "prontuario",
-          "situacaoviolencia"
-        ],
-        [
-          "add_trabalhorendimento",
-          "prontuario",
-          "trabalhorendimento"
-        ],
-        [
-          "add_trabalhorendimentomembro",
-          "prontuario",
-          "trabalhorendimentomembro"
-        ],
-        [
-          "add_transferenciarenda",
-          "prontuario",
-          "transferenciarenda"
-        ],
-        [
-          "add_unidade",
-          "prontuario",
-          "unidade"
-        ],
-        [
-          "change_abastecimentoagua",
-          "prontuario",
-          "abastecimentoagua"
-        ],
-        [
-          "change_acolhimentofamiliar",
-          "prontuario",
-          "acolhimentofamiliar"
-        ],
-        [
-          "change_acolhimentoinstitucional",
-          "prontuario",
-          "acolhimentoinstitucional"
-        ],
-        [
-          "change_acompanhamentocreas",
-          "prontuario",
-          "acompanhamentocreas"
-        ],
-        [
-          "change_acompanhamentolapsc",
-          "prontuario",
-          "acompanhamentolapsc"
-        ],
-        [
           "change_agendamento",
           "agendamentos",
           "agendamento"
         ],
         [
-          "change_anotacaoplanejamento",
-          "prontuario",
-          "anotacaoplanejamento"
-        ],
-        [
-          "change_avaliacaoacompanhamentofamiliar",
-          "prontuario",
-          "avaliacaoacompanhamentofamiliar"
-        ],
-        [
-          "change_beneficioseventuais",
-          "prontuario",
-          "beneficioseventuais"
-        ],
-        [
-          "change_beneficiosocial",
-          "prontuario",
-          "beneficiosocial"
-        ],
-        [
-          "change_beneficiosservicos",
-          "prontuario",
-          "beneficiosservicos"
-        ],
-        [
-          "change_condicaoeducacional",
-          "prontuario",
-          "condicaoeducacional"
-        ],
-        [
-          "change_condicaoeducacionalmembro",
-          "prontuario",
-          "condicaoeducacionalmembro"
-        ],
-        [
-          "change_condicaohabitacional",
-          "prontuario",
-          "condicaohabitacional"
-        ],
-        [
-          "change_condicoesdesaude",
-          "prontuario",
-          "condicoesdesaude"
-        ],
-        [
-          "change_convivenciafamiliar",
-          "prontuario",
-          "convivenciafamiliar"
-        ],
-        [
-          "change_convivenviafortalecimento",
-          "prontuario",
-          "convivenviafortalecimento"
-        ],
-        [
-          "change_descumprimentocondicionalidadesbolsa",
-          "prontuario",
-          "descumprimentocondicionalidadesbolsa"
-        ],
-        [
-          "change_descumprimentoeducacional",
-          "prontuario",
-          "descumprimentoeducacional"
-        ],
-        [
           "change_encaminhamento",
           "encaminhamentos",
           "encaminhamento"
-        ],
-        [
-          "change_evolucaoacompanhamento",
-          "prontuario",
-          "evolucaoacompanhamento"
-        ],
-        [
-          "change_exclusaomembrocomposicao",
-          "prontuario",
-          "exclusaomembrocomposicao"
         ],
         [
           "change_fichaatendimentofamiliar",
@@ -346,29 +66,9 @@
           "filaespera"
         ],
         [
-          "change_formaingresso",
-          "prontuario",
-          "formaingresso"
-        ],
-        [
           "change_logentry",
           "admin",
           "logentry"
-        ],
-        [
-          "change_medidasocioeducativa",
-          "prontuario",
-          "medidasocioeducativa"
-        ],
-        [
-          "change_medidasocioeducativamembro",
-          "prontuario",
-          "medidasocioeducativamembro"
-        ],
-        [
-          "change_membrocomposicao",
-          "prontuario",
-          "membrocomposicao"
         ],
         [
           "change_membrofamiliar",
@@ -376,174 +76,14 @@
           "membrofamiliar"
         ],
         [
-          "change_novoingresso",
-          "prontuario",
-          "novoingresso"
-        ],
-        [
-          "change_orgaoorigemencaminhamento",
-          "prontuario",
-          "orgaoorigemencaminhamento"
-        ],
-        [
-          "change_parentesco",
-          "prontuario",
-          "parentesco"
-        ],
-        [
-          "change_pessoareferencia",
-          "prontuario",
-          "pessoareferencia"
-        ],
-        [
-          "change_prontuario",
-          "prontuario",
-          "prontuario"
-        ],
-        [
-          "change_registrodesligamento",
-          "prontuario",
-          "registrodesligamento"
-        ],
-        [
-          "change_saudecuidadosmembro",
-          "prontuario",
-          "saudecuidadosmembro"
-        ],
-        [
-          "change_situacaoviolencia",
-          "prontuario",
-          "situacaoviolencia"
-        ],
-        [
-          "change_trabalhorendimento",
-          "prontuario",
-          "trabalhorendimento"
-        ],
-        [
-          "change_trabalhorendimentomembro",
-          "prontuario",
-          "trabalhorendimentomembro"
-        ],
-        [
-          "change_transferenciarenda",
-          "prontuario",
-          "transferenciarenda"
-        ],
-        [
-          "change_unidade",
-          "prontuario",
-          "unidade"
-        ],
-        [
-          "delete_abastecimentoagua",
-          "prontuario",
-          "abastecimentoagua"
-        ],
-        [
-          "delete_acolhimentofamiliar",
-          "prontuario",
-          "acolhimentofamiliar"
-        ],
-        [
-          "delete_acolhimentoinstitucional",
-          "prontuario",
-          "acolhimentoinstitucional"
-        ],
-        [
-          "delete_acompanhamentocreas",
-          "prontuario",
-          "acompanhamentocreas"
-        ],
-        [
-          "delete_acompanhamentolapsc",
-          "prontuario",
-          "acompanhamentolapsc"
-        ],
-        [
           "delete_agendamento",
           "agendamentos",
           "agendamento"
         ],
         [
-          "delete_anotacaoplanejamento",
-          "prontuario",
-          "anotacaoplanejamento"
-        ],
-        [
-          "delete_avaliacaoacompanhamentofamiliar",
-          "prontuario",
-          "avaliacaoacompanhamentofamiliar"
-        ],
-        [
-          "delete_beneficioseventuais",
-          "prontuario",
-          "beneficioseventuais"
-        ],
-        [
-          "delete_beneficiosocial",
-          "prontuario",
-          "beneficiosocial"
-        ],
-        [
-          "delete_beneficiosservicos",
-          "prontuario",
-          "beneficiosservicos"
-        ],
-        [
-          "delete_condicaoeducacional",
-          "prontuario",
-          "condicaoeducacional"
-        ],
-        [
-          "delete_condicaoeducacionalmembro",
-          "prontuario",
-          "condicaoeducacionalmembro"
-        ],
-        [
-          "delete_condicaohabitacional",
-          "prontuario",
-          "condicaohabitacional"
-        ],
-        [
-          "delete_condicoesdesaude",
-          "prontuario",
-          "condicoesdesaude"
-        ],
-        [
-          "delete_convivenciafamiliar",
-          "prontuario",
-          "convivenciafamiliar"
-        ],
-        [
-          "delete_convivenviafortalecimento",
-          "prontuario",
-          "convivenviafortalecimento"
-        ],
-        [
-          "delete_descumprimentocondicionalidadesbolsa",
-          "prontuario",
-          "descumprimentocondicionalidadesbolsa"
-        ],
-        [
-          "delete_descumprimentoeducacional",
-          "prontuario",
-          "descumprimentoeducacional"
-        ],
-        [
           "delete_encaminhamento",
           "encaminhamentos",
           "encaminhamento"
-        ],
-        [
-          "delete_evolucaoacompanhamento",
-          "prontuario",
-          "evolucaoacompanhamento"
-        ],
-        [
-          "delete_exclusaomembrocomposicao",
-          "prontuario",
-          "exclusaomembrocomposicao"
         ],
         [
           "delete_fichaatendimentofamiliar",
@@ -556,119 +96,14 @@
           "filaespera"
         ],
         [
-          "delete_formaingresso",
-          "prontuario",
-          "formaingresso"
-        ],
-        [
           "delete_logentry",
           "admin",
           "logentry"
         ],
         [
-          "delete_medidasocioeducativa",
-          "prontuario",
-          "medidasocioeducativa"
-        ],
-        [
-          "delete_medidasocioeducativamembro",
-          "prontuario",
-          "medidasocioeducativamembro"
-        ],
-        [
-          "delete_membrocomposicao",
-          "prontuario",
-          "membrocomposicao"
-        ],
-        [
           "delete_membrofamiliar",
           "atendimento_familiar",
           "membrofamiliar"
-        ],
-        [
-          "delete_novoingresso",
-          "prontuario",
-          "novoingresso"
-        ],
-        [
-          "delete_orgaoorigemencaminhamento",
-          "prontuario",
-          "orgaoorigemencaminhamento"
-        ],
-        [
-          "delete_parentesco",
-          "prontuario",
-          "parentesco"
-        ],
-        [
-          "delete_pessoareferencia",
-          "prontuario",
-          "pessoareferencia"
-        ],
-        [
-          "delete_prontuario",
-          "prontuario",
-          "prontuario"
-        ],
-        [
-          "delete_registrodesligamento",
-          "prontuario",
-          "registrodesligamento"
-        ],
-        [
-          "delete_saudecuidadosmembro",
-          "prontuario",
-          "saudecuidadosmembro"
-        ],
-        [
-          "delete_situacaoviolencia",
-          "prontuario",
-          "situacaoviolencia"
-        ],
-        [
-          "delete_trabalhorendimento",
-          "prontuario",
-          "trabalhorendimento"
-        ],
-        [
-          "delete_trabalhorendimentomembro",
-          "prontuario",
-          "trabalhorendimentomembro"
-        ],
-        [
-          "delete_transferenciarenda",
-          "prontuario",
-          "transferenciarenda"
-        ],
-        [
-          "delete_unidade",
-          "prontuario",
-          "unidade"
-        ],
-        [
-          "view_abastecimentoagua",
-          "prontuario",
-          "abastecimentoagua"
-        ],
-        [
-          "view_acolhimentofamiliar",
-          "prontuario",
-          "acolhimentofamiliar"
-        ],
-        [
-          "view_acolhimentoinstitucional",
-          "prontuario",
-          "acolhimentoinstitucional"
-        ],
-        [
-          "view_acompanhamentocreas",
-          "prontuario",
-          "acompanhamentocreas"
-        ],
-        [
-          "view_acompanhamentolapsc",
-          "prontuario",
-          "acompanhamentolapsc"
         ],
         [
           "view_agendamento",
@@ -681,39 +116,14 @@
           "agendavaga"
         ],
         [
-          "view_anotacaoplanejamento",
-          "prontuario",
-          "anotacaoplanejamento"
-        ],
-        [
           "view_avaliacao",
           "avaliacao",
           "avaliacao"
         ],
         [
-          "view_avaliacaoacompanhamentofamiliar",
-          "prontuario",
-          "avaliacaoacompanhamentofamiliar"
-        ],
-        [
           "view_bairro",
           "app",
           "bairro"
-        ],
-        [
-          "view_beneficioseventuais",
-          "prontuario",
-          "beneficioseventuais"
-        ],
-        [
-          "view_beneficiosocial",
-          "prontuario",
-          "beneficiosocial"
-        ],
-        [
-          "view_beneficiosservicos",
-          "prontuario",
-          "beneficiosservicos"
         ],
         [
           "change_cidadao",
@@ -731,59 +141,9 @@
           "codigoarea"
         ],
         [
-          "view_condicaoeducacional",
-          "prontuario",
-          "condicaoeducacional"
-        ],
-        [
-          "view_condicaoeducacionalmembro",
-          "prontuario",
-          "condicaoeducacionalmembro"
-        ],
-        [
-          "view_condicaohabitacional",
-          "prontuario",
-          "condicaohabitacional"
-        ],
-        [
-          "view_condicoesdesaude",
-          "prontuario",
-          "condicoesdesaude"
-        ],
-        [
-          "view_convivenciafamiliar",
-          "prontuario",
-          "convivenciafamiliar"
-        ],
-        [
-          "view_convivenviafortalecimento",
-          "prontuario",
-          "convivenviafortalecimento"
-        ],
-        [
-          "view_descumprimentocondicionalidadesbolsa",
-          "prontuario",
-          "descumprimentocondicionalidadesbolsa"
-        ],
-        [
-          "view_descumprimentoeducacional",
-          "prontuario",
-          "descumprimentoeducacional"
-        ],
-        [
           "view_encaminhamento",
           "encaminhamentos",
           "encaminhamento"
-        ],
-        [
-          "view_evolucaoacompanhamento",
-          "prontuario",
-          "evolucaoacompanhamento"
-        ],
-        [
-          "view_exclusaomembrocomposicao",
-          "prontuario",
-          "exclusaomembrocomposicao"
         ],
         [
           "view_fichaatendimentofamiliar",
@@ -796,94 +156,14 @@
           "filaespera"
         ],
         [
-          "view_formaingresso",
-          "prontuario",
-          "formaingresso"
-        ],
-        [
           "view_logentry",
           "admin",
           "logentry"
         ],
         [
-          "view_medidasocioeducativa",
-          "prontuario",
-          "medidasocioeducativa"
-        ],
-        [
-          "view_medidasocioeducativamembro",
-          "prontuario",
-          "medidasocioeducativamembro"
-        ],
-        [
-          "view_membrocomposicao",
-          "prontuario",
-          "membrocomposicao"
-        ],
-        [
           "view_membrofamiliar",
           "atendimento_familiar",
           "membrofamiliar"
-        ],
-        [
-          "view_novoingresso",
-          "prontuario",
-          "novoingresso"
-        ],
-        [
-          "view_orgaoorigemencaminhamento",
-          "prontuario",
-          "orgaoorigemencaminhamento"
-        ],
-        [
-          "view_parentesco",
-          "prontuario",
-          "parentesco"
-        ],
-        [
-          "view_pessoareferencia",
-          "prontuario",
-          "pessoareferencia"
-        ],
-        [
-          "view_prontuario",
-          "prontuario",
-          "prontuario"
-        ],
-        [
-          "view_registrodesligamento",
-          "prontuario",
-          "registrodesligamento"
-        ],
-        [
-          "view_saudecuidadosmembro",
-          "prontuario",
-          "saudecuidadosmembro"
-        ],
-        [
-          "view_situacaoviolencia",
-          "prontuario",
-          "situacaoviolencia"
-        ],
-        [
-          "view_trabalhorendimento",
-          "prontuario",
-          "trabalhorendimento"
-        ],
-        [
-          "view_trabalhorendimentomembro",
-          "prontuario",
-          "trabalhorendimentomembro"
-        ],
-        [
-          "view_transferenciarenda",
-          "prontuario",
-          "transferenciarenda"
-        ],
-        [
-          "view_unidade",
-          "prontuario",
-          "unidade"
         ],
         [
           "view_usuario",
@@ -939,6 +219,21 @@
           "view_receitamedicamento",
           "prontuario",
           "receitamedicamento"
+        ],
+        [
+          "add_registroatendimento",
+          "prontuario",
+          "registroatendimento"
+        ],
+        [
+          "change_registroatendimento",
+          "prontuario",
+          "registroatendimento"
+        ],
+        [
+          "view_registroatendimento",
+          "prontuario",
+          "registroatendimento"
         ]
       ]
     }
@@ -949,31 +244,6 @@
     "fields": {
       "name": "Enfermeiro",
       "permissions": [
-        [
-          "add_abastecimentoagua",
-          "prontuario",
-          "abastecimentoagua"
-        ],
-        [
-          "add_acolhimentofamiliar",
-          "prontuario",
-          "acolhimentofamiliar"
-        ],
-        [
-          "add_acolhimentoinstitucional",
-          "prontuario",
-          "acolhimentoinstitucional"
-        ],
-        [
-          "add_acompanhamentocreas",
-          "prontuario",
-          "acompanhamentocreas"
-        ],
-        [
-          "add_acompanhamentolapsc",
-          "prontuario",
-          "acompanhamentolapsc"
-        ],
         [
           "add_agendamento",
           "agendamentos",
@@ -990,84 +260,9 @@
           "guiche"
         ],
         [
-          "add_anotacaoplanejamento",
-          "prontuario",
-          "anotacaoplanejamento"
-        ],
-        [
-          "add_avaliacaoacompanhamentofamiliar",
-          "prontuario",
-          "avaliacaoacompanhamentofamiliar"
-        ],
-        [
-          "add_beneficioseventuais",
-          "prontuario",
-          "beneficioseventuais"
-        ],
-        [
-          "add_beneficiosocial",
-          "prontuario",
-          "beneficiosocial"
-        ],
-        [
-          "add_beneficiosservicos",
-          "prontuario",
-          "beneficiosservicos"
-        ],
-        [
-          "add_condicaoeducacional",
-          "prontuario",
-          "condicaoeducacional"
-        ],
-        [
-          "add_condicaoeducacionalmembro",
-          "prontuario",
-          "condicaoeducacionalmembro"
-        ],
-        [
-          "add_condicaohabitacional",
-          "prontuario",
-          "condicaohabitacional"
-        ],
-        [
-          "add_condicoesdesaude",
-          "prontuario",
-          "condicoesdesaude"
-        ],
-        [
-          "add_convivenciafamiliar",
-          "prontuario",
-          "convivenciafamiliar"
-        ],
-        [
-          "add_convivenviafortalecimento",
-          "prontuario",
-          "convivenviafortalecimento"
-        ],
-        [
-          "add_descumprimentocondicionalidadesbolsa",
-          "prontuario",
-          "descumprimentocondicionalidadesbolsa"
-        ],
-        [
-          "add_descumprimentoeducacional",
-          "prontuario",
-          "descumprimentoeducacional"
-        ],
-        [
           "add_encaminhamento",
           "encaminhamentos",
           "encaminhamento"
-        ],
-        [
-          "add_evolucaoacompanhamento",
-          "prontuario",
-          "evolucaoacompanhamento"
-        ],
-        [
-          "add_exclusaomembrocomposicao",
-          "prontuario",
-          "exclusaomembrocomposicao"
         ],
         [
           "add_fichaatendimentofamiliar",
@@ -1080,29 +275,9 @@
           "filaespera"
         ],
         [
-          "add_formaingresso",
-          "prontuario",
-          "formaingresso"
-        ],
-        [
           "add_logentry",
           "admin",
           "logentry"
-        ],
-        [
-          "add_medidasocioeducativa",
-          "prontuario",
-          "medidasocioeducativa"
-        ],
-        [
-          "add_medidasocioeducativamembro",
-          "prontuario",
-          "medidasocioeducativamembro"
-        ],
-        [
-          "add_membrocomposicao",
-          "prontuario",
-          "membrocomposicao"
         ],
         [
           "add_membrofamiliar",
@@ -1110,174 +285,14 @@
           "membrofamiliar"
         ],
         [
-          "add_novoingresso",
-          "prontuario",
-          "novoingresso"
-        ],
-        [
-          "add_orgaoorigemencaminhamento",
-          "prontuario",
-          "orgaoorigemencaminhamento"
-        ],
-        [
-          "add_parentesco",
-          "prontuario",
-          "parentesco"
-        ],
-        [
-          "add_pessoareferencia",
-          "prontuario",
-          "pessoareferencia"
-        ],
-        [
-          "add_prontuario",
-          "prontuario",
-          "prontuario"
-        ],
-        [
-          "add_registrodesligamento",
-          "prontuario",
-          "registrodesligamento"
-        ],
-        [
-          "add_saudecuidadosmembro",
-          "prontuario",
-          "saudecuidadosmembro"
-        ],
-        [
-          "add_situacaoviolencia",
-          "prontuario",
-          "situacaoviolencia"
-        ],
-        [
-          "add_trabalhorendimento",
-          "prontuario",
-          "trabalhorendimento"
-        ],
-        [
-          "add_trabalhorendimentomembro",
-          "prontuario",
-          "trabalhorendimentomembro"
-        ],
-        [
-          "add_transferenciarenda",
-          "prontuario",
-          "transferenciarenda"
-        ],
-        [
-          "add_unidade",
-          "prontuario",
-          "unidade"
-        ],
-        [
-          "change_abastecimentoagua",
-          "prontuario",
-          "abastecimentoagua"
-        ],
-        [
-          "change_acolhimentofamiliar",
-          "prontuario",
-          "acolhimentofamiliar"
-        ],
-        [
-          "change_acolhimentoinstitucional",
-          "prontuario",
-          "acolhimentoinstitucional"
-        ],
-        [
-          "change_acompanhamentocreas",
-          "prontuario",
-          "acompanhamentocreas"
-        ],
-        [
-          "change_acompanhamentolapsc",
-          "prontuario",
-          "acompanhamentolapsc"
-        ],
-        [
           "change_agendamento",
           "agendamentos",
           "agendamento"
         ],
         [
-          "change_anotacaoplanejamento",
-          "prontuario",
-          "anotacaoplanejamento"
-        ],
-        [
-          "change_avaliacaoacompanhamentofamiliar",
-          "prontuario",
-          "avaliacaoacompanhamentofamiliar"
-        ],
-        [
-          "change_beneficioseventuais",
-          "prontuario",
-          "beneficioseventuais"
-        ],
-        [
-          "change_beneficiosocial",
-          "prontuario",
-          "beneficiosocial"
-        ],
-        [
-          "change_beneficiosservicos",
-          "prontuario",
-          "beneficiosservicos"
-        ],
-        [
-          "change_condicaoeducacional",
-          "prontuario",
-          "condicaoeducacional"
-        ],
-        [
-          "change_condicaoeducacionalmembro",
-          "prontuario",
-          "condicaoeducacionalmembro"
-        ],
-        [
-          "change_condicaohabitacional",
-          "prontuario",
-          "condicaohabitacional"
-        ],
-        [
-          "change_condicoesdesaude",
-          "prontuario",
-          "condicoesdesaude"
-        ],
-        [
-          "change_convivenciafamiliar",
-          "prontuario",
-          "convivenciafamiliar"
-        ],
-        [
-          "change_convivenviafortalecimento",
-          "prontuario",
-          "convivenviafortalecimento"
-        ],
-        [
-          "change_descumprimentocondicionalidadesbolsa",
-          "prontuario",
-          "descumprimentocondicionalidadesbolsa"
-        ],
-        [
-          "change_descumprimentoeducacional",
-          "prontuario",
-          "descumprimentoeducacional"
-        ],
-        [
           "change_encaminhamento",
           "encaminhamentos",
           "encaminhamento"
-        ],
-        [
-          "change_evolucaoacompanhamento",
-          "prontuario",
-          "evolucaoacompanhamento"
-        ],
-        [
-          "change_exclusaomembrocomposicao",
-          "prontuario",
-          "exclusaomembrocomposicao"
         ],
         [
           "change_fichaatendimentofamiliar",
@@ -1290,29 +305,9 @@
           "filaespera"
         ],
         [
-          "change_formaingresso",
-          "prontuario",
-          "formaingresso"
-        ],
-        [
           "change_logentry",
           "admin",
           "logentry"
-        ],
-        [
-          "change_medidasocioeducativa",
-          "prontuario",
-          "medidasocioeducativa"
-        ],
-        [
-          "change_medidasocioeducativamembro",
-          "prontuario",
-          "medidasocioeducativamembro"
-        ],
-        [
-          "change_membrocomposicao",
-          "prontuario",
-          "membrocomposicao"
         ],
         [
           "change_membrofamiliar",
@@ -1320,174 +315,14 @@
           "membrofamiliar"
         ],
         [
-          "change_novoingresso",
-          "prontuario",
-          "novoingresso"
-        ],
-        [
-          "change_orgaoorigemencaminhamento",
-          "prontuario",
-          "orgaoorigemencaminhamento"
-        ],
-        [
-          "change_parentesco",
-          "prontuario",
-          "parentesco"
-        ],
-        [
-          "change_pessoareferencia",
-          "prontuario",
-          "pessoareferencia"
-        ],
-        [
-          "change_prontuario",
-          "prontuario",
-          "prontuario"
-        ],
-        [
-          "change_registrodesligamento",
-          "prontuario",
-          "registrodesligamento"
-        ],
-        [
-          "change_saudecuidadosmembro",
-          "prontuario",
-          "saudecuidadosmembro"
-        ],
-        [
-          "change_situacaoviolencia",
-          "prontuario",
-          "situacaoviolencia"
-        ],
-        [
-          "change_trabalhorendimento",
-          "prontuario",
-          "trabalhorendimento"
-        ],
-        [
-          "change_trabalhorendimentomembro",
-          "prontuario",
-          "trabalhorendimentomembro"
-        ],
-        [
-          "change_transferenciarenda",
-          "prontuario",
-          "transferenciarenda"
-        ],
-        [
-          "change_unidade",
-          "prontuario",
-          "unidade"
-        ],
-        [
-          "delete_abastecimentoagua",
-          "prontuario",
-          "abastecimentoagua"
-        ],
-        [
-          "delete_acolhimentofamiliar",
-          "prontuario",
-          "acolhimentofamiliar"
-        ],
-        [
-          "delete_acolhimentoinstitucional",
-          "prontuario",
-          "acolhimentoinstitucional"
-        ],
-        [
-          "delete_acompanhamentocreas",
-          "prontuario",
-          "acompanhamentocreas"
-        ],
-        [
-          "delete_acompanhamentolapsc",
-          "prontuario",
-          "acompanhamentolapsc"
-        ],
-        [
           "delete_agendamento",
           "agendamentos",
           "agendamento"
         ],
         [
-          "delete_anotacaoplanejamento",
-          "prontuario",
-          "anotacaoplanejamento"
-        ],
-        [
-          "delete_avaliacaoacompanhamentofamiliar",
-          "prontuario",
-          "avaliacaoacompanhamentofamiliar"
-        ],
-        [
-          "delete_beneficioseventuais",
-          "prontuario",
-          "beneficioseventuais"
-        ],
-        [
-          "delete_beneficiosocial",
-          "prontuario",
-          "beneficiosocial"
-        ],
-        [
-          "delete_beneficiosservicos",
-          "prontuario",
-          "beneficiosservicos"
-        ],
-        [
-          "delete_condicaoeducacional",
-          "prontuario",
-          "condicaoeducacional"
-        ],
-        [
-          "delete_condicaoeducacionalmembro",
-          "prontuario",
-          "condicaoeducacionalmembro"
-        ],
-        [
-          "delete_condicaohabitacional",
-          "prontuario",
-          "condicaohabitacional"
-        ],
-        [
-          "delete_condicoesdesaude",
-          "prontuario",
-          "condicoesdesaude"
-        ],
-        [
-          "delete_convivenciafamiliar",
-          "prontuario",
-          "convivenciafamiliar"
-        ],
-        [
-          "delete_convivenviafortalecimento",
-          "prontuario",
-          "convivenviafortalecimento"
-        ],
-        [
-          "delete_descumprimentocondicionalidadesbolsa",
-          "prontuario",
-          "descumprimentocondicionalidadesbolsa"
-        ],
-        [
-          "delete_descumprimentoeducacional",
-          "prontuario",
-          "descumprimentoeducacional"
-        ],
-        [
           "delete_encaminhamento",
           "encaminhamentos",
           "encaminhamento"
-        ],
-        [
-          "delete_evolucaoacompanhamento",
-          "prontuario",
-          "evolucaoacompanhamento"
-        ],
-        [
-          "delete_exclusaomembrocomposicao",
-          "prontuario",
-          "exclusaomembrocomposicao"
         ],
         [
           "delete_fichaatendimentofamiliar",
@@ -1500,119 +335,14 @@
           "filaespera"
         ],
         [
-          "delete_formaingresso",
-          "prontuario",
-          "formaingresso"
-        ],
-        [
           "delete_logentry",
           "admin",
           "logentry"
         ],
         [
-          "delete_medidasocioeducativa",
-          "prontuario",
-          "medidasocioeducativa"
-        ],
-        [
-          "delete_medidasocioeducativamembro",
-          "prontuario",
-          "medidasocioeducativamembro"
-        ],
-        [
-          "delete_membrocomposicao",
-          "prontuario",
-          "membrocomposicao"
-        ],
-        [
           "delete_membrofamiliar",
           "atendimento_familiar",
           "membrofamiliar"
-        ],
-        [
-          "delete_novoingresso",
-          "prontuario",
-          "novoingresso"
-        ],
-        [
-          "delete_orgaoorigemencaminhamento",
-          "prontuario",
-          "orgaoorigemencaminhamento"
-        ],
-        [
-          "delete_parentesco",
-          "prontuario",
-          "parentesco"
-        ],
-        [
-          "delete_pessoareferencia",
-          "prontuario",
-          "pessoareferencia"
-        ],
-        [
-          "delete_prontuario",
-          "prontuario",
-          "prontuario"
-        ],
-        [
-          "delete_registrodesligamento",
-          "prontuario",
-          "registrodesligamento"
-        ],
-        [
-          "delete_saudecuidadosmembro",
-          "prontuario",
-          "saudecuidadosmembro"
-        ],
-        [
-          "delete_situacaoviolencia",
-          "prontuario",
-          "situacaoviolencia"
-        ],
-        [
-          "delete_trabalhorendimento",
-          "prontuario",
-          "trabalhorendimento"
-        ],
-        [
-          "delete_trabalhorendimentomembro",
-          "prontuario",
-          "trabalhorendimentomembro"
-        ],
-        [
-          "delete_transferenciarenda",
-          "prontuario",
-          "transferenciarenda"
-        ],
-        [
-          "delete_unidade",
-          "prontuario",
-          "unidade"
-        ],
-        [
-          "view_abastecimentoagua",
-          "prontuario",
-          "abastecimentoagua"
-        ],
-        [
-          "view_acolhimentofamiliar",
-          "prontuario",
-          "acolhimentofamiliar"
-        ],
-        [
-          "view_acolhimentoinstitucional",
-          "prontuario",
-          "acolhimentoinstitucional"
-        ],
-        [
-          "view_acompanhamentocreas",
-          "prontuario",
-          "acompanhamentocreas"
-        ],
-        [
-          "view_acompanhamentolapsc",
-          "prontuario",
-          "acompanhamentolapsc"
         ],
         [
           "view_agendamento",
@@ -1625,39 +355,14 @@
           "agendavaga"
         ],
         [
-          "view_anotacaoplanejamento",
-          "prontuario",
-          "anotacaoplanejamento"
-        ],
-        [
           "view_avaliacao",
           "avaliacao",
           "avaliacao"
         ],
         [
-          "view_avaliacaoacompanhamentofamiliar",
-          "prontuario",
-          "avaliacaoacompanhamentofamiliar"
-        ],
-        [
           "view_bairro",
           "app",
           "bairro"
-        ],
-        [
-          "view_beneficioseventuais",
-          "prontuario",
-          "beneficioseventuais"
-        ],
-        [
-          "view_beneficiosocial",
-          "prontuario",
-          "beneficiosocial"
-        ],
-        [
-          "view_beneficiosservicos",
-          "prontuario",
-          "beneficiosservicos"
         ],
         [
           "change_cidadao",
@@ -1675,59 +380,9 @@
           "codigoarea"
         ],
         [
-          "view_condicaoeducacional",
-          "prontuario",
-          "condicaoeducacional"
-        ],
-        [
-          "view_condicaoeducacionalmembro",
-          "prontuario",
-          "condicaoeducacionalmembro"
-        ],
-        [
-          "view_condicaohabitacional",
-          "prontuario",
-          "condicaohabitacional"
-        ],
-        [
-          "view_condicoesdesaude",
-          "prontuario",
-          "condicoesdesaude"
-        ],
-        [
-          "view_convivenciafamiliar",
-          "prontuario",
-          "convivenciafamiliar"
-        ],
-        [
-          "view_convivenviafortalecimento",
-          "prontuario",
-          "convivenviafortalecimento"
-        ],
-        [
-          "view_descumprimentocondicionalidadesbolsa",
-          "prontuario",
-          "descumprimentocondicionalidadesbolsa"
-        ],
-        [
-          "view_descumprimentoeducacional",
-          "prontuario",
-          "descumprimentoeducacional"
-        ],
-        [
           "view_encaminhamento",
           "encaminhamentos",
           "encaminhamento"
-        ],
-        [
-          "view_evolucaoacompanhamento",
-          "prontuario",
-          "evolucaoacompanhamento"
-        ],
-        [
-          "view_exclusaomembrocomposicao",
-          "prontuario",
-          "exclusaomembrocomposicao"
         ],
         [
           "view_fichaatendimentofamiliar",
@@ -1740,94 +395,14 @@
           "filaespera"
         ],
         [
-          "view_formaingresso",
-          "prontuario",
-          "formaingresso"
-        ],
-        [
           "view_logentry",
           "admin",
           "logentry"
         ],
         [
-          "view_medidasocioeducativa",
-          "prontuario",
-          "medidasocioeducativa"
-        ],
-        [
-          "view_medidasocioeducativamembro",
-          "prontuario",
-          "medidasocioeducativamembro"
-        ],
-        [
-          "view_membrocomposicao",
-          "prontuario",
-          "membrocomposicao"
-        ],
-        [
           "view_membrofamiliar",
           "atendimento_familiar",
           "membrofamiliar"
-        ],
-        [
-          "view_novoingresso",
-          "prontuario",
-          "novoingresso"
-        ],
-        [
-          "view_orgaoorigemencaminhamento",
-          "prontuario",
-          "orgaoorigemencaminhamento"
-        ],
-        [
-          "view_parentesco",
-          "prontuario",
-          "parentesco"
-        ],
-        [
-          "view_pessoareferencia",
-          "prontuario",
-          "pessoareferencia"
-        ],
-        [
-          "view_prontuario",
-          "prontuario",
-          "prontuario"
-        ],
-        [
-          "view_registrodesligamento",
-          "prontuario",
-          "registrodesligamento"
-        ],
-        [
-          "view_saudecuidadosmembro",
-          "prontuario",
-          "saudecuidadosmembro"
-        ],
-        [
-          "view_situacaoviolencia",
-          "prontuario",
-          "situacaoviolencia"
-        ],
-        [
-          "view_trabalhorendimento",
-          "prontuario",
-          "trabalhorendimento"
-        ],
-        [
-          "view_trabalhorendimentomembro",
-          "prontuario",
-          "trabalhorendimentomembro"
-        ],
-        [
-          "view_transferenciarenda",
-          "prontuario",
-          "transferenciarenda"
-        ],
-        [
-          "view_unidade",
-          "prontuario",
-          "unidade"
         ],
         [
           "view_usuario",
@@ -1853,6 +428,21 @@
           "view_receitamedicamento",
           "prontuario",
           "receitamedicamento"
+        ],
+        [
+          "add_registroatendimento",
+          "prontuario",
+          "registroatendimento"
+        ],
+        [
+          "change_registroatendimento",
+          "prontuario",
+          "registroatendimento"
+        ],
+        [
+          "view_registroatendimento",
+          "prontuario",
+          "registroatendimento"
         ]
       ]
     }
@@ -1948,11 +538,6 @@
           "bairro"
         ],
         [
-          "add_beneficiosocial",
-          "prontuario",
-          "beneficiosocial"
-        ],
-        [
           "add_classeservico",
           "servicos",
           "classeservico"
@@ -1988,11 +573,6 @@
           "tiposervico"
         ],
         [
-          "add_unidade",
-          "prontuario",
-          "unidade"
-        ],
-        [
           "add_unidadecras",
           "unidade_cras",
           "unidadecras"
@@ -2001,11 +581,6 @@
           "change_bairro",
           "app",
           "bairro"
-        ],
-        [
-          "change_beneficiosocial",
-          "prontuario",
-          "beneficiosocial"
         ],
         [
           "change_classeservico",
@@ -2043,11 +618,6 @@
           "tiposervico"
         ],
         [
-          "change_unidade",
-          "prontuario",
-          "unidade"
-        ],
-        [
           "change_unidadecras",
           "unidade_cras",
           "unidadecras"
@@ -2061,11 +631,6 @@
           "view_bairro",
           "app",
           "bairro"
-        ],
-        [
-          "view_beneficiosocial",
-          "prontuario",
-          "beneficiosocial"
         ],
         [
           "view_classeservico",
@@ -2101,11 +666,6 @@
           "view_tiposervico",
           "servicos",
           "tiposervico"
-        ],
-        [
-          "view_unidade",
-          "prontuario",
-          "unidade"
         ],
         [
           "view_unidadecras",

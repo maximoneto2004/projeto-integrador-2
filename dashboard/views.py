@@ -19,7 +19,6 @@ from rest_framework import generics
 from agendamentos.models import Agendamento
 from app.models import Bairro
 from app.permissions import DjangoModelPermissionsWithView
-from prontuario.models import Prontuario
 from unidade_posto.models import UnidadePosto
 from usuarios.models import Usuario
 
@@ -29,7 +28,6 @@ from .serializers import (
     DashboardGestorSerializer,
     DashboardMonitorUnidadeSerializer,
     DashboardSupervisorSerializer,
-    PerfilFamiliarSerializer,
 )
 class DashboardSupervisorAPIView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated, DjangoModelPermissionsWithView]
@@ -130,21 +128,6 @@ class DashboardGestorAPIView(APIView):
                     "detail": str(e),
                 },
             )
-
-
-class PerfilFamiliarAPIView(APIView):
-    permission_classes = [permissions.IsAuthenticated, DjangoModelPermissionsWithView]
-    queryset = Prontuario.objects.all()
-
-    def get(self, request):
-        serializer = PerfilFamiliarSerializer(data={"cpf": request.query_params.get("cpf", "")})
-        serializer.is_valid(raise_exception=True)
-
-        payload = serializer.data
-        if not payload.get("encontrado"):
-            return Response({"success": False, "error": "Prontuário não encontrado."}, status=404)
-
-        return Response({"success": True, "results": payload})
 
 
 class MapaUnidadesQuerySerializer(serializers.Serializer):

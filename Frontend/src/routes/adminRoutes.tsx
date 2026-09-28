@@ -16,7 +16,6 @@ import AdminPerguntaFrequentesPage from "@/pages/Sistema/Administrador/AdminPerg
 import AdminUnidadesPage from "@/pages/Sistema/Administrador/AdminUnidadesPage";
 import AdminServicosTabelasPage from "@/pages/Sistema/Administrador/AdminServicosTabelasPage";
 import AdminBairrosPage from "@/pages/Sistema/Administrador/AdminBairrosPage";
-import AdminProntuarioCamposPage from "@/pages/Sistema/Administrador/AdminProntuarioCamposPage";
 import AdminMapaUnidades from "@/pages/Sistema/Dashboards/AdminMapaUnidades";
 import AdminLogin from "@/pages/Sistema/AdminLogin";
 import AlterarSenha from "@/pages/Sistema/AlterarSenha";
@@ -90,10 +89,6 @@ export const adminRoutes: RouteObject[] = [
   {
     path: "/sistema/administrador/bairros",
     element: guard(<AdminBairrosPage />, { allowedRoles: ACCESS.adminBairros }),
-  },
-  {
-    path: "/sistema/administrador/prontuario-campos",
-    element: guard(<AdminProntuarioCamposPage />, { allowedRoles: ACCESS.adminProntuarioCampos }),
   },
   {
     path: "/sistema/mapa-unidades",

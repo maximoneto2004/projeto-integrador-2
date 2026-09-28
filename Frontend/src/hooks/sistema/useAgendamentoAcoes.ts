@@ -160,8 +160,8 @@ export function useAgendamentoAcoes({ navigate, onRefresh, currentUserName }: Us
   };
 
   const abrirDialogRegistrar = (appointment: Appointment) => {
-    if (appointment.status === "Atendimento") {
-      navigate(`/sistema/prontuario?id=${appointment.id}&cpf=${appointment.cpfCidadao || ""}`);
+    if (appointment.status === "Atendimento" && appointment.cidadaoId) {
+      navigate(`/sistema/prontuario?cidadao=${appointment.cidadaoId}`);
       return;
     }
 

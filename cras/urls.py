@@ -41,7 +41,6 @@ urlpatterns = [
     path("api/v1/", include("fila_espera.urls")),
 
     path("api/v1/",include("duvidas_frequentes.urls")),
-    path("api/v1/",include("historico.urls")),
     path("api/prontuario/", include("prontuario.urls")),
     path("api/v1/", include("servicos.urls")),
     path("api/v1/", include("medicamentos.urls")),

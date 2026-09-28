@@ -2,6 +2,7 @@ import {
   Calendar,
   Users,
   FileText,
+  FileHeart,
   Gauge,
   BarChart3,
   LogOut,
@@ -133,6 +134,18 @@ const menuGroups: MenuGroup[] = [
   },
 
   {
+    label: "Pacientes",
+    items: [
+      {
+        title: "Prontuário",
+        url: "/sistema/prontuario",
+        icon: FileHeart,
+        roles: ["medico", "enfermeiro"],
+      },
+    ],
+  },
+
+  {
     label: "Medicamentos",
     items: [
       {
@@ -238,12 +251,6 @@ const menuGroups: MenuGroup[] = [
         icon: MapPin,
         roles: ["admin"],
       },
-      // {
-      //   title: "Campos ProntuÃƒÆ’Ã‚Â¡rio",
-      //   url: "/sistema/administrador/prontuario-campos",
-      //   icon: FileText,
-      //   roles: ["admin"],
-      // },
     ],
   },
 

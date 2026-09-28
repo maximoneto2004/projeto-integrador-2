@@ -21,7 +21,7 @@ class CidadaoFilter(filters.FilterSet):
         if not termo:
             return queryset
 
-        query = Q(cpf__icontains=termo)
+        query = Q(cpf__icontains=termo) | Q(cns__icontains=termo)
         if connection.vendor == "postgresql":
             query |= Q(nome__unaccent__icontains=termo)
         else:

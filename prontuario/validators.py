@@ -1,3 +1,4 @@
+# Sem uso no código atual: mantido só porque migrações antigas do prontuário SUAS importam estes validadores.
 from django.core.exceptions import ValidationError
 from app.static_data import QUALIFICACAO_CHOICES, DOENCAS_CHOICES
 

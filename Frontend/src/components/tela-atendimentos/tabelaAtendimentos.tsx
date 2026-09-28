@@ -1,5 +1,5 @@
 ﻿import type { Appointment } from "@/types/agenda";
-import { Eye, Edit, Phone, UserCheck, CircleX, ClipboardList, CheckCircle2, ReceiptText } from "lucide-react";
+import { Eye, Edit, Phone, UserCheck, CircleX, ClipboardList, CheckCircle2, ReceiptText, Stethoscope } from "lucide-react";
 import { getAppointmentActionVisibility } from "./appointmentActionRules";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -27,6 +27,7 @@ interface TabelaAtendimentosProps {
   onExcluir: (a: Appointment) => void;
   onEditar: (a: Appointment) => void;
   onRegistrarReceita: (a: Appointment) => void;
+  onRegistrarAtendimento: (a: Appointment) => void;
   onAssumir: (a: Appointment) => void;
   onFinalizar: (a: Appointment) => void;
   onAbrirServicos: (a: Appointment) => void;
@@ -58,6 +59,7 @@ export function TabelaAtendimentos({
   onEditar,
   onExcluir,
   onRegistrarReceita,
+  onRegistrarAtendimento,
   onAssumir,
   onFinalizar,
   onAbrirServicos,
@@ -144,6 +146,16 @@ export function TabelaAtendimentos({
                           onClick={() => onChamar(appointment)}
                         >
                           <Phone className="w-5 h-5 text-green-600" />
+                        </button>
+                      )}
+
+                      {actions.showRegistrarAtendimento && (
+                        <button
+                          className="p-2 hover:bg-teal-100 rounded-full"
+                          title="Registrar atendimento"
+                          onClick={() => onRegistrarAtendimento(appointment)}
+                        >
+                          <Stethoscope className="w-5 h-5 text-teal-700" />
                         </button>
                       )}
 

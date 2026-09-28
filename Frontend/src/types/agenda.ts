@@ -63,5 +63,5 @@ export interface Appointment {
   atendenteQueRealizouChamada?: string;
   tentativasChamada?: number;
   registrosPosAtendimento?: number;
-  prontuario?: unknown;
+  cidadaoId?: string;
 }

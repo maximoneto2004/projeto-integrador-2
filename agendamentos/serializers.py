@@ -8,9 +8,7 @@ from cidadaos.serializers import CidadaoSerializer
 from servicos.serializers import ServicoListDetailSerializer
 from unidade_posto.serializers import UnidadePostoSerializerDetail
 from usuarios.serializers import UsuarioListDetailSerializer
-from prontuario.serializers import ProntuarioSerializer
 
-from prontuario.models import MembroComposicao
 
 class AgendaVagaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -84,7 +82,6 @@ class AgendamentoDetailSerializer(serializers.ModelSerializer):
     servico = ServicoListDetailSerializer()
     unidade = UnidadePostoSerializerDetail()
     atendente = UsuarioListDetailSerializer()
-    prontuario = serializers.SerializerMethodField()
 
 
     class Meta:
@@ -103,18 +100,7 @@ class AgendamentoDetailSerializer(serializers.ModelSerializer):
             "final_atendimento",
             "observacoes_gerais",
             "servicos_adicionais",
-            "prontuario"
         ]
-
-    def get_prontuario(self, obj):
-        try:
-            membro = MembroComposicao.objects.get(cidadao=obj.cidadao)
-            if membro:
-                return ProntuarioSerializer(membro.prontuario).data
-            return None
-        except:
-            return None
-        
 
 
 class AgendamentoSimpleSerializer(serializers.ModelSerializer):

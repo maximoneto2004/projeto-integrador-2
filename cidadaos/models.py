@@ -1,3 +1,4 @@
+from django.core.validators import RegexValidator
 from django.db import models
 from app.mixins import BaseModel
 from app.validators import validate_CPF
@@ -47,6 +48,16 @@ class Cidadao(BaseModel):
     complemento = models.CharField(verbose_name="Complemento", max_length=150, blank=True, null=True)
     origem = models.CharField(verbose_name='Origem do agendamento', choices=ORIGEM_CHOICES, max_length=50, null=True, blank=True)
     unidade_origem = models.ForeignKey(UnidadePosto, verbose_name="Unidade Posto de acompanhamento", null=True, on_delete=models.PROTECT)
+    cns = models.CharField(
+        verbose_name="Cartão Nacional de Saúde (CNS)",
+        max_length=15,
+        null=True,
+        blank=True,
+        unique=True,
+        validators=[RegexValidator(r"^\d{15}$", "O CNS deve ter 15 dígitos.")],
+    )
+    alergias = models.TextField(verbose_name="Alergias", blank=True, null=True, max_length=1000)
+    condicoes_cronicas = models.TextField(verbose_name="Condições Crônicas", blank=True, null=True, max_length=1000)
 
 
     class Meta:
@@ -58,6 +69,7 @@ class Cidadao(BaseModel):
             self.nome = normalize_nome(self.nome)
         if self.cpf:
             self.cpf = re.sub(r"\D", "", self.cpf)
+        self.cns = re.sub(r"\D", "", self.cns or "") or None
         super().save(*args, **kwargs)
 
     def __str__(self):

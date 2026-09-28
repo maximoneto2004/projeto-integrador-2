@@ -13,6 +13,7 @@ import { ModalDetalhesAgendamento } from "@/components/tela-atendimentos/modais/
 import { ModalChamada } from "@/components/tela-atendimentos/modais/modalChamada";
 import { ModalAssumirAtendimento } from "@/components/tela-atendimentos/modais/modalAssumirAtendimento";
 import { ModalRegistrarReceita } from "@/components/tela-atendimentos/modais/modalRegistrarReceita";
+import { ModalRegistrarAtendimento } from "@/components/tela-atendimentos/modais/modalRegistrarAtendimento";
 import { Filtro } from "@/components/tela-atendimentos/filtro";
 import { TabelaAtendimentos } from "@/components/tela-atendimentos/tabelaAtendimentos";
 import { AgendamentosHeader } from "@/components/tela-atendimentos/AgendamentosHeader";
@@ -60,7 +61,7 @@ const mapAgendamentoParaAppointment = (ag: AgendamentoResponse, guicheNomePorId?
     atendenteId: atendente?.id || "",
     guiche: guicheNome,
     motivoOutraUnidade: (ag as any)?.motivo_territorio || undefined,
-    prontuario: (ag as any)?.prontuario ?? null,
+    cidadaoId: ag.cidadao?.id,
   };
 };
 
@@ -89,6 +90,7 @@ const AdminAgendamentos = () => {
   const [agendamentoServicoId, setAgendamentoServicoId] = useState<string | null>(null);
   const [modalReceitaAberto, setModalReceitaAberto] = useState(false);
   const [agendamentoReceita, setAgendamentoReceita] = useState<Appointment | null>(null);
+  const [agendamentoRegistro, setAgendamentoRegistro] = useState<Appointment | null>(null);
   const [modalChamada, setModalChamada] = useState(false);
   const [agendamentoParaChamar, setAgendamentoParaChamar] = useState<Appointment | null>(null);
   const [modalAgendamentoAberto, setModalAgendamentoAberto] = useState(false);
@@ -648,6 +650,7 @@ const AdminAgendamentos = () => {
             onExcluir={onExcluir}
             onEditar={abrirEdicaoAgendamento}
             onRegistrarReceita={abrirModalRegistrarReceita}
+            onRegistrarAtendimento={setAgendamentoRegistro}
             onAssumir={abrirModalAssumir}
             onFinalizar={onFinalizarAtendimento}
             onAbrirServicos={abrirModalServicos}
@@ -794,6 +797,12 @@ const AdminAgendamentos = () => {
         }}
         appointment={agendamentoReceita}
         profissional={user?.nome}
+      />
+
+      <ModalRegistrarAtendimento
+        open={!!agendamentoRegistro}
+        onOpenChange={(open) => !open && setAgendamentoRegistro(null)}
+        appointment={agendamentoRegistro}
       />
 
       <ModalServicosAgendamento

@@ -1,44 +1,25 @@
 from django.contrib import admin
-from .models import ( PessoaReferencia, Prontuario, FormaIngresso, OrgaoOrigemEncaminhamento, Unidade, BeneficioSocial,
-                      Parentesco, MembroComposicao, ExclusaoMembroComposicao, AbastecimentoAgua, CondicaoHabitacional,
-                      CondicaoEducacional, CondicaoEducacionalMembro, DescumprimentoEducacional, DescumprimentoCondicionalidadesBolsa,
-                      TrabalhoRendimentoMembro, TransferenciaRenda, TrabalhoRendimento, SaudeCuidadosMembro, CondicoesDeSaude, BeneficiosEventuais, ConvivenviaFortalecimento, BeneficiosServicos, ConvivenciaFamiliar, AcompanhamentoCreas, SituacaoViolencia, AcolhimentoFamiliar, AcolhimentoInstitucional, AnotacaoPlanejamento, NovoIngresso, RegistroDesligamento, EvolucaoAcompanhamento, AvaliacaoAcompanhamentoFamiliar,
-                      MedidaSocioEducativaMembro, AcompanhamentoLAPSC, MedidaSocioEducativa)
+
+from .models import Receita, ReceitaMedicamento, RegistroAtendimento
 
 
-admin.site.register(MedidaSocioEducativaMembro)
-admin.site.register(AcompanhamentoLAPSC)
-admin.site.register(MedidaSocioEducativa)
-admin.site.register(PessoaReferencia)
-admin.site.register(Prontuario)
-admin.site.register(FormaIngresso)
-admin.site.register(OrgaoOrigemEncaminhamento)
-admin.site.register(Unidade)
-admin.site.register(BeneficioSocial)
-admin.site.register(Parentesco)
-admin.site.register(MembroComposicao)
-admin.site.register(ExclusaoMembroComposicao)
-admin.site.register(AbastecimentoAgua)
-admin.site.register(CondicaoHabitacional)
-admin.site.register(CondicaoEducacional)
-admin.site.register(CondicaoEducacionalMembro)
-admin.site.register(DescumprimentoEducacional)
-admin.site.register(DescumprimentoCondicionalidadesBolsa)
-admin.site.register(TrabalhoRendimentoMembro)
-admin.site.register(TransferenciaRenda)
-admin.site.register(TrabalhoRendimento)
-admin.site.register(SaudeCuidadosMembro)
-admin.site.register(CondicoesDeSaude)
-admin.site.register(BeneficiosEventuais)
-admin.site.register(ConvivenviaFortalecimento)
-admin.site.register(BeneficiosServicos)
-admin.site.register(ConvivenciaFamiliar)
-admin.site.register(AcompanhamentoCreas)
-admin.site.register(SituacaoViolencia)
-admin.site.register(AcolhimentoFamiliar)
-admin.site.register(AcolhimentoInstitucional)
-admin.site.register(AnotacaoPlanejamento)
-admin.site.register(NovoIngresso)
-admin.site.register(RegistroDesligamento)
-admin.site.register(EvolucaoAcompanhamento)
-admin.site.register(AvaliacaoAcompanhamentoFamiliar)
+class ReceitaMedicamentoInline(admin.TabularInline):
+    model = ReceitaMedicamento
+    extra = 0
+    raw_id_fields = ("medicamento",)
+
+
+@admin.register(Receita)
+class ReceitaAdmin(admin.ModelAdmin):
+    list_display = ("cidadao", "profissional", "data_emissao", "data_validade")
+    search_fields = ("cidadao__nome", "cidadao__cpf")
+    raw_id_fields = ("agendamento", "cidadao", "profissional")
+    inlines = [ReceitaMedicamentoInline]
+
+
+@admin.register(RegistroAtendimento)
+class RegistroAtendimentoAdmin(admin.ModelAdmin):
+    list_display = ("cidadao", "profissional", "unidade", "created_at", "cid")
+    search_fields = ("cidadao__nome", "cidadao__cpf", "cid")
+    list_filter = ("unidade", "classificacao_risco")
+    raw_id_fields = ("agendamento", "cidadao", "profissional", "unidade")

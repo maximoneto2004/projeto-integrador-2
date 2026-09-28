@@ -10,16 +10,13 @@ from agendamentos.models import AgendaVaga, Agendamento
 from app.models import Bairro
 from app.static_data import (
     DIA_SEMANA_CHOICES,
-    FORMA_INGRESSO_CHOICES,
     ORIGEM_CHOICES,
-    PARENTESCO_CHOICES,
     PRIORIDADE_CHOICES,
     STATUS_FINAL_ATENDIMENTO_CHOICES,
     URGENCIA_ATENDIMENTO_CHOICES,
 )
 from cidadaos.models import Cidadao
 from fila_espera.models import FilaEspera
-from prontuario.models import MembroComposicao, PessoaReferencia, Prontuario
 from servicos.catalogo_saude import TIPOS_POR_GRUPO
 from servicos.models import Servico
 from unidade_posto.models import Guiche, UnidadePosto
@@ -29,16 +26,14 @@ from usuarios.models import EscalaTrabalho, Usuario
 class Command(BaseCommand):
     help = (
         "Popula dados para testes de dashboards/performance: profissionais, "
-        "cidadaos, prontuarios, grupos familiares, agendamentos historicos "
+        "cidadaos, agendamentos historicos "
         "e fila de espera."
     )
 
     TAG = "[SEED_PERF]"
 
     def add_arguments(self, parser):
-        parser.add_argument("--familias", type=int, default=200)
-        parser.add_argument("--membros-min", type=int, default=2)
-        parser.add_argument("--membros-max", type=int, default=6)
+        parser.add_argument("--cidadaos", type=int, default=800)
         parser.add_argument("--profissionais-por-unidade", type=int, default=6)
         parser.add_argument("--agendamentos", type=int, default=3000)
         parser.add_argument("--fila-aguardando", type=int, default=800)
@@ -56,12 +51,6 @@ class Command(BaseCommand):
 
         if options["limpar"]:
             self._limpar()
-            return
-
-        membros_min = options["membros_min"]
-        membros_max = options["membros_max"]
-        if membros_min < 1 or membros_max < membros_min:
-            self.stdout.write(self.style.ERROR("Parametros invalidos: membros-min/membros-max"))
             return
 
         unidades = list(UnidadePosto.objects.filter(is_active=True))
@@ -92,11 +81,9 @@ class Command(BaseCommand):
             vagas_por_slot=options["vagas_por_slot"],
         )
 
-        self.stdout.write(self.style.NOTICE("Criando familias, cidadaos e prontuarios..."))
-        cidadaos = self._criar_familias(
-            familias=options["familias"],
-            membros_min=membros_min,
-            membros_max=membros_max,
+        self.stdout.write(self.style.NOTICE("Criando cidadaos..."))
+        cidadaos = self._criar_cidadaos(
+            quantidade=options["cidadaos"],
             unidades=unidades,
             bairros=bairros,
         )
@@ -226,61 +213,33 @@ class Command(BaseCommand):
                         vagas.append(vaga)
         return vagas
 
-    def _criar_familias(self, familias, membros_min, membros_max, unidades, bairros):
-        parentescos = [p[0] for p in PARENTESCO_CHOICES if p[0] != "REFERENCIA"]
-        formas_ingresso = [f[0] for f in FORMA_INGRESSO_CHOICES]
+    def _criar_cidadaos(self, quantidade, unidades, bairros):
         origens = [o[0] for o in ORIGEM_CHOICES]
+        alergias = [None, None, None, "Dipirona", "Penicilina", "Frutos do mar"]
+        condicoes = [None, None, "Hipertensão", "Diabetes tipo 2", "Asma", "Hipertensão e diabetes tipo 2"]
         cidadaos = []
         inicio_cpf = 600000000
 
         with transaction.atomic():
-            for idx_familia in range(1, familias + 1):
-                unidade = random.choice(unidades)
-                bairro = random.choice(bairros)
-                prontuario = Prontuario.objects.create(unidade_inicial=unidade)
-                total_membros = random.randint(membros_min, membros_max)
-                familia = []
-
-                for ordem in range(total_membros):
-                    seq = inicio_cpf + (idx_familia * 1000) + ordem
-                    cpf = self._gerar_cpf_valido(seq)
-                    cid = Cidadao.objects.create(
-                        nome=f"{self.TAG} Cidadao {idx_familia:05d}-{ordem:02d}",
+            for idx in range(1, quantidade + 1):
+                cpf = self._gerar_cpf_valido(inicio_cpf + idx)
+                cidadaos.append(
+                    Cidadao.objects.create(
+                        nome=f"{self.TAG} Cidadao {idx:05d}",
                         cpf=cpf,
-                        email=f"seedperf_{idx_familia:05d}_{ordem:02d}@example.local",
+                        email=f"seedperf_{idx:05d}@example.local",
                         telefone=f"8599{random.randint(1000000, 9999999)}",
                         sexo=random.choice(["MASCULINO", "FEMININO"]),
                         data_nascimento=date(1950, 1, 1) + timedelta(days=random.randint(0, 25000)),
                         origem=random.choice(origens),
-                        unidade_origem=unidade,
-                        bairro=bairro,
-                        logradouro=f"{self.TAG} Rua {idx_familia}",
+                        unidade_origem=random.choice(unidades),
+                        bairro=random.choice(bairros),
+                        logradouro=f"{self.TAG} Rua {idx}",
                         numero=str(random.randint(1, 9999)),
                         cep=f"60{random.randint(100, 999)}-{random.randint(100, 999)}",
+                        alergias=random.choice(alergias),
+                        condicoes_cronicas=random.choice(condicoes),
                     )
-                    cidadaos.append(cid)
-                    familia.append(cid)
-
-                    MembroComposicao.objects.create(
-                        prontuario=prontuario,
-                        cidadao=cid,
-                        parentesco="REFERENCIA" if ordem == 0 else random.choice(parentescos),
-                        responsavel=(ordem == 0),
-                        ativo=True,
-                        data_entrada=timezone.localdate() - timedelta(days=random.randint(30, 700)),
-                    )
-
-                PessoaReferencia.objects.create(
-                    pessoa_referencia=familia[0],
-                    prontuario=prontuario,
-                    bairro=bairro,
-                    logradouro=f"{self.TAG} Endereco Familia {idx_familia}",
-                    numero=str(random.randint(1, 9999)),
-                    cep=f"60{random.randint(100, 999)}-{random.randint(100, 999)}",
-                    cidade="Fortaleza",
-                    estado="CE",
-                    forma_ingresso=random.choice(formas_ingresso),
-                    razoes=f"{self.TAG} Cadastro gerado para teste de performance.",
                 )
         return cidadaos
 
@@ -411,14 +370,6 @@ class Command(BaseCommand):
 
             ag_qs = Agendamento.objects.filter(observacoes_gerais__startswith=self.TAG)
             ag_qs.delete()
-
-            membros_qs = MembroComposicao.objects.filter(cidadao__nome__startswith=self.TAG)
-            prontuario_ids = list(membros_qs.values_list("prontuario_id", flat=True).distinct())
-            membros_qs.delete()
-
-            PessoaReferencia.objects.filter(pessoa_referencia__nome__startswith=self.TAG).delete()
-            if prontuario_ids:
-                Prontuario.objects.filter(id__in=prontuario_ids).delete()
 
             Cidadao.objects.filter(nome__startswith=self.TAG).delete()
 
