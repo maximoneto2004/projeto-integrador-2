@@ -894,6 +894,11 @@
           "view_medicamento",
           "medicamentos",
           "medicamento"
+        ],
+        [
+          "view_lotemedicamento",
+          "medicamentos",
+          "lotemedicamento"
         ]
       ]
     }
@@ -1793,6 +1798,11 @@
           "view_medicamento",
           "medicamentos",
           "medicamento"
+        ],
+        [
+          "view_lotemedicamento",
+          "medicamentos",
+          "lotemedicamento"
         ]
       ]
     }
@@ -2071,6 +2081,16 @@
           "view_medicamento",
           "medicamentos",
           "medicamento"
+        ],
+        [
+          "view_lotemedicamento",
+          "medicamentos",
+          "lotemedicamento"
+        ],
+        [
+          "view_movimentacaoestoque",
+          "medicamentos",
+          "movimentacaoestoque"
         ]
       ]
     }
@@ -2423,6 +2443,31 @@
           "view_medicamento",
           "medicamentos",
           "medicamento"
+        ],
+        [
+          "add_lotemedicamento",
+          "medicamentos",
+          "lotemedicamento"
+        ],
+        [
+          "change_lotemedicamento",
+          "medicamentos",
+          "lotemedicamento"
+        ],
+        [
+          "view_lotemedicamento",
+          "medicamentos",
+          "lotemedicamento"
+        ],
+        [
+          "add_movimentacaoestoque",
+          "medicamentos",
+          "movimentacaoestoque"
+        ],
+        [
+          "view_movimentacaoestoque",
+          "medicamentos",
+          "movimentacaoestoque"
         ]
       ]
     }
