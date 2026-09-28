@@ -119,7 +119,6 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
-            BASE_DIR / "base",
             BASE_DIR / "Frontend" / "dist",
             BASE_DIR / "static",
         ],
@@ -332,6 +331,9 @@ FRONTEND_RESET_PASSWORD_URL = os.getenv("FRONTEND_RESET_PASSWORD_URL")
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# Nome exibido nos e-mails; manter igual a APP_NAME em Frontend/src/constants/app.ts.
+NOME_SISTEMA = "Sistema de Postos de Saúde"
 
 # CSP CONFIGS
 # CSP_REPORT_ONLY = os.getenv("CSP_REPORT_ONLY", "True" if DEBUG else "False").lower() == "true"

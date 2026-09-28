@@ -37,7 +37,7 @@ import { Button } from "./ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { clearMesaInStorage, deriveRoleFromGroups, getMesaFromStorage } from "@/lib/authHelpers";
 import { useEffect } from "react";
-import logoSdhdsCor from "@/assets/images/logo-sdhds-cor.png";
+import { BrandLogo } from "./BrandLogo";
 
 interface MenuItem {
   title: string;
@@ -259,7 +259,6 @@ export function RoleBasedSidebar() {
   const userRole = deriveRoleFromGroups(user?.grupos);
   const mesa = getMesaFromStorage();
   const location = useLocation();
-  const citinovaLogoSrc = encodeURI(`${import.meta.env.BASE_URL}CITINOVA_COR (1).png`);
 
   if (!user || !userRole) return null;
 
@@ -270,9 +269,8 @@ export function RoleBasedSidebar() {
   };
   return (
     <Sidebar>
-      {/* 1. Header Dedicado para a Logo */}
       <div className="flex flex-col items-center px-6 py-4">
-        {/* <img src={logoSdhdsCor} alt="Logo Prefeitura" className="h-14 w-auto object-contain " /> */}
+        <BrandLogo size="sm" />
       </div>
 
       <SidebarContent>
@@ -327,11 +325,6 @@ export function RoleBasedSidebar() {
         </SidebarGroupContent>
       </SidebarContent>
 
-      <div className="flex flex-col items-center justify-center gap-2">
-        {/* <img src={citinovaLogoSrc} alt="Logo CITINOVA" className="h-16 w-auto object-contain" /> */}
-        {/* <img src={logoSdhdsCor} alt="Logo SDHDS" className="h-8 w-auto pb-4 object-contain" /> */}
-
-      </div>
       <SidebarFooter className="p-4 border-t bg-background">
         <Button variant="ghost" className="w-full justify-start gap-3 text-muted-foreground hover:text-destructive" onClick={handleLogout}>
           <LogOut className="h-4 w-4" />

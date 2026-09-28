@@ -4,9 +4,6 @@ from django.core.cache import cache
 from django.db.models import F, Q
 from django.http import JsonResponse
 from django.shortcuts import redirect
-from django.urls import reverse
-from django.views import View
-from django.views.generic import TemplateView
 from rest_framework import permissions, status, serializers
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
@@ -24,15 +21,10 @@ from agendamentos.serializers import (
     AgendamentoDetailSerializer,
     AgendamentoSerializer,
 )
-from cidadaos.models import Cidadao
-from cidadaos.requests_fd import check_auth_sso, get_valid_token_or_none
 from servicos.models import Servico, TipoServico
 from unidade_posto.models import ServicoUnidadePosto, UnidadePosto
 from app.permissions import DjangoModelPermissionsWithView
 from app.static_data import GRUPOS_PROFISSIONAIS_SAUDE, TIPO_MARCACAO_AGENDAMENTO
-from cidadaos.authentication import SSOAuthentication
-from cidadaos.serializers import CidadaoSerializer
-from rest_framework.permissions import AllowAny
 from usuarios.models import EscalaTrabalho
 from django.conf import settings
 from utils.email import send_email_in_thread
@@ -107,6 +99,7 @@ def _send_agendamento_email(agendamento):
             "atendimento/enderecos-e-telefones/2-uncategorised/"
             "57-telefones-e-enderecos-cras"
         ),
+        "nome_sistema": settings.NOME_SISTEMA,
     }
     html = render_to_string(
         "agendamentos/email_agendamento_confirmacao.html", context
@@ -122,21 +115,6 @@ def _send_agendamento_email(agendamento):
         )
     except Exception:
         logger.exception("Falha ao enviar email de agendamento para %s", email)
-
-
-class TelaAgendamentoView(TemplateView):
-    template_name = "tela_agendamento.html"
-
-    def dispatch(self, request, *args, **kwargs):
-        redirect_response = check_auth_sso(request)
-        if redirect_response:
-            return redirect_response
-        return super().dispatch(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
-        ctx["unidades"] = UnidadePosto.objects.all()
-        return ctx
 
 
 def _ofertas_agendaveis(unidade_id):
@@ -191,93 +169,6 @@ def ajax_carregar_servicos_por_tipo(request, unidade_id, tipo_id):
     data = [{"id": str(s.id), "nome": s.nome} for s in servicos]
 
     return JsonResponse({"servicos": data})
-
-
-class CriarAgendamentoView(View):
-    permission_classes = [permissions.IsAuthenticated, DjangoModelPermissionsWithView]
-    queryset = Agendamento.objects.all()
-
-    def post(self, request):
-        token = get_valid_token_or_none(request)
-        if not token:
-            return JsonResponse({"redirect": reverse("login")}, status=401)
-
-        identidade = {
-            "cpf": token.get("preferred_username"),
-            "email": token.get("email"),
-            "nome": token.get("name"),
-        }
-        
-        cidadao = None
-        if identidade["cpf"] or identidade["email"]:
-            cidadao = Cidadao.objects.filter(
-                Q(cpf=identidade["cpf"]) | Q(email=identidade["email"])
-            ).first()
-        # if identidade.get("cpf"):
-        #     cidadao = Cidadao.objects.filter(cpf=identidade["cpf"]).first()
-        # if not cidadao and identidade.get("email"):
-        #     cidadao = Cidadao.objects.filter(email=identidade["email"]).first()
-
-        if not cidadao:
-            # Garante que a identidade ficará na sessão para pré-preencher o cadastro
-            request.session["cidadao_identity"] = {
-                k: v for k, v in identidade.items() if v
-            }
-            return JsonResponse({"redirect": reverse("completar_cadastro")}, status=403)
-
-        vaga_id = request.POST.get("vaga_id")
-        servico_id = request.POST.get("servico_id")
-        if not vaga_id or not servico_id:
-            return JsonResponse({"error": "Dados incompletos."}, status=400)
-
-        try:
-            servico = Servico.objects.filter(pk=servico_id).first()
-        except Servico.DoesNotExist:
-            return JsonResponse({"error": "Serviço inválido."}, status=404)
-
-        if Agendamento.possui_ativo_por_tipo(
-                cidadao=cidadao,
-                tipo_servico=servico.tipo_servico,
-            ):
-                return JsonResponse(
-                    {"error": "Já existe um agendamento ativo deste tipo para você."},
-                    status=409,
-                )
-        
-        with transaction.atomic():
-            try:
-                vaga = AgendaVaga.objects.select_for_update().get(pk=vaga_id)
-            except AgendaVaga.DoesNotExist:
-                return JsonResponse({"error": "Vaga não encontrada."}, status=404)
-
-            if vaga.vagas_ocupadas >= vaga.vagas:
-                return JsonResponse({"error": "Vaga já preenchida."}, status=409)
-
-            if servico.tipo_servico_id != vaga.tipo_servico_id:
-                return JsonResponse(
-                    {"error": "Serviço não pertence a este tipo de vaga."}, status=400
-                )
-
-            vaga.vagas_ocupadas += 1
-            vaga.save(update_fields=["vagas_ocupadas", "updated_at"])
-
-            agendamento = Agendamento.objects.create(
-                cidadao=cidadao,
-                unidade=vaga.unidade,
-                servico=servico,
-                vaga=vaga,
-                situacao="AGENDADO",
-            )
-
-        transaction.on_commit(lambda:_send_agendamento_email(agendamento))
-
-        return JsonResponse(
-            {
-                "ok": True,
-                "agendamento_id": str(agendamento.id),
-                "mensagem": f"Agendamento confirmado para {vaga.data} às {vaga.horario}.",
-            }
-        )
 
 
 class AgendamentoAtivadoAusenteAPIView(APIView):
@@ -641,285 +532,6 @@ class AgendamentoListCreateView(generics.ListCreateAPIView):
             {"success": True, "result": serializer.data},
             status=status.HTTP_201_CREATED,
         )
-
-
-class AgendamentoSSOCreateView(generics.GenericAPIView):
-    authentication_classes = [SSOAuthentication]
-    permission_classes = [AllowAny]
-    filter_backends = [DjangoFilterBackend]
-    filterset_class = AgendamentoFilter
-
-    def get(self, request, *args, **kwargs):
-        identidade = getattr(request, "sso_identity", None) or {}
-        cpf = identidade.get("cpf")
-        email = identidade.get("email")
-        if not cpf and not email:
-            return Response(
-                {"success": False, "result": "CPF ou email é obrigatório."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        cidadao = None
-        if cpf:
-            cidadao = Cidadao.objects.filter(cpf=cpf).first()
-        if not cidadao and email:
-            cidadao = Cidadao.objects.filter(email=email).first()
-
-        if not cidadao:
-            return Response({"success": True, "result": []})
-
-        qs = self.filter_queryset(
-            Agendamento.objects.filter(cidadao=cidadao)
-        ).order_by("-created_at")
-
-        page_param = request.query_params.get("page")
-        page_size_param = request.query_params.get("page_size")
-        if page_param is not None or page_size_param is not None:
-            try:
-                page = int(page_param or 1)
-            except (TypeError, ValueError):
-                page = 1
-            try:
-                page_size = int(page_size_param or 10)
-            except (TypeError, ValueError):
-                page_size = 10
-
-            page = max(page, 1)
-            page_size = max(1, min(page_size, 50))
-            total = qs.count()
-            start = (page - 1) * page_size
-            end = start + page_size
-            paged_qs = qs[start:end]
-
-            serializer = AgendamentoDetailSerializer(
-                paged_qs, many=True, context={"request": request}
-            )
-            return Response(
-                {
-                    "success": True,
-                    "result": {
-                        "items": serializer.data,
-                        "total": total,
-                        "page": page,
-                        "page_size": page_size,
-                        "has_next": end < total,
-                    },
-                }
-            )
-
-        serializer = AgendamentoDetailSerializer(qs, many=True, context={"request": request})
-        return Response({"success": True, "result": serializer.data})
-
-    def post(self, request, *args, **kwargs):
-        identidade = getattr(request, "sso_identity", None) or {}
-        identidade = dict(identidade)
-        identidade.setdefault("origem", "SITE")
-        # Evita validação de null em campos de endereço não anuláveis no Cidadao.
-        for field in ("logradouro", "numero", "cep", "complemento"):
-            if identidade.get(field) is None:
-                identidade.pop(field, None)
-        cpf = identidade.get("cpf")
-        email = identidade.get("email")
-        if not cpf and not email:
-            return Response(
-                {"success": False, "result": "CPF ou email é obrigatório."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        cidadao = None
-        if cpf:
-            cidadao = Cidadao.objects.filter(cpf=cpf).first()
-        if not cidadao and email:
-            cidadao = Cidadao.objects.filter(email=email).first()
-
-        if cidadao:
-            cid_serializer = CidadaoSerializer(
-                cidadao, data=identidade, partial=True
-            )
-            cid_serializer.is_valid(raise_exception=True)
-            cid_serializer.save()
-        else:
-            cid_serializer = CidadaoSerializer(data=identidade)
-            cid_serializer.is_valid(raise_exception=True)
-            cidadao = cid_serializer.save()
-
-        data = request.data.copy()
-        data["cidadao"] = str(cidadao.id)
-        data["origem"] = "SITE"
-        if not data.get("situacao"):
-            data["situacao"] = "AGENDADO"
-
-        serializer = AgendamentoSerializer(data=data, context={"request": request})
-        try:
-            serializer.is_valid(raise_exception=True)
-        except Exception as exc:
-            if isinstance(exc, serializers.ValidationError):
-                detail = exc.detail
-                message = detail
-                if isinstance(detail, dict):
-                    first_key = next(iter(detail.keys()), None)
-                    if first_key is not None:
-                        value = detail[first_key]
-                        if isinstance(value, (list, tuple)) and value:
-                            message = value[0]
-                        else:
-                            message = value
-                return Response(
-                    {"success": False, "result": message},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-            raise
-
-        vaga = serializer.validated_data.get("vaga")
-        servico = serializer.validated_data.get("servico")
-        situacao = serializer.validated_data.get("situacao") or "AGENDADO"
-
-        if not vaga:
-            return Response(
-                {
-                    "success": False,
-                    "result": "Vaga é obrigatória para criar agendamento.",
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        if Agendamento.possui_ativo_por_tipo(
-            cidadao=cidadao,
-            tipo_servico=servico.tipo_servico,
-        ):
-            return Response(
-                {
-                    "success": False,
-                    "result": "Já existe um agendamento ativo deste tipo para você.",
-                },
-                status=status.HTTP_409_CONFLICT,
-            )
-
-        with transaction.atomic():
-            try:
-                vaga_locked = AgendaVaga.objects.select_for_update().get(pk=vaga.pk)
-            except AgendaVaga.DoesNotExist:
-                return Response(
-                    {"success": False, "result": "Vaga não encontrada."},
-                    status=status.HTTP_404_NOT_FOUND,
-                )
-
-            if vaga_locked.vagas_ocupadas >= vaga_locked.vagas:
-                return Response(
-                    {"success": False, "result": "Vaga já preenchida."},
-                    status=status.HTTP_409_CONFLICT,
-                )
-
-            if servico.tipo_servico_id != vaga_locked.tipo_servico_id:
-                return Response(
-                    {
-                        "success": False,
-                        "result": "Serviço não pertence a este tipo de vaga.",
-                    },
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-
-            initial_ocupadas = vaga_locked.vagas_ocupadas
-            agendamento = serializer.save(
-                vaga=vaga_locked,
-                unidade=vaga_locked.unidade,
-                data=vaga_locked.data,
-                horario=vaga_locked.horario,
-                situacao=situacao,
-                origem="SITE",
-            )
-
-            vaga_locked.refresh_from_db(fields=["vagas_ocupadas"])
-            if vaga_locked.vagas_ocupadas == initial_ocupadas:
-                AgendaVaga.objects.filter(pk=vaga_locked.pk).update(
-                    vagas_ocupadas=F("vagas_ocupadas") + 1
-                )
-                vaga_locked.refresh_from_db(fields=["vagas_ocupadas"])
-
-        _send_agendamento_email(agendamento)
-
-        return Response(
-            {"success": True, "result": serializer.data},
-            status=status.HTTP_201_CREATED,
-        )
-
-
-class AgendamentoSSORetrieveUpdateView(APIView):
-    authentication_classes = [SSOAuthentication]
-    permission_classes = [AllowAny]
-
-    def get(self, request, pk, *args, **kwargs):
-        identidade = getattr(request, "sso_identity", None) or {}
-        cpf = identidade.get("cpf")
-        email = identidade.get("email")
-        if not cpf and not email:
-            return Response(
-                {"success": False, "result": "CPF ou email é obrigatório."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        cidadao = None
-        if cpf:
-            cidadao = Cidadao.objects.filter(cpf=cpf).first()
-        if not cidadao and email:
-            cidadao = Cidadao.objects.filter(email=email).first()
-        if not cidadao:
-            return Response(
-                {"success": False, "result": "Cidadão não encontrado."},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-        try:
-            agendamento = Agendamento.objects.get(pk=pk, cidadao=cidadao)
-        except Agendamento.DoesNotExist:
-            return Response(
-                {"success": False, "result": "Agendamento não encontrado."},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-        serializer = AgendamentoDetailSerializer(
-            agendamento, context={"request": request}
-        )
-        return Response({"success": True, "result": serializer.data})
-
-    def patch(self, request, pk, *args, **kwargs):
-        identidade = getattr(request, "sso_identity", None) or {}
-        cpf = identidade.get("cpf")
-        email = identidade.get("email")
-        if not cpf and not email:
-            return Response(
-                {"success": False, "result": "CPF ou email é obrigatório."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        cidadao = None
-        if cpf:
-            cidadao = Cidadao.objects.filter(cpf=cpf).first()
-        if not cidadao and email:
-            cidadao = Cidadao.objects.filter(email=email).first()
-        if not cidadao:
-            return Response(
-                {"success": False, "result": "Cidadão não encontrado."},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-        try:
-            agendamento = Agendamento.objects.get(pk=pk, cidadao=cidadao)
-        except Agendamento.DoesNotExist:
-            return Response(
-                {"success": False, "result": "Agendamento não encontrado."},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-        data = request.data.copy()
-        data["cidadao"] = str(cidadao.id)
-        serializer = AgendamentoSerializer(
-            agendamento, data=data, partial=True, context={"request": request}
-        )
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        return Response({"success": True, "result": serializer.data})
 
 
 class AgendamentoRetrieveUpdateView(generics.RetrieveUpdateAPIView):

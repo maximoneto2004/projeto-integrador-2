@@ -1,4 +1,4 @@
-import { Route, RouteObject, Routes } from "react-router-dom";
+import { Navigate, Route, RouteObject, Routes } from "react-router-dom";
 import { adminRoutes } from "./adminRoutes";
 import { agendamentosRoutes } from "./agendamentosRoutes";
 import { prontuarioRoutes } from "./prontuarioRoutes";
@@ -17,6 +17,7 @@ const renderRoutes = (routes: RouteObject[]) =>
 
 export const AppRoutes = () => (
   <Routes>
+    <Route path="/" element={<Navigate to="/sistema/login" replace />} />
     {renderRoutes(groups)}
     <Route path="*" element={<NotFound />} />
   </Routes>

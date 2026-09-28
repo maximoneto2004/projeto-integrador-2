@@ -25,20 +25,13 @@ from drf_spectacular.views import (
 )
 from django.conf import settings
 from django.conf.urls.static import static
-from cidadaos import requests_fd
-from cidadaos.views import capturar_identidade
 
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", TemplateView.as_view(template_name="index.html"), name="frontend"),
-    path("", include("app.urls_web")),
     re_path(r"^sistema/.*$", TemplateView.as_view(template_name="index.html")),
-
-    # Portal SPA routes (React Router)
-    re_path(r"^(agendar(?:/.*)?|meus-agendamentos(?:/.*)?|perfil(?:/.*)?|cadastro-digital(?:/.*)?|duvidas-frequentes(?:/.*)?|unidades-postos(?:/.*)?|styleguide(?:/.*)?|teste(?:/.*)?|selo(?:/.*)?|validar-cadastro(?:/.*))$", TemplateView.as_view(template_name="index.html")),
     path("api/v1/", include("app.urls")),
-    path("agendamentos/", include("agendamentos.web_urls")),
     path("api/v1/", include("authentication.urls")),
     path("api/v1/", include("unidade_posto.urls")),
     path("api/v1/", include("cidadaos.urls")),
@@ -50,23 +43,9 @@ urlpatterns = [
     path("api/v1/",include("duvidas_frequentes.urls")),
     path("api/v1/",include("historico.urls")),
     path("api/prontuario/", include("prontuario.urls")),
-    # esses endpoints são para o fortd
-    path("auth-sso", requests_fd.check_auth_sso, name="auth_sso_root"),
-    path("login-sso", requests_fd.login_sso, name="login_sso_root"),
-    path("logout-sso", requests_fd.logout, name="logout_sso_root"),
-    path("cidadao-identity", capturar_identidade, name="cidadao_identity_root"),
     path("api/v1/", include("servicos.urls")),
     path("api/v1/", include("medicamentos.urls")),
-    path("api/sso/", include("cidadaos.urls_sso")),
-    path("api/sso/", include("agendamentos.urls_sso")),
 ]
-
-"""
-Em relação ao cidadao-identity é só uma rota que eu criei para o frontend 
-conseguir pegar o perfil do cidadão que foi salvo na sessão depois do round-trip do fort digital, 
-caso queira depois é só trazer no no login-sso sem problemas.
-
-"""
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

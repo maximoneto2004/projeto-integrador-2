@@ -10,6 +10,7 @@ import { deriveRoleFromGroups, getDefaultRouteByRole } from "@/lib/authHelpers";
 import { authService } from "@/services/sistema/authService";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import bgCras from "@/assets/images/bgCras.jpg";
+import { BrandLogo } from "@/components/BrandLogo";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -125,6 +126,9 @@ const AdminLogin = () => {
       <div className="hidden lg:block lg:w-[60%] relative overflow-hidden bg-slate-200">
         <img src={bgCras} alt="" aria-hidden="true" className="absolute inset-0 z-0 h-full w-full object-cover" />
         <div className="absolute inset-0 z-10 bg-black/10" />
+        <div className="absolute top-8 left-8 z-20 drop-shadow-lg">
+          <BrandLogo size="lg" tone="light" />
+        </div>
       </div>
 
       <Dialog open={forgotOpen} onOpenChange={setForgotOpen}>

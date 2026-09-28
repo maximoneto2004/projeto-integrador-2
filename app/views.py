@@ -1,48 +1,12 @@
-from django.views.generic import TemplateView
-from cidadaos.requests_fd import get_valid_token_or_none, check_auth_sso, logout
-from django.shortcuts import redirect
 from rest_framework import generics, status, permissions
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 from django.http import Http404
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Bairro
-from .serializers import BairroSerializer, FaleConoscoSerializer
+from .serializers import BairroSerializer
 from .filters import BairroFilter
 from app.permissions import DjangoModelPermissionsWithView
-from utils.email import send_email_in_thread
-import os
-
-RHSSO_URL_BASE = "https://sso-rhsso-hom.apps.np-ocp.fortaleza.ce.gov.br"
-REALM = "pmf"
-CLIENT_ID = "citinova-reciclo"
-HOST = "http://localhost:8080"
-REDIRECT_URI = HOST + "/login-sso"
-
-
-class IndexView(TemplateView):
-    template_name = "app/index.html"
-
-
-def login(request):
-    token_parsed = get_valid_token_or_none(request)
-    if token_parsed:
-        print(token_parsed)
-    else:
-        return redirect(
-            RHSSO_URL_BASE
-            + "/auth/realms/"
-            + REALM
-            + "/protocol/openid-connect/auth?response_type=code&"
-            "client_id=" + CLIENT_ID + "&scope=openid" + "&redirect_uri=" + REDIRECT_URI
-        )
-        check_auth_sso(request)
-    return redirect("index")
-
-
-def logout_sso(request):
-    logout(request)
-    return redirect("/")
 
 
 class BairroListCreateView(generics.ListCreateAPIView):
@@ -144,42 +108,3 @@ class BairroRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
             {"success": True, "result": "Bairro removido com sucesso."},
             status=status.HTTP_204_NO_CONTENT,
         )
-
-class FaleConoscoView(generics.GenericAPIView):
-    permission_classes = [permissions.AllowAny]
-    serializer_class = FaleConoscoSerializer
-
-    def _valid_nome_length(nome: str):
-        if len(nome) > 150:
-            return Response({
-                "success": False,
-                "result": "O nome completo deve conter no máximo 150 caracteres."
-            }, status=status.HTTP_400_BAD_REQUEST)
-            
-
-    def _prepare_email(email_data:dict):
-        nome = email_data.get('nome_completo')
-        email = email_data.get('email')
-        assunto = email_data.get('assunto')
-        mensagem = email_data.get('mensagem')
-        message_sent = f'{nome}<br>{mensagem}'
-        return [nome, email, assunto, message_sent]
-
-
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            content = FaleConoscoView._prepare_email(request.data)
-            send_email_in_thread(
-                os.getenv('EMAIL_HOST_USER'), 
-                content[2],
-                'Mensagem do Portal Agendamento CRAS',
-                content[3],
-                content[1])
-            
-            return Response(
-                {"success": True, "result": "Mensagem enviada com sucesso."},
-                status=status.HTTP_200_OK,
-            )
-        return Response({"success": False, "result": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-    

@@ -5,16 +5,13 @@ from .views import (
     AgendamentoRetrieveUpdateView,
     AgendamentoAtivadoAusenteAPIView,
     AgendamentoCanceladoCrasAPIView,
-    TelaAgendamentoView,
     ajax_carregar_tipos,
     ajax_carregar_vagas,
     ajax_carregar_servicos_por_tipo,
-    CriarAgendamentoView,
     UltimasChamadasPainelAPIView,
 )
 
 urlpatterns = [
-    path("", TelaAgendamentoView.as_view(), name="tela_agendamento"),
     path(
         "ajax/tipos/<uuid:unidade_id>/", ajax_carregar_tipos, name="ajax_carregar_tipos"
     ),
@@ -28,7 +25,6 @@ urlpatterns = [
         ajax_carregar_vagas,
         name="ajax_carregar_vagas",
     ),
-    path("ajax/agendar/", CriarAgendamentoView.as_view(), name="ajax_agendar"),
     path("vagas/", AgendaVagaListView.as_view(), name="lista_vagas"),
     path(
         "agendamentos/",

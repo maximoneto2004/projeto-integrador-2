@@ -191,6 +191,7 @@ class PasswordResetRequestAPIView(APIView):
                 context = {
                     "cidadao_nome": getattr(user, "nome_completo", "") or getattr(user, "nome", ""),
                     "link_redefinicao": reset_url,
+                    "nome_sistema": settings.NOME_SISTEMA,
                 }
                 html = render_to_string(
                     "authentication/email_password_reset.html", context

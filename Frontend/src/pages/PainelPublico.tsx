@@ -3,8 +3,7 @@ import { Card } from "@/components/ui/card";
 import { format } from "date-fns";
 import { Volume2, MapPin, Clock } from "lucide-react";
 import { usePainelChamadas } from "@/hooks/sistema/usePainelChamadas";
-
-const logoPrefeituraSrc = `${import.meta.env.BASE_URL}Untitled-2-01.png`;
+import { BrandLogo } from "@/components/BrandLogo";
 
 type ChamadoDisplay = {
   nomeCidadao: string;
@@ -75,11 +74,7 @@ export default function PainelPublico() {
       <div className="mx-auto flex min-h-[calc(100vh-2rem)] w-full max-w-[1600px] flex-col">
         <header className="mb-4 flex-none md:mb-8">
           <div className="flex flex-col items-center justify-center gap-4 md:flex-row md:gap-6">
-            <img
-              src={logoPrefeituraSrc}
-              alt="Logo Prefeitura de Fortaleza"
-              className="h-16 w-auto object-contain drop-shadow-sm sm:h-20 md:h-28"
-            />
+            <BrandLogo size="lg" />
             <div className="text-center md:text-left">
               <div className="mb-1 flex items-center justify-center gap-2 sm:gap-3 md:justify-start">
                 <h1 className="text-2xl font-extrabold tracking-tight text-primary sm:text-3xl md:text-5xl">

@@ -93,7 +93,8 @@ def _send_agendamento_cancelado_email(agendamento: Agendamento):
             "https://desenvolvimentosocial.fortaleza.ce.gov.br/"
             "atendimento/enderecos-e-telefones/2-uncategorised/"
             "57-telefones-e-enderecos-cras"
-        )
+        ),
+        "nome_sistema": settings.NOME_SISTEMA,
     }
     html = render_to_string("agendamentos/email_agendamento_cancelado.html", context)
     message = strip_tags(html)

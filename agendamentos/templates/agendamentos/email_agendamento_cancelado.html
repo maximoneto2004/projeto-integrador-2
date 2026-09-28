@@ -11,7 +11,7 @@
                 <div style="max-width:600px; margin:0 auto; background: #ffffff; border-radius:12px; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);">
                     
                     <div style="background-color: #ffffff; padding: 30px 20px; text-align: center; border-bottom: 4px solid #ff8558;">
-                        <img src="https://citinova.fortaleza.ce.gov.br/static/dist/images/logo-pmf-2025.png" alt="Prefeitura de Fortaleza" style="width: 220px; height: auto;">
+                        <span style="font-size: 22px; font-weight: 700; color: #1f2937;">{{ nome_sistema }}</span>
                     </div>
 
                     <div style="padding: 40px 35px;">
@@ -46,7 +46,7 @@
                 
                 <div style="max-width:600px; margin: 20px auto; text-align: center;">
                     <p style="color:#92400e; font-size:11px; opacity: 0.8;">
-                        © 2026 Prefeitura Municipal de Fortaleza. <br> Este é um informativo automático e não deve ser respondido.
+                        © {% now "Y" %} {{ nome_sistema }}. <br> Este é um informativo automático e não deve ser respondido.
                     </p>
                 </div>
             </td>

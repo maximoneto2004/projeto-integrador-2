@@ -7,8 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authService } from "@/services/sistema/authService";
 import bgCras from "@/assets/images/bgCras.jpg";
-import citinova from "@/assets/images/logo-citinova-branc.png";
-import sdhds from "@/assets/images/logo-sdhds-branca.png";
+import { BrandLogo } from "@/components/BrandLogo";
 
 const AlterarSenha = () => {
   const [novaSenha, setNovaSenha] = useState("");
@@ -128,12 +127,8 @@ const AlterarSenha = () => {
         <img src={bgCras} alt="" aria-hidden="true" className="absolute inset-0 z-0 h-full w-full object-cover" />
         <div className="absolute inset-0 z-10 bg-black/10" />
 
-        <div className="absolute top-8 left-8 z-20">
-          <img src={sdhds} alt="Logo SDHDS" className="h-28 w-auto object-contain drop-shadow-lg" />
-        </div>
-
-        <div className="absolute bottom-8 left-8 z-20">
-          <img src={citinova} alt="Logo Citinova" className="h-16 w-auto object-contain drop-shadow-lg" />
+        <div className="absolute top-8 left-8 z-20 drop-shadow-lg">
+          <BrandLogo size="lg" tone="light" />
         </div>
       </div>
     </div>
