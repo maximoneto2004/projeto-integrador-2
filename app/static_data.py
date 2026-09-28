@@ -1,7 +1,57 @@
 GRUPO_MEDICO = "Médico"
 GRUPO_ENFERMEIRO = "Enfermeiro"
 GRUPO_SUPERVISOR = "Supervisor"
+GRUPO_ADMINISTRADOR = "administrador"
 GRUPOS_PROFISSIONAIS_SAUDE = [GRUPO_MEDICO, GRUPO_ENFERMEIRO]
+
+FORMA_FARMACEUTICA_CHOICES = [
+    ("COMPRIMIDO", "Comprimido"),
+    ("CAPSULA", "Cápsula"),
+    ("DRAGEA", "Drágea"),
+    ("SOLUCAO_ORAL", "Solução oral"),
+    ("SUSPENSAO_ORAL", "Suspensão oral"),
+    ("XAROPE", "Xarope"),
+    ("GOTAS", "Gotas"),
+    ("SOLUCAO_INJETAVEL", "Solução injetável"),
+    ("POMADA", "Pomada"),
+    ("CREME", "Creme"),
+    ("GEL", "Gel"),
+    ("COLIRIO", "Colírio"),
+    ("SPRAY", "Spray"),
+    ("AEROSSOL", "Aerossol"),
+    ("SUPOSITORIO", "Supositório"),
+    ("ADESIVO", "Adesivo"),
+    ("PO", "Pó"),
+    ("OUTRO", "Outro"),
+]
+
+UNIDADE_MEDIDA_CHOICES = [
+    ("MG", "mg"),
+    ("G", "g"),
+    ("MCG", "mcg"),
+    ("ML", "mL"),
+    ("MG_ML", "mg/mL"),
+    ("MG_G", "mg/g"),
+    ("UI", "UI"),
+    ("UI_ML", "UI/mL"),
+    ("PERCENTUAL", "%"),
+]
+
+VIA_ADMINISTRACAO_CHOICES = [
+    ("ORAL", "Oral"),
+    ("SUBLINGUAL", "Sublingual"),
+    ("INTRAVENOSA", "Intravenosa"),
+    ("INTRAMUSCULAR", "Intramuscular"),
+    ("SUBCUTANEA", "Subcutânea"),
+    ("TOPICA", "Tópica"),
+    ("OFTALMICA", "Oftálmica"),
+    ("OTOLOGICA", "Otológica"),
+    ("NASAL", "Nasal"),
+    ("INALATORIA", "Inalatória"),
+    ("RETAL", "Retal"),
+    ("VAGINAL", "Vaginal"),
+    ("TRANSDERMICA", "Transdérmica"),
+]
 
 TIPO_MARCACAO_CHOICES = [
     ("AGENDAMENTO", "Atendimento por agendamento"),

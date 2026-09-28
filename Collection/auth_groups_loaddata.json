@@ -889,6 +889,11 @@
           "view_usuario",
           "usuarios",
           "usuario"
+        ],
+        [
+          "view_medicamento",
+          "medicamentos",
+          "medicamento"
         ]
       ]
     }
@@ -1783,6 +1788,11 @@
           "view_usuario",
           "usuarios",
           "usuario"
+        ],
+        [
+          "view_medicamento",
+          "medicamentos",
+          "medicamento"
         ]
       ]
     }
@@ -2041,6 +2051,26 @@
           "view_unidadecras",
           "unidade_cras",
           "unidadecras"
+        ],
+        [
+          "add_medicamento",
+          "medicamentos",
+          "medicamento"
+        ],
+        [
+          "change_medicamento",
+          "medicamentos",
+          "medicamento"
+        ],
+        [
+          "delete_medicamento",
+          "medicamentos",
+          "medicamento"
+        ],
+        [
+          "view_medicamento",
+          "medicamentos",
+          "medicamento"
         ]
       ]
     }
@@ -2388,6 +2418,11 @@
           "view_usuario",
           "usuarios",
           "usuario"
+        ],
+        [
+          "view_medicamento",
+          "medicamentos",
+          "medicamento"
         ]
       ]
     }

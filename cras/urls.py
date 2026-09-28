@@ -56,6 +56,7 @@ urlpatterns = [
     path("logout-sso", requests_fd.logout, name="logout_sso_root"),
     path("cidadao-identity", capturar_identidade, name="cidadao_identity_root"),
     path("api/v1/", include("servicos.urls")),
+    path("api/v1/", include("medicamentos.urls")),
     path("api/sso/", include("cidadaos.urls_sso")),
     path("api/sso/", include("agendamentos.urls_sso")),
 ]

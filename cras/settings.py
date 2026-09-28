@@ -75,6 +75,7 @@ INSTALLED_APPS = [\
     "corsheaders",
     "django.contrib.postgres",
     "duvidas_frequentes",
+    "medicamentos",
     # "csp",
 ]
 
