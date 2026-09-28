@@ -33,6 +33,7 @@ import type { FilaEsperaResponse, Prioridade, UrgenciaAtendimento } from "@/type
 import { agendarService } from "@/services/agendarService";
 import { useAuth } from "@/contexts/AuthContext";
 import { deriveRoleFromGroups } from "@/lib/authHelpers";
+import { isProfissionalSaude } from "@/security/acess";
 
 type SelectOption = { value: string; label: string };
 
@@ -81,8 +82,8 @@ const AdminFilaEspera = () => {
   const { cidadaos, fetchCidadaos, loading: carregandoCidadaos } = useCidadaos();
   const { mutateAsync: chamarProximoFila, isPending: callingNext } = useChamarProximoFila();
   const role = deriveRoleFromGroups(user?.grupos);
-  const podeChamarProximo = role === "atendente";
-  const exibirAcoes = role !== "atendente";
+  const podeChamarProximo = isProfissionalSaude(role);
+  const exibirAcoes = !podeChamarProximo;
   const totalColunasTabela = exibirAcoes ? 7 : 6;
 
   const [dialogOpen, setDialogOpen] = useState(false);

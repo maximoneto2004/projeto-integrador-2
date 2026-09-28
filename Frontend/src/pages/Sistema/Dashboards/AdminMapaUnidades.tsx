@@ -1,5 +1,6 @@
 ﻿import { useCallback, useEffect, useMemo, useState } from "react";
 import { format, isValid, parseISO, subDays } from "date-fns";
+import { isCargoProfissionalSaude } from "@/security/acess";
 
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { RoleBasedSidebar } from "@/components/RoleBasedSidebar";
@@ -358,8 +359,7 @@ const parseProfissionaisUnidade = (raw: unknown): UnidadeProfissional[] => {
         .filter(Boolean);
 
       const cargo = cargos.length ? cargos.join(", ") : "-";
-      const cargoNorm = cargo.toLowerCase();
-      const ehAtendente = cargoNorm.includes("atendente");
+      const ehAtendente = cargos.some(isCargoProfissionalSaude);
       const notaMedia = ehAtendente ? toNumber(row.nota_media, 0) : null;
 
       return {

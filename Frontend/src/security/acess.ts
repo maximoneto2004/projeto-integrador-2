@@ -2,19 +2,34 @@ export const ROLES = {
   ADMIN: "admin",
   GESTOR: "gestor",
   SUPERVISOR: "supervisor",
-  ATENDENTE: "atendente",
-  ATENDENTE_156: "atendente 156",
+  MEDICO: "medico",
+  ENFERMEIRO: "enfermeiro",
   RECEPCIONISTA: "recepcionista",
   COORDENADOR: "coordenador",
 } as const;
 
+export const PROFISSIONAIS_SAUDE = [ROLES.MEDICO, ROLES.ENFERMEIRO] as const;
+
+export function isProfissionalSaude(role?: string | null): boolean {
+  return !!role && (PROFISSIONAIS_SAUDE as readonly string[]).includes(role);
+}
+
+export function isCargoProfissionalSaude(cargoNome?: string | null): boolean {
+  const normalizado = String(cargoNome || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "");
+  return isProfissionalSaude(normalizado);
+}
+
 export const ACCESS = {
-  adminAgendamentos: [ROLES.ATENDENTE, ROLES.SUPERVISOR, ROLES.GESTOR, ROLES.ADMIN, ROLES.RECEPCIONISTA, ROLES.ATENDENTE_156, ROLES.COORDENADOR],
+  adminAgendamentos: [...PROFISSIONAIS_SAUDE, ROLES.SUPERVISOR, ROLES.GESTOR, ROLES.ADMIN, ROLES.RECEPCIONISTA, ROLES.COORDENADOR],
   atendimentoPublico: [ROLES.RECEPCIONISTA, ROLES.ADMIN],
-  filaEspera: [ROLES.RECEPCIONISTA, ROLES.ATENDENTE, ROLES.SUPERVISOR, ROLES.ADMIN],
-  confirmarChegada: [ROLES.RECEPCIONISTA, ROLES.ADMIN, ROLES.ATENDENTE],
-  registrarServicos: [ROLES.ATENDENTE, ROLES.SUPERVISOR, ROLES.ADMIN],
-  prontuario: [ROLES.ATENDENTE, ROLES.SUPERVISOR, ROLES.ADMIN],
+  filaEspera: [ROLES.RECEPCIONISTA, ...PROFISSIONAIS_SAUDE, ROLES.SUPERVISOR, ROLES.ADMIN],
+  confirmarChegada: [ROLES.RECEPCIONISTA, ROLES.ADMIN, ...PROFISSIONAIS_SAUDE],
+  registrarServicos: [...PROFISSIONAIS_SAUDE, ROLES.SUPERVISOR, ROLES.ADMIN],
+  prontuario: [...PROFISSIONAIS_SAUDE, ROLES.SUPERVISOR, ROLES.ADMIN],
   configurarServicos: [ROLES.SUPERVISOR, ROLES.ADMIN, ROLES.COORDENADOR],
   bloquearHorarios: [ROLES.SUPERVISOR, ROLES.GESTOR, ROLES.ADMIN, ROLES.COORDENADOR],
   gerenciarProfissionais: [ROLES.SUPERVISOR, ROLES.GESTOR, ROLES.ADMIN, ROLES.COORDENADOR],
@@ -31,10 +46,10 @@ export const ACCESS = {
   supervisorGuiches: [ROLES.SUPERVISOR, ROLES.ADMIN],
   coordenadorGuiches: [ROLES.COORDENADOR, ROLES.ADMIN],
   horario: undefined,
-  cadastroCidadao: [ROLES.ATENDENTE_156, ROLES.ADMIN, ROLES.RECEPCIONISTA],
-  agendarCidadao: [ROLES.ATENDENTE_156, ROLES.RECEPCIONISTA, ROLES.ADMIN],
+  cadastroCidadao: [ROLES.ADMIN, ROLES.RECEPCIONISTA],
+  agendarCidadao: [ROLES.RECEPCIONISTA, ROLES.ADMIN],
   dashboard: [ROLES.SUPERVISOR, ROLES.COORDENADOR],
   dashboardGestor: [ROLES.GESTOR],
-  dashboardAtendente: [ROLES.ATENDENTE],
+  dashboardAtendente: [...PROFISSIONAIS_SAUDE],
   monitorUnidade: [ROLES.GESTOR, ROLES.ADMIN],
 };

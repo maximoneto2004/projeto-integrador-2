@@ -16,6 +16,7 @@ from agendamentos.models import Agendamento
 from agendamentos.serializers import AgendamentoDetailSerializer
 from usuarios.models import EscalaTrabalho
 from app.permissions import DjangoModelPermissionsWithView
+from app.static_data import GRUPO_SUPERVISOR, GRUPOS_PROFISSIONAIS_SAUDE
 
 
 def _get_fila_queryset_for_user(user):
@@ -37,7 +38,7 @@ def _get_fila_queryset_for_user(user):
 
     queryset = FilaEspera.objects.filter(unidade=escala_ativa.unidade)
 
-    if user.groups.filter(name="Atendente").exists():
+    if user.groups.filter(name__in=GRUPOS_PROFISSIONAIS_SAUDE).exists():
         tipos_ofertados = user.tipo_ofertados.all()
         if not tipos_ofertados.exists():
             return FilaEspera.objects.none()
@@ -209,7 +210,7 @@ class FilaEsperaChamarProximoAPIView(APIView):
         atendente = None
         user = request.user
         if user and user.is_authenticated:
-            if hasattr(user, "groups") and user.groups.filter(name__in=["Atendente", "Supervisor"]).exists():
+            if hasattr(user, "groups") and user.groups.filter(name__in=[*GRUPOS_PROFISSIONAIS_SAUDE, GRUPO_SUPERVISOR]).exists():
                 atendente = user
             hoje = timezone.localdate()
             agendamentos_usuario = Agendamento.objects.filter(

@@ -1,10 +1,10 @@
 export type UserRole =
   | "admin"
   | "recepcionista"
-  | "atendente"
+  | "medico"
+  | "enfermeiro"
   | "supervisor"
   | "gestor"
-  | "atendente 156"
   | "coordenador";
 
 export interface MockUser {

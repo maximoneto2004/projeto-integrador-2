@@ -9,9 +9,9 @@ const GROUP_ROLE_MAP: Record<string, UserRole> = {
   gestor: "gestor",
   supervisor: "supervisor",
   recepcionista: "recepcionista",
-  atendente: "atendente",
-  "atendente 156": "atendente 156",
-  "atendente do 156": "atendente 156",
+  médico: "medico",
+  medico: "medico",
+  enfermeiro: "enfermeiro",
   coordenador: "coordenador",
 };
 
@@ -19,8 +19,8 @@ const DEFAULT_REDIRECT_BY_ROLE: Record<UserRole, string> = {
   admin: "/sistema/administrador/unidades",
   gestor: "/sistema/dashboard-gestor",
   supervisor: "/sistema/dashboard",
-  atendente: "/sistema/agendamentos",
-  "atendente 156": "/sistema/agendamentos",
+  medico: "/sistema/agendamentos",
+  enfermeiro: "/sistema/agendamentos",
   recepcionista: "/sistema/agendamentos",
   coordenador: "/sistema/dashboard",
 };

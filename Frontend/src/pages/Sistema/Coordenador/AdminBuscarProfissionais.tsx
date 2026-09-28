@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { isCargoProfissionalSaude } from "@/security/acess";
 import { useNavigate } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { RoleBasedSidebar } from "@/components/RoleBasedSidebar";
@@ -184,7 +185,7 @@ const AdminBuscarProfissionais = () => {
 
   const servicosAtendente = useMemo(() => tiposServico.map((tipo) => ({ id: String(tipo.id), nome: tipo.nome })), [tiposServico]);
   const cargosDisponiveis = useMemo(() => {
-    const bloqueados = new Set(["atendente 156", "administrador", "gestor"]);
+    const bloqueados = new Set(["administrador", "gestor"]);
     return cargos.filter((cargo) => {
       const nome = cargo?.name?.trim().toLowerCase();
       return nome && !bloqueados.has(nome);
@@ -407,7 +408,7 @@ const AdminBuscarProfissionais = () => {
 
     const cargoSelecionado = cargosDisponiveis.find((cargo) => String(cargo.id) === String(editCargoId));
     const cargoNome = cargoSelecionado?.name ?? editFormData.cargo ?? "";
-    const isAtendente = cargoNome.trim().toLowerCase() === "atendente";
+    const isAtendente = isCargoProfissionalSaude(cargoNome);
     const servicosSelecionados = editFormData.servicoIds ?? [];
     const nomeNormalizado = normalizeNome(editFormData.nome || "").trim();
     const telefoneNormalizado = onlyDigits(editFormData.telefone || "").slice(0, TELEFONE_MAX_LENGTH);
@@ -829,7 +830,7 @@ const AdminBuscarProfissionais = () => {
                           onValueChange={(value) => {
                             const cargoId = String(value);
                             const cargoSelecionado = cargosDisponiveis.find((cargo) => String(cargo.id) === cargoId);
-                            const isAtendente = cargoSelecionado?.name?.trim().toLowerCase() === "atendente";
+                            const isAtendente = isCargoProfissionalSaude(cargoSelecionado?.name);
                             setEditCargoId(cargoId);
                             setEditFormData({
                               ...editFormData,
@@ -870,7 +871,7 @@ const AdminBuscarProfissionais = () => {
                     </div>
 
                     {/* Tipo de Serviço (Condicional) */}
-                    {cargoSelecionadoEdit?.name?.trim().toLowerCase() === "atendente" && (
+                    {isCargoProfissionalSaude(cargoSelecionadoEdit?.name) && (
                       <div className="space-y-2 text-left">
                         <Label className="text-sm font-semibold text-slate-700 ml-1">
                           Tipo de Serviço <span className="text-destructive">*</span>

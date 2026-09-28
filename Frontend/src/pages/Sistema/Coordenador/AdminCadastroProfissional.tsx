@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { isCargoProfissionalSaude } from "@/security/acess";
 import { useNavigate } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { RoleBasedSidebar } from "@/components/RoleBasedSidebar";
@@ -26,10 +27,7 @@ type EscalaForm = {
   turno2: { inicio: string; fim: string };
 };
 
-const isCargoAtendente = (cargoNome?: string | null) =>
-  String(cargoNome || "")
-    .trim()
-    .toLowerCase() === "atendente";
+const isCargoAtendente = isCargoProfissionalSaude;
 
 const API_FIELD_TO_FORM_FIELD: Record<string, FormErrorField> = {
   nome_completo: "nome",
@@ -132,7 +130,7 @@ const AdminCadastroProfissional = () => {
     [servicosDisponiveis],
   );
   const cargosDisponiveis = useMemo(() => {
-    const bloqueados = new Set(["atendente 156", "administrador", "gestor"]);
+    const bloqueados = new Set(["administrador", "gestor"]);
     return cargos.filter((cargo) => {
       const nome = cargo?.name?.trim().toLowerCase();
       return nome && !bloqueados.has(nome);

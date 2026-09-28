@@ -5,7 +5,13 @@ from app.mixins import BaseModel
 from unidade_posto.models import UnidadePosto
 from servicos.models import Servico, TipoServico
 from cidadaos.models import Cidadao
-from app.static_data import SITUACAO_AGENDAMENTO_CHOICES, ORIGEM_CHOICES, STATUS_FINAL_ATENDIMENTO_CHOICES
+from app.static_data import (
+    GRUPO_SUPERVISOR,
+    GRUPOS_PROFISSIONAIS_SAUDE,
+    ORIGEM_CHOICES,
+    SITUACAO_AGENDAMENTO_CHOICES,
+    STATUS_FINAL_ATENDIMENTO_CHOICES,
+)
 from usuarios.models import Usuario
 
 
@@ -42,7 +48,7 @@ class Agendamento(BaseModel):
         verbose_name="Atendente",
         null=True,
         blank=True,
-        limit_choices_to={"groups__name__in": ["Atendente", "Supervisor"],},
+        limit_choices_to={"groups__name__in": [*GRUPOS_PROFISSIONAIS_SAUDE, GRUPO_SUPERVISOR]},
         on_delete=models.PROTECT,
     )
     unidade = models.ForeignKey(UnidadePosto, verbose_name="Unidade", on_delete=models.PROTECT, related_name="agendamentos")

@@ -301,7 +301,7 @@ const AdminAgendamentos = () => {
 
   const canView = userRole;
   const { canCall, canCancel, canConfirmArrival, canEdit } = tablePermissions;
-  const canCreateAppointment = userRole === "recepcionista" || userRole === "admin" || userRole === "atendente 156";
+  const canCreateAppointment = userRole === "recepcionista" || userRole === "admin";
   const salvandoAgendamento = criandoAgendamento || atualizarAgendamento.isPending;
   const isAgendamentoAssumidoPorMim = (appointment: Appointment) => appointment.atendenteId === user?.id || appointment.atendente === currentUserName;
 
@@ -368,7 +368,7 @@ const AdminAgendamentos = () => {
       return;
     }
 
-    const origem = userRole === "atendente 156" ? "156" : userRole === "recepcionista" ? "RECEPCAO" : undefined;
+    const origem = userRole === "recepcionista" ? "RECEPCAO" : undefined;
     const motivoTerritorio = agendarOutraUnidade ? motivoOutraUnidade.trim() : undefined;
     try {
       if (agendamentoEmEdicao) {

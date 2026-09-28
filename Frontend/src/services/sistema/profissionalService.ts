@@ -23,7 +23,7 @@ export type UsuariosPaginados = {
   previous: string | null;
 };
 
-const ALLOWED_ROLES = new Set(["atendente", "recepcionista", "supervisor", "coordenador"]);
+const ALLOWED_ROLES = new Set(["médico", "medico", "enfermeiro", "recepcionista", "supervisor", "coordenador"]);
 
 function getUserRole(user: any): string {
   if (typeof user?.cargo === "string") {

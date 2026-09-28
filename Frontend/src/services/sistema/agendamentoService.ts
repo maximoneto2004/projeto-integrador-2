@@ -1,6 +1,5 @@
 import type { AxiosResponse } from "axios";
 import { api } from "../api";
-import {AuthUser} from "@/types/api";
 import type {
   AgendaVaga,
   AgendaVagaListItem,
@@ -32,9 +31,6 @@ export type AgendamentoListParams = Partial<{
 }>;
 
 const API_URL = import.meta.env.VITE_API_URL
-const raw = sessionStorage.getItem("auth_user_session");
-const user: AuthUser | null = raw ? JSON.parse(raw) : null;
-const atendente156 = user?.grupos?.some((grupo) => grupo === "atendente 156");
 
 
 
@@ -46,10 +42,7 @@ export const agendamentoService = {
   },
 
   listar(params?: AgendamentoListParams) {
-    const finalParams: AgendamentoListParams = {
-      ...params,
-      ...(atendente156 && { origem: "156" }),
-    };
+    const finalParams: AgendamentoListParams = { ...params };
 
     return api.get<
       ApiEnvelope<AgendamentoResponse[] | PaginatedResponse<AgendamentoResponse>>

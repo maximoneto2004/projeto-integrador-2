@@ -29,6 +29,7 @@ from cidadaos.requests_fd import check_auth_sso, get_valid_token_or_none
 from servicos.models import Servico, TipoServico
 from unidade_posto.models import ServicoUnidadePosto, UnidadePosto
 from app.permissions import DjangoModelPermissionsWithView
+from app.static_data import GRUPOS_PROFISSIONAIS_SAUDE
 from cidadaos.authentication import SSOAuthentication
 from cidadaos.serializers import CidadaoSerializer
 from rest_framework.permissions import AllowAny
@@ -288,7 +289,7 @@ class AgendamentoAtivadoAusenteAPIView(APIView):
         is_atendente = (
                 user
                 and user.is_authenticated
-                and user.groups.filter(name="Atendente").exists()
+                and user.groups.filter(name__in=GRUPOS_PROFISSIONAIS_SAUDE).exists()
             )
         with transaction.atomic():
             try:
@@ -469,7 +470,7 @@ class AgendamentoListCreateView(generics.ListCreateAPIView):
         is_atendente = (
             user
             and user.is_authenticated
-            and user.groups.filter(name="Atendente").exists()
+            and user.groups.filter(name__in=GRUPOS_PROFISSIONAIS_SAUDE).exists()
         )
         if is_atendente:
             tipos_ids = user.tipo_ofertados.values_list("id", flat=True)
@@ -966,11 +967,7 @@ class AgendamentoRetrieveUpdateView(generics.RetrieveUpdateAPIView):
         is_atendente = (
             user
             and user.is_authenticated
-            and user.groups.filter(
-                Q(name__iexact="Atendente")
-                | Q(name__iexact="Atendente 156")
-                | Q(name__iexact="Atendente do 156")
-            ).exists()
+            and user.groups.filter(name__in=GRUPOS_PROFISSIONAIS_SAUDE).exists()
         )
         atendente_atual_id = instance.atendente_id
         solicitante_id = str(user.id) if user and user.is_authenticated else ""
@@ -1050,33 +1047,6 @@ class AgendamentoRetrieveUpdateView(generics.RetrieveUpdateAPIView):
                     status=status.HTTP_409_CONFLICT,
                 )
             
-        is_atendente_156 = (
-        user
-        and user.is_authenticated
-        and user.groups.filter(
-            Q(name__iexact="Atendente 156")
-            | Q(name__iexact="Atendente do 156")
-        ).exists()
-    )
-    
-        if is_atendente_156 and "CANCELADO_CRAS" in nova_situacao:
-            try:
-                cancelar_agendamento(
-                    agendamento_id=instance.id,
-                    origem=nova_situacao,  
-                    liberar_vaga=True
-                )
-                instance.refresh_from_db()
-                serializer = self.get_serializer(instance)
-                return Response(
-                    {"success": True, "result": serializer.data},
-                    status=status.HTTP_200_OK
-                )
-            except Exception as e:
-                return Response(
-                    {"success": False, "result": str(e)},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         try:

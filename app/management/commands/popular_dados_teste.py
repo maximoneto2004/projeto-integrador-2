@@ -131,7 +131,7 @@ class Command(BaseCommand):
         dia_codigos = [d[0] for d in DIA_SEMANA_CHOICES if d[0] in {"SEG", "TER", "QUA", "QUI", "SEX"}]
         tipos_servico = list({s.tipo_servico for s in servicos if s.tipo_servico_id})
 
-        for nome_grupo in ("Atendente", "Supervisor", "Gestor"):
+        for nome_grupo in ("Médico", "Enfermeiro", "Supervisor", "Gestor"):
             Group.objects.get_or_create(name=nome_grupo)
 
         profissionais_por_unidade = {}
@@ -173,7 +173,8 @@ class Command(BaseCommand):
                     elif idx_p == 1:
                         user.groups.add(Group.objects.get(name="Gestor"))
                     else:
-                        user.groups.add(Group.objects.get(name="Atendente"))
+                        grupo = "Médico" if idx_p % 2 == 0 else "Enfermeiro"
+                        user.groups.add(Group.objects.get(name=grupo))
 
                     EscalaTrabalho.objects.create(
                         profissional=user,

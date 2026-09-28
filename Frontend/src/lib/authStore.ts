@@ -22,11 +22,17 @@ const mockUsers: MockUser[] = [
   },
   {
     id: '3',
-    username: 'atendente',
-    password: 'atend123',
-    role: 'atendente',
+    username: 'medico',
+    password: 'medico123',
+    role: 'medico',
     nome: 'Roberta Nascimento',
-    
+  },
+  {
+    id: '6',
+    username: 'enfermeiro',
+    password: 'enfermeiro123',
+    role: 'enfermeiro',
+    nome: 'Paulo Enfermeiro',
   },
   {
     id: '4',
@@ -42,13 +48,6 @@ const mockUsers: MockUser[] = [
     role: 'gestor',
     nome: 'Maria Gestora'
   },
-  {
-    id: '6',
-    username: 'atendente 156',
-    password: '156',
-    role: 'atendente 156',
-    nome: 'Maria  156'
-  }
 ];
 
 class AuthStore {
@@ -75,7 +74,7 @@ class AuthStore {
     if (user) {
       this.currentUser = user;
       // Don't save mesa yet for atendentes, will be set after guiche selection
-      const userToStore = user.role === 'atendente' ? { ...user, mesa: undefined } : user;
+      const userToStore = user.role === 'medico' || user.role === 'enfermeiro' ? { ...user, mesa: undefined } : user;
       localStorage.setItem(this.storageKey, JSON.stringify(userToStore));
       return user;
     }

@@ -1,3 +1,8 @@
+GRUPO_MEDICO = "Médico"
+GRUPO_ENFERMEIRO = "Enfermeiro"
+GRUPO_SUPERVISOR = "Supervisor"
+GRUPOS_PROFISSIONAIS_SAUDE = [GRUPO_MEDICO, GRUPO_ENFERMEIRO]
+
 TIPO_MARCACAO_CHOICES = [
     ("AGENDAMENTO", "Atendimento por agendamento"),
     ("ENCAMINHAMENTO", "Atendimento por encaminhamento interno"),

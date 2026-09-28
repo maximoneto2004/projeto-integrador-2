@@ -89,13 +89,13 @@ const menuGroups: MenuGroup[] = [
         title: "Lista",
         url: "/sistema/agendamentos",
         icon: Calendar,
-        roles: ["atendente", "supervisor", "recepcionista", "atendente 156"],
+        roles: ["medico", "enfermeiro", "supervisor", "recepcionista"],
       },
       {
         title: "Fila de Encaixe",
         url: "/sistema/fila-espera",
         icon: Users,
-        roles: ["recepcionista", "atendente", "supervisor"],
+        roles: ["recepcionista", "medico", "enfermeiro", "supervisor"],
       },
     ],
   },
@@ -139,7 +139,7 @@ const menuGroups: MenuGroup[] = [
         title: "Buscar Receitas",
         url: "/sistema/buscar-receitas",
         icon: FileText,
-        roles: ["atendente"],
+        roles: ["medico", "enfermeiro"],
       },
     ],
   },
@@ -151,7 +151,7 @@ const menuGroups: MenuGroup[] = [
         title: "Agendar e cadastrar",
         url: "/sistema/cadastro-cidadao",
         icon: UserRoundPen,
-        roles: ["atendente 156", "recepcionista"],
+        roles: ["recepcionista"],
       },
     ],
   },
@@ -283,7 +283,7 @@ export function RoleBasedSidebar() {
             {userRole}
             {mesa && ` - ${mesa.nome}`}
           </p>
-          {userRole !== "atendente 156" && userRole !== "admin" && (
+          {userRole !== "admin" && (
             <p className="text-xs text-muted-foreground italic">{`Unidade: ${user.unidade_ativa.nome}`}</p>
           )}
         </div>

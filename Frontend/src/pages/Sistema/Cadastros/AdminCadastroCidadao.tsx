@@ -321,7 +321,7 @@ export default function AdminCadastroCidadao() {
       return;
     }
 
-    const origem = userRole === "atendente 156" ? "156" : userRole === "recepcionista" ? "RECEPCAO" : undefined;
+    const origem = userRole === "recepcionista" ? "RECEPCAO" : undefined;
     const motivoTerritorio = agendarOutraUnidade ? motivoOutraUnidade.trim() : undefined;
     try {
       await criarAgendamento({

@@ -1,4 +1,5 @@
 import type { Appointment } from "@/types/agenda";
+import { isProfissionalSaude } from "@/security/acess";
 
 type ActionPermissions = {
   canCall: boolean;
@@ -62,7 +63,7 @@ export function getAppointmentActionVisibility({
   const canAct = !hasAssigned || isOwner;
 
   const isSupervisor = user.userRole === "supervisor";
-  const isAtendente = user.userRole === "atendente" || user.userRole === "atendente 156";
+  const isAtendente = isProfissionalSaude(user.userRole);
   const tipoServicoNormalizado = normalize(appointment.tipoServicoNome || appointment.tipoAtendimento || "");
   const isEspecializado = tipoServicoNormalizado.includes("especializado");
   const isComum = tipoServicoNormalizado.includes("comum");

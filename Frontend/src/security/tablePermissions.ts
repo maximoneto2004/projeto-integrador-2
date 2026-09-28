@@ -1,13 +1,13 @@
-import { ROLES } from "./acess";
+import { PROFISSIONAIS_SAUDE, ROLES } from "./acess";
 
 type UserRole = (typeof ROLES)[keyof typeof ROLES];
 
 const TABLE_PERMISSIONS: Record<string, ReadonlyArray<UserRole>> = {
-  call: [ROLES.ATENDENTE],
-  edit: [ROLES.SUPERVISOR, , ROLES.RECEPCIONISTA, ROLES.ATENDENTE_156],
-  cancel: [ROLES.SUPERVISOR, , ROLES.RECEPCIONISTA, ROLES.ATENDENTE_156],
+  call: [...PROFISSIONAIS_SAUDE],
+  edit: [ROLES.SUPERVISOR, ROLES.RECEPCIONISTA],
+  cancel: [ROLES.SUPERVISOR, ROLES.RECEPCIONISTA],
   confirmArrival: [ROLES.RECEPCIONISTA],
-  register: [ROLES.ATENDENTE, ROLES.SUPERVISOR],
+  register: [...PROFISSIONAIS_SAUDE, ROLES.SUPERVISOR],
   assume: [ROLES.SUPERVISOR],
 };
 

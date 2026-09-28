@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { AgendamentoListParams } from "@/services/sistema/agendamentoService";
 import { useAuth } from "@/contexts/AuthContext";
-import { deriveRoleFromGroups } from "@/lib/authHelpers";
 
 type FiltersState = {
   filtroData: string;
@@ -31,15 +30,13 @@ export function useAgendamentosFilters(options: FiltersOptions = {}) {
   const { debounceMs = 350, defaults } = options;
   const { user } = useAuth();
   const hoje = new Date().toLocaleDateString("en-CA");
-  const userRole = deriveRoleFromGroups(user?.grupos);
-  const isAtendente156 = userRole === "atendente 156";
 
   const [filtroData, setFiltroData] = useState(defaults?.filtroData ?? hoje);
   const [filtroUnidade, setFiltroUnidade] = useState(
-    defaults?.filtroUnidade ?? (isAtendente156 ? "todas" : user?.unidade_ativa?.id ?? "todas")
+    defaults?.filtroUnidade ?? user?.unidade_ativa?.id ?? "todas"
   );
   const [filtroServico, setFiltroServico] = useState(defaults?.filtroServico ?? "todos");
-  const [filtroStatus, setFiltroStatus] = useState(defaults?.filtroStatus ?? (isAtendente156 ? "AGENDADO" : "todos"));
+  const [filtroStatus, setFiltroStatus] = useState(defaults?.filtroStatus ?? "todos");
   const [filtroAtendente, setFiltroAtendente] = useState(defaults?.filtroAtendente ?? "todos");
   const [buscaTexto, setBuscaTexto] = useState(defaults?.buscaTexto ?? "");
   const [buscaTextoDebounced, setBuscaTextoDebounced] = useState("");
@@ -57,9 +54,7 @@ export function useAgendamentosFilters(options: FiltersOptions = {}) {
     if (filtroData) apiParams.data = filtroData;
     if (filtroUnidade && filtroUnidade !== "todas") apiParams.unidade = filtroUnidade;
     if (filtroServico && filtroServico !== "todos") apiParams.servico = filtroServico;
-    if (isAtendente156) {
-      apiParams.situacao = "AGENDADO";
-    } else if (filtroStatus && filtroStatus !== "todos") {
+    if (filtroStatus && filtroStatus !== "todos") {
       apiParams.situacao = filtroStatus;
     }
     if (filtroAtendente && filtroAtendente !== "todos") apiParams.atendente = filtroAtendente;
@@ -84,9 +79,9 @@ export function useAgendamentosFilters(options: FiltersOptions = {}) {
 
   const resetFilters = () => {
     setFiltroData(hoje);
-    setFiltroUnidade(isAtendente156 ? "todas" : user?.unidade_ativa?.id ?? "todas");
+    setFiltroUnidade(user?.unidade_ativa?.id ?? "todas");
     setFiltroServico("todos");
-    setFiltroStatus(isAtendente156 ? "AGENDADO" : "todos");
+    setFiltroStatus("todos");
     setFiltroAtendente("todos");
     setBuscaTexto("");
   };
