@@ -1,14 +1,29 @@
 import { api } from "@/services/api";
 
+export type StatusDispensacao = "PENDENTE" | "PARCIAL" | "DISPENSADO";
+
 export type ReceitaMedicamentoPayload = {
-  nome: string;
-  dosagem: string;
+  medicamento: string;
+  dosagem?: string;
   frequencia: string;
   duracao: string;
   instrucoes?: string;
+  quantidade_prescrita: number;
 };
 
-export type ReceitaMedicamento = ReceitaMedicamentoPayload & { id: string };
+export type ReceitaMedicamento = Omit<ReceitaMedicamentoPayload, "medicamento"> & {
+  id: string;
+  medicamento: string | null;
+  nome: string;
+  dosagem: string;
+  controlado: boolean;
+  quantidade_prescrita: number | null;
+  quantidade_dispensada: number;
+  quantidade_restante: number;
+  status_dispensacao: StatusDispensacao;
+  status_dispensacao_display: string;
+  legado: boolean;
+};
 
 export type Receita = {
   id: string;
@@ -17,6 +32,10 @@ export type Receita = {
   cidadao_cpf: string;
   profissional_nome?: string;
   data_emissao: string;
+  validade_dias: number;
+  data_validade: string | null;
+  vencida: boolean;
+  status_dispensacao: StatusDispensacao;
   diagnostico?: string;
   observacoes?: string;
   medicamentos: ReceitaMedicamento[];
@@ -24,6 +43,7 @@ export type Receita = {
 
 export type ReceitaPayload = {
   agendamento: string;
+  validade_dias?: number;
   diagnostico?: string;
   observacoes?: string;
   medicamentos: ReceitaMedicamentoPayload[];
@@ -33,6 +53,9 @@ export type ReceitaListParams = {
   search?: string;
   agendamento?: string;
   cidadao?: string;
+  medicamento?: string;
+  vigente?: boolean;
+  pendente_dispensacao?: boolean;
   limit?: number;
   offset?: number;
 };

@@ -35,7 +35,15 @@ from usuarios.models import Usuario
 from app.models import Bairro
 from django.db.models import Max
 from .validators import validate_qualificacoes, validate_doencas_graves
-from datetime import date
+from datetime import date, timedelta
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.utils import timezone
+from app.static_data import (
+    STATUS_DISPENSACAO_CHOICES,
+    STATUS_DISPENSACAO_DISPENSADO,
+    STATUS_DISPENSACAO_PARCIAL,
+    STATUS_DISPENSACAO_PENDENTE,
+)
 
 
 class Prontuario(BaseModel):
@@ -856,6 +864,12 @@ class Receita(BaseModel):
     data_emissao = models.DateTimeField(verbose_name="Data de Emissão", auto_now_add=True)
     diagnostico = models.TextField(verbose_name="Diagnóstico", null=True, blank=True, max_length=600)
     observacoes = models.TextField(verbose_name="Observações", null=True, blank=True, max_length=600)
+    validade_dias = models.PositiveSmallIntegerField(
+        verbose_name="Validade (dias)",
+        default=30,
+        validators=[MinValueValidator(1), MaxValueValidator(365)],
+    )
+    data_validade = models.DateField(verbose_name="Válida até", null=True, blank=True, editable=False)
 
     class Meta:
         verbose_name = "Receita"
@@ -865,6 +879,19 @@ class Receita(BaseModel):
     def __str__(self):
         return f"Receita {self.id} - {self.cidadao.nome}"
 
+    def save(self, *args, **kwargs):
+        emissao = timezone.localtime(self.data_emissao).date() if self.data_emissao else timezone.localdate()
+        self.data_validade = emissao + timedelta(days=self.validade_dias)
+        super().save(*args, **kwargs)
+
+    @property
+    def vencida(self):
+        return self.data_validade is not None and self.data_validade < timezone.localdate()
+
+    @property
+    def possui_dispensacao(self):
+        return self.medicamentos.filter(quantidade_dispensada__gt=0).exists()
+
 
 class ReceitaMedicamento(BaseModel):
     receita = models.ForeignKey(
@@ -873,11 +900,34 @@ class ReceitaMedicamento(BaseModel):
         on_delete=models.CASCADE,
         related_name="medicamentos",
     )
-    nome = models.CharField(verbose_name="Medicamento", max_length=200)
+    # Nulo apenas em itens legados, prescritos em texto livre antes do cadastro de medicamentos.
+    medicamento = models.ForeignKey(
+        "medicamentos.Medicamento",
+        verbose_name="Medicamento",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="itens_receita",
+    )
+    # Retrato do medicamento no momento da prescrição; preserva o histórico se o cadastro mudar.
+    nome = models.CharField(verbose_name="Descrição do Medicamento", max_length=200)
     dosagem = models.CharField(verbose_name="Dosagem", max_length=100)
     frequencia = models.CharField(verbose_name="Frequência", max_length=100)
     duracao = models.CharField(verbose_name="Duração", max_length=100)
     instrucoes = models.TextField(verbose_name="Instruções", null=True, blank=True, max_length=600)
+    quantidade_prescrita = models.PositiveIntegerField(
+        verbose_name="Quantidade Prescrita",
+        null=True,
+        blank=True,
+        help_text="Em unidades de dispensação (comprimidos, frascos...). Nulo em itens legados.",
+    )
+    quantidade_dispensada = models.PositiveIntegerField(verbose_name="Quantidade Dispensada", default=0)
+    status_dispensacao = models.CharField(
+        verbose_name="Status da Dispensação",
+        max_length=20,
+        choices=STATUS_DISPENSACAO_CHOICES,
+        default=STATUS_DISPENSACAO_PENDENTE,
+    )
 
     class Meta:
         verbose_name = "Medicamento da Receita"
@@ -885,3 +935,17 @@ class ReceitaMedicamento(BaseModel):
 
     def __str__(self):
         return f"{self.nome} - {self.dosagem}"
+
+    @property
+    def quantidade_restante(self):
+        if self.quantidade_prescrita is None:
+            return 0
+        return max(self.quantidade_prescrita - self.quantidade_dispensada, 0)
+
+    def registrar_dispensacao(self, quantidade):
+        self.quantidade_dispensada += quantidade
+        if self.quantidade_dispensada >= (self.quantidade_prescrita or 0):
+            self.status_dispensacao = STATUS_DISPENSACAO_DISPENSADO
+        else:
+            self.status_dispensacao = STATUS_DISPENSACAO_PARCIAL
+        self.save(update_fields=["quantidade_dispensada", "status_dispensacao", "updated_at"])

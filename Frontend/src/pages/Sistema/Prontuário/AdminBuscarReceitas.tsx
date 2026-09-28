@@ -8,13 +8,27 @@ import { Badge } from "@/components/ui/badge";
 import { Search, Eye } from "lucide-react";
 import { formatCpf } from "@/utils/cpfFormater";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { receitaService, type Receita } from "@/services/prontuario/receitaService";
+import { receitaService, type Receita, type StatusDispensacao } from "@/services/prontuario/receitaService";
 import { toast } from "@/lib/sonner";
 
 const PAGE_SIZE = 10;
 
-function toDateLabel(iso: string): string {
-  const d = new Date(iso);
+const STATUS_LABEL: Record<StatusDispensacao, string> = {
+  PENDENTE: "Pendente",
+  PARCIAL: "Parcial",
+  DISPENSADO: "Dispensada",
+};
+
+const STATUS_VARIANT: Record<StatusDispensacao, "outline" | "secondary" | "default"> = {
+  PENDENTE: "outline",
+  PARCIAL: "secondary",
+  DISPENSADO: "default",
+};
+
+function toDateLabel(iso?: string | null): string {
+  if (!iso) return "-";
+  // Datas "AAAA-MM-DD" viram meia-noite UTC em new Date(), o que volta um dia no fuso do Brasil.
+  const d = /^\d{4}-\d{2}-\d{2}$/.test(iso) ? new Date(`${iso}T00:00:00`) : new Date(iso);
   if (Number.isNaN(d.getTime())) return "-";
   return d.toLocaleDateString("pt-BR");
 }
@@ -96,14 +110,16 @@ export default function AdminBuscarReceitas() {
                         <TableHead>Cidadão</TableHead>
                         <TableHead>CPF</TableHead>
                         <TableHead>Data</TableHead>
+                        <TableHead>Validade</TableHead>
                         <TableHead>Qtd. medicamentos</TableHead>
+                        <TableHead>Dispensação</TableHead>
                         <TableHead className="text-right">Ações</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {resultado.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={5} className="text-center text-sm text-muted-foreground py-8">
+                          <TableCell colSpan={7} className="text-center text-sm text-muted-foreground py-8">
                             Nenhuma receita encontrada.
                           </TableCell>
                         </TableRow>
@@ -114,7 +130,18 @@ export default function AdminBuscarReceitas() {
                             <TableCell>{formatCpf(r.cidadao_cpf) || "-"}</TableCell>
                             <TableCell>{toDateLabel(r.data_emissao)}</TableCell>
                             <TableCell>
+                              {toDateLabel(r.data_validade)}
+                              {r.vencida && (
+                                <Badge variant="destructive" className="ml-2">
+                                  Vencida
+                                </Badge>
+                              )}
+                            </TableCell>
+                            <TableCell>
                               <Badge variant="outline">{r.medicamentos.length}</Badge>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant={STATUS_VARIANT[r.status_dispensacao]}>{STATUS_LABEL[r.status_dispensacao]}</Badge>
                             </TableCell>
                             <TableCell className="text-right">
                               <Button variant="outline" size="sm" onClick={() => setReceitaSelecionada(r)}>
@@ -179,6 +206,16 @@ export default function AdminBuscarReceitas() {
                 <strong>Profissional:</strong> {receitaSelecionada.profissional_nome || "-"}
               </p>
               <p>
+                <strong>Emitida em:</strong> {toDateLabel(receitaSelecionada.data_emissao)}
+                {" · "}
+                <strong>Válida até:</strong> {toDateLabel(receitaSelecionada.data_validade)}
+                {receitaSelecionada.vencida && (
+                  <Badge variant="destructive" className="ml-2">
+                    Vencida
+                  </Badge>
+                )}
+              </p>
+              <p>
                 <strong>Diagnóstico:</strong> {receitaSelecionada.diagnostico || "-"}
               </p>
               <p>
@@ -189,9 +226,18 @@ export default function AdminBuscarReceitas() {
                 <h3 className="font-semibold">Medicamentos</h3>
                 {receitaSelecionada.medicamentos.map((m) => (
                   <div key={m.id} className="border rounded-md p-3 text-sm">
-                    <p>
-                      <strong>Nome:</strong> {m.nome}
+                    <p className="flex flex-wrap items-center gap-2">
+                      <strong>Medicamento:</strong> {m.nome}
+                      {m.controlado && <Badge variant="destructive">Controlado</Badge>}
+                      {m.legado && <Badge variant="outline">Texto livre (legado)</Badge>}
                     </p>
+                    {!m.legado && (
+                      <p>
+                        <strong>Quantidade:</strong> {m.quantidade_dispensada} de {m.quantidade_prescrita} dispensada(s)
+                        {" · "}
+                        {m.status_dispensacao_display}
+                      </p>
+                    )}
                     <p>
                       <strong>Dosagem:</strong> {m.dosagem}
                     </p>

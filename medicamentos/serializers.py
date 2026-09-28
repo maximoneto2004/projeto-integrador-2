@@ -152,10 +152,34 @@ class MovimentacaoEstoqueSerializer(serializers.ModelSerializer):
 
 
 class DispensacaoSerializer(serializers.Serializer):
-    medicamento = serializers.PrimaryKeyRelatedField(queryset=Medicamento.objects.filter(is_active=True))
+    """Com receita_item, medicamento e quantidade são opcionais: vêm do item (quantidade = o que falta dispensar)."""
+
+    medicamento = serializers.PrimaryKeyRelatedField(
+        queryset=Medicamento.objects.filter(is_active=True), required=False
+    )
     unidade = serializers.PrimaryKeyRelatedField(queryset=UnidadePosto.objects.all())
-    quantidade = serializers.IntegerField(min_value=1)
+    quantidade = serializers.IntegerField(min_value=1, required=False)
     receita_item = serializers.PrimaryKeyRelatedField(
-        queryset=ReceitaMedicamento.objects.all(), required=False, allow_null=True
+        queryset=ReceitaMedicamento.objects.select_related("medicamento"), required=False, allow_null=True
     )
     motivo = serializers.CharField(required=False, allow_blank=True, allow_null=True, max_length=600)
+
+    def validate(self, attrs):
+        item = attrs.get("receita_item")
+        if item is None:
+            erros = {campo: "Obrigatório quando não há item de receita." for campo in ("medicamento", "quantidade") if campo not in attrs}
+            if erros:
+                raise serializers.ValidationError(erros)
+            return attrs
+
+        if item.medicamento_id is None:
+            raise serializers.ValidationError(
+                {"receita_item": "Item de receita legado (texto livre) não está vinculado a um medicamento cadastrado."}
+            )
+        if "medicamento" in attrs and attrs["medicamento"] != item.medicamento:
+            raise serializers.ValidationError({"medicamento": "O medicamento não corresponde ao prescrito na receita."})
+        attrs["medicamento"] = item.medicamento
+        attrs.setdefault("quantidade", item.quantidade_restante)
+        if attrs["quantidade"] <= 0:
+            raise serializers.ValidationError({"receita_item": "Este item da receita já foi totalmente dispensado."})
+        return attrs

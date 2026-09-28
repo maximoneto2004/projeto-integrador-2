@@ -65,9 +65,8 @@ export function getAppointmentActionVisibility({
   const isSupervisor = user.userRole === "supervisor";
   const isAtendente = isProfissionalSaude(user.userRole);
   const tipoServicoNormalizado = normalize(appointment.tipoServicoNome || appointment.tipoAtendimento || "");
-  const isEspecializado = tipoServicoNormalizado.includes("especializado");
   const isComum = tipoServicoNormalizado.includes("comum");
-  const atendenteEspecializado = isAtendente && isEspecializado;
+  const podePrescrever = user.userRole === "medico";
 
   return {
     showConfirmarChegada: permissions.canConfirmArrival && canAct && appointment.status === "Marcado",
@@ -77,7 +76,7 @@ export function getAppointmentActionVisibility({
       (!isSupervisor || isComum) &&
       (permissions.canCall || permissions.canAssume) &&
       podeExibirBotaoChamar(appointment),
-    showRegistrarReceita: atendenteEspecializado && permissions.canRegister && appointment.status === "Atendimento" && canAct,
+    showRegistrarReceita: podePrescrever && permissions.canRegister && appointment.status === "Atendimento" && canAct,
     showFinalizarAtendimento: permissions.canRegister && canAct && appointment.status === "Atendimento",
     showServicosAtendimento: isAtendente && appointment.status === "Finalizado",
     showRegistrarPosAtendimento:

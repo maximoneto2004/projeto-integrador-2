@@ -139,7 +139,7 @@ const menuGroups: MenuGroup[] = [
         title: "Buscar Receitas",
         url: "/sistema/buscar-receitas",
         icon: FileText,
-        roles: ["medico", "enfermeiro"],
+        roles: ["medico", "enfermeiro", "supervisor"],
       },
     ],
   },

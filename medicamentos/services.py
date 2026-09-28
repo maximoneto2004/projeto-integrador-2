@@ -13,6 +13,7 @@ from app.static_data import (
     TIPO_MOVIMENTACAO_SAIDA,
 )
 from medicamentos.models import LoteMedicamento, Medicamento, MovimentacaoEstoque
+from prontuario.models import ReceitaMedicamento
 from unidade_posto.models import UnidadePosto
 
 TIPOS_QUE_EXIGEM_MOTIVO = {TIPO_MOVIMENTACAO_AJUSTE, TIPO_MOVIMENTACAO_PERDA}
@@ -94,6 +95,8 @@ def dispensar(usuario, medicamento, unidade, quantidade, receita_item=None, moti
         raise ValidationError({"quantidade": "Informe uma quantidade maior que zero."})
     garantir_acesso_unidade(usuario, unidade)
     with transaction.atomic():
+        if receita_item is not None:
+            receita_item = _validar_item_receita(receita_item.pk, medicamento, quantidade)
         lotes = list(
             LoteMedicamento.objects.select_for_update()
             .filter(
@@ -121,7 +124,26 @@ def dispensar(usuario, medicamento, unidade, quantidade, receita_item=None, moti
                 _aplicar_movimentacao(lote, TIPO_MOVIMENTACAO_SAIDA, -retirar, usuario, motivo, receita_item)
             )
             restante -= retirar
+
+        if receita_item is not None:
+            receita_item.registrar_dispensacao(quantidade)
     return movimentacoes
+
+
+def _validar_item_receita(item_id, medicamento, quantidade):
+    """Trava o item para que duas dispensações simultâneas não ultrapassem o prescrito."""
+    item = ReceitaMedicamento.objects.select_for_update().select_related("receita").get(pk=item_id)
+    if item.medicamento_id != medicamento.pk:
+        raise ValidationError({"medicamento": "O medicamento não corresponde ao prescrito na receita."})
+    if item.receita.vencida:
+        raise ValidationError(
+            {"receita_item": f"A receita venceu em {item.receita.data_validade:%d/%m/%Y} e não pode mais ser dispensada."}
+        )
+    if quantidade > item.quantidade_restante:
+        raise ValidationError(
+            {"quantidade": f"Quantidade acima do que falta dispensar nesta receita: restam {item.quantidade_restante}."}
+        )
+    return item
 
 
 def calcular_saldos(unidades, medicamento_id=None):

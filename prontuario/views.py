@@ -2884,7 +2884,9 @@ class MedidaSocioEducativaRetrieveUpdateDestroyView(
 
 class ReceitaListCreateView(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated, DjangoModelPermissionsWithView]
-    queryset = Receita.objects.select_related("cidadao", "profissional", "agendamento").prefetch_related("medicamentos")
+    queryset = Receita.objects.select_related("cidadao", "profissional", "agendamento").prefetch_related(
+        "medicamentos__medicamento"
+    )
     serializer_class = ReceitaSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = ReceitaFilter
@@ -2918,7 +2920,9 @@ class ReceitaListCreateView(generics.ListCreateAPIView):
 
 class ReceitaRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated, DjangoModelPermissionsWithView]
-    queryset = Receita.objects.select_related("cidadao", "profissional", "agendamento").prefetch_related("medicamentos")
+    queryset = Receita.objects.select_related("cidadao", "profissional", "agendamento").prefetch_related(
+        "medicamentos__medicamento"
+    )
     serializer_class = ReceitaSerializer
 
     def handle_exception(self, exc):
@@ -2934,8 +2938,20 @@ class ReceitaRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         serializer = self.get_serializer(instance)
         return Response({"success": True, "result": serializer.data})
 
+    def update(self, request, *args, **kwargs):
+        partial = request.method == "PATCH"
+        serializer = self.get_serializer(self.get_object(), data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response({"success": True, "result": serializer.data})
+
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
+        if instance.possui_dispensacao:
+            return Response(
+                {"success": False, "result": "A receita já teve medicamentos dispensados e não pode ser removida."},
+                status=status.HTTP_409_CONFLICT,
+            )
         self.perform_destroy(instance)
         return Response({"success": True, "result": "Receita removida com sucesso."}, status=status.HTTP_200_OK)
 

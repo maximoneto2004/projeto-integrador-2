@@ -899,6 +899,46 @@
           "view_lotemedicamento",
           "medicamentos",
           "lotemedicamento"
+        ],
+        [
+          "add_receita",
+          "prontuario",
+          "receita"
+        ],
+        [
+          "change_receita",
+          "prontuario",
+          "receita"
+        ],
+        [
+          "delete_receita",
+          "prontuario",
+          "receita"
+        ],
+        [
+          "view_receita",
+          "prontuario",
+          "receita"
+        ],
+        [
+          "add_receitamedicamento",
+          "prontuario",
+          "receitamedicamento"
+        ],
+        [
+          "change_receitamedicamento",
+          "prontuario",
+          "receitamedicamento"
+        ],
+        [
+          "delete_receitamedicamento",
+          "prontuario",
+          "receitamedicamento"
+        ],
+        [
+          "view_receitamedicamento",
+          "prontuario",
+          "receitamedicamento"
         ]
       ]
     }
@@ -1803,6 +1843,16 @@
           "view_lotemedicamento",
           "medicamentos",
           "lotemedicamento"
+        ],
+        [
+          "view_receita",
+          "prontuario",
+          "receita"
+        ],
+        [
+          "view_receitamedicamento",
+          "prontuario",
+          "receitamedicamento"
         ]
       ]
     }
@@ -2091,6 +2141,16 @@
           "view_movimentacaoestoque",
           "medicamentos",
           "movimentacaoestoque"
+        ],
+        [
+          "view_receita",
+          "prontuario",
+          "receita"
+        ],
+        [
+          "view_receitamedicamento",
+          "prontuario",
+          "receitamedicamento"
         ]
       ]
     }
@@ -2468,6 +2528,16 @@
           "view_movimentacaoestoque",
           "medicamentos",
           "movimentacaoestoque"
+        ],
+        [
+          "view_receita",
+          "prontuario",
+          "receita"
+        ],
+        [
+          "view_receitamedicamento",
+          "prontuario",
+          "receitamedicamento"
         ]
       ]
     }

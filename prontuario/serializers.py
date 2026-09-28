@@ -1,5 +1,11 @@
 from rest_framework import serializers
 from django.db import transaction
+from app.static_data import (
+    STATUS_DISPENSACAO_DISPENSADO,
+    STATUS_DISPENSACAO_PARCIAL,
+    STATUS_DISPENSACAO_PENDENTE,
+)
+from medicamentos.models import Medicamento
 from prontuario.models import (
     BeneficioSocial,
     BeneficiosEventuais,
@@ -765,9 +771,43 @@ class MedidaSocioEducativaSerializer(
 
 
 class ReceitaMedicamentoSerializer(serializers.ModelSerializer):
+    medicamento = serializers.PrimaryKeyRelatedField(queryset=Medicamento.objects.filter(is_active=True))
+    dosagem = serializers.CharField(max_length=100, required=False, allow_blank=True)
+    quantidade_prescrita = serializers.IntegerField(min_value=1)
+    quantidade_restante = serializers.IntegerField(read_only=True)
+    status_dispensacao_display = serializers.CharField(source="get_status_dispensacao_display", read_only=True)
+    controlado = serializers.BooleanField(source="medicamento.controlado", read_only=True, default=False)
+    legado = serializers.SerializerMethodField()
+
     class Meta:
         model = ReceitaMedicamento
-        fields = ["id", "nome", "dosagem", "frequencia", "duracao", "instrucoes"]
+        fields = [
+            "id",
+            "medicamento",
+            "nome",
+            "controlado",
+            "dosagem",
+            "frequencia",
+            "duracao",
+            "instrucoes",
+            "quantidade_prescrita",
+            "quantidade_dispensada",
+            "quantidade_restante",
+            "status_dispensacao",
+            "status_dispensacao_display",
+            "legado",
+        ]
+        read_only_fields = ["id", "nome", "quantidade_dispensada", "status_dispensacao"]
+
+    def get_legado(self, obj):
+        return obj.medicamento_id is None
+
+    def validate(self, attrs):
+        medicamento = attrs["medicamento"]
+        if not (attrs.get("dosagem") or "").strip():
+            attrs["dosagem"] = f"{medicamento.concentracao} {medicamento.get_unidade_medida_display()}"
+        attrs["nome"] = str(medicamento)
+        return attrs
 
 
 class ReceitaSerializer(serializers.ModelSerializer):
@@ -775,6 +815,8 @@ class ReceitaSerializer(serializers.ModelSerializer):
     cidadao_nome = serializers.CharField(source="cidadao.nome", read_only=True)
     cidadao_cpf = serializers.CharField(source="cidadao.cpf", read_only=True)
     profissional_nome = serializers.CharField(source="profissional.nome_completo", read_only=True)
+    vencida = serializers.BooleanField(read_only=True)
+    status_dispensacao = serializers.SerializerMethodField()
 
     class Meta:
         model = Receita
@@ -787,12 +829,51 @@ class ReceitaSerializer(serializers.ModelSerializer):
             "profissional",
             "profissional_nome",
             "data_emissao",
+            "validade_dias",
+            "data_validade",
+            "vencida",
+            "status_dispensacao",
             "diagnostico",
             "observacoes",
             "medicamentos",
         ]
-        read_only_fields = ["id", "data_emissao", "cidadao", "cidadao_nome", "cidadao_cpf", "profissional", "profissional_nome"]
+        read_only_fields = [
+            "id",
+            "data_emissao",
+            "data_validade",
+            "cidadao",
+            "cidadao_nome",
+            "cidadao_cpf",
+            "profissional",
+            "profissional_nome",
+        ]
 
+    def get_status_dispensacao(self, obj):
+        status_itens = {item.status_dispensacao for item in obj.medicamentos.all() if item.medicamento_id}
+        if not status_itens or status_itens == {STATUS_DISPENSACAO_PENDENTE}:
+            return STATUS_DISPENSACAO_PENDENTE
+        if status_itens == {STATUS_DISPENSACAO_DISPENSADO}:
+            return STATUS_DISPENSACAO_DISPENSADO
+        return STATUS_DISPENSACAO_PARCIAL
+
+    def validate_medicamentos(self, value):
+        if not value:
+            raise serializers.ValidationError("Informe pelo menos um medicamento.")
+        ids = [item["medicamento"].pk for item in value]
+        if len(ids) != len(set(ids)):
+            raise serializers.ValidationError("O mesmo medicamento foi informado mais de uma vez.")
+        return value
+
+    def validate(self, attrs):
+        if self.instance and "agendamento" in attrs and attrs["agendamento"] != self.instance.agendamento:
+            raise serializers.ValidationError({"agendamento": "Não é possível trocar o agendamento de uma receita."})
+        if self.instance and "medicamentos" in attrs and self.instance.possui_dispensacao:
+            raise serializers.ValidationError(
+                {"medicamentos": "A receita já teve medicamentos dispensados; os itens não podem ser alterados."}
+            )
+        return attrs
+
+    @transaction.atomic
     def create(self, validated_data):
         medicamentos_data = validated_data.pop("medicamentos")
         agendamento = validated_data["agendamento"]
@@ -802,3 +883,15 @@ class ReceitaSerializer(serializers.ModelSerializer):
         for med in medicamentos_data:
             ReceitaMedicamento.objects.create(receita=receita, **med)
         return receita
+
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        medicamentos_data = validated_data.pop("medicamentos", None)
+        for campo, valor in validated_data.items():
+            setattr(instance, campo, valor)
+        instance.save()
+        if medicamentos_data is not None:
+            instance.medicamentos.all().delete()
+            for med in medicamentos_data:
+                ReceitaMedicamento.objects.create(receita=instance, **med)
+        return instance
