@@ -97,6 +97,8 @@ export type Servico = {
   nome: string;
   descricao: string | null;
   tipo_marcacao: TipoMarcacao;
+  gera_receita?: boolean;
+  envolve_dispensacao?: boolean;
   classe: string;
   tipo_servico: string;
   created_at: string;
@@ -124,6 +126,8 @@ export type ServicoDetalhado = {
   nome: string;
   descricao: string | null;
   tipo_marcacao: TipoMarcacao;
+  gera_receita?: boolean;
+  envolve_dispensacao?: boolean;
   classe: ClasseServicoResumo;
   tipo_servico: TipoServicoResumo;
   is_active?: boolean;

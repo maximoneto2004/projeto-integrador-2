@@ -18,6 +18,8 @@ export type ServicoPayload = {
   classe: string;
   tipo_servico: string;
   tipo_marcacao?: TipoMarcacao;
+  gera_receita?: boolean;
+  envolve_dispensacao?: boolean;
   is_active?: boolean;
 };
 

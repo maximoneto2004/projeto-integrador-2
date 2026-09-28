@@ -1,38 +1,51 @@
 [
 {
   "model": "servicos.tiposervico",
-  "pk": "57488658-a251-44c0-bf74-f7eaef78368d",
+  "pk": "4ffd9b19-25dc-55af-83d7-aa12d98a3b4a",
   "fields": {
-    "created_at": "2026-02-06T18:42:31.864Z",
-    "updated_at": "2026-02-06T18:43:05.437Z",
+    "created_at": "2026-09-28T12:00:00Z",
+    "updated_at": "2026-09-28T12:00:00Z",
     "is_active": true,
-    "nome": "ESPECIALIZADO ADICIONAL",
-    "descricao": "Atendimento especializado adicional, geralmente vinculado a ações internas, encaminhamentos e registros complementares.",
-    "tempo_atendimento": 60
-  }
-},
-{
-  "model": "servicos.tiposervico",
-  "pk": "b45ae596-af8f-41fe-86fc-970cadc866ea",
-  "fields": {
-    "created_at": "2026-02-02T16:16:26.224Z",
-    "updated_at": "2026-02-02T16:44:33.726Z",
-    "is_active": true,
-    "nome": "ESPECIALIZADO",
-    "descricao": "Atendimento que exige avaliação técnica mais aprofundada e/ou articulação com a rede, podendo demandar maior tempo de atendimento e registro mais detalhado.",
-    "tempo_atendimento": 60
-  }
-},
-{
-  "model": "servicos.tiposervico",
-  "pk": "d67bdfb9-037d-410c-b9df-c6b395e06d93",
-  "fields": {
-    "created_at": "2026-02-02T16:14:30.421Z",
-    "updated_at": "2026-02-02T16:44:15.815Z",
-    "is_active": true,
-    "nome": "COMUM",
-    "descricao": "Atendimento padrão para registro da demanda, orientações gerais e encaminhamentos básicos, conforme fluxo da unidade e necessidade apresentada.",
+    "nome": "Consulta Médica",
+    "descricao": "Atendimento realizado por médico.",
     "tempo_atendimento": 20
+  }
+},
+{
+  "model": "servicos.tiposervico",
+  "pk": "3544cc57-a58e-5675-8c5e-354bc1d6c732",
+  "fields": {
+    "created_at": "2026-09-28T12:00:00Z",
+    "updated_at": "2026-09-28T12:00:00Z",
+    "is_active": true,
+    "nome": "Consulta de Enfermagem",
+    "descricao": "Atendimento realizado por enfermeiro.",
+    "tempo_atendimento": 20
+  }
+},
+{
+  "model": "servicos.tiposervico",
+  "pk": "e9caa3b7-abca-57b9-9dbf-9c5dce7de050",
+  "fields": {
+    "created_at": "2026-09-28T12:00:00Z",
+    "updated_at": "2026-09-28T12:00:00Z",
+    "is_active": true,
+    "nome": "Procedimento de Enfermagem",
+    "descricao": "Procedimentos técnicos realizados pela enfermagem.",
+    "tempo_atendimento": 15
+  }
+},
+{
+  "model": "servicos.tiposervico",
+  "pk": "76d41656-55f3-5de9-a0ab-78bb04de58b2",
+  "fields": {
+    "created_at": "2026-09-28T12:00:00Z",
+    "updated_at": "2026-09-28T12:00:00Z",
+    "is_active": true,
+    "nome": "Dispensação de Medicamentos",
+    "descricao": "Entrega de medicamentos do estoque do posto.",
+    "tempo_atendimento": 10
   }
 }
 ]
+

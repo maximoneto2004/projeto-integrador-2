@@ -29,6 +29,8 @@ export interface Appointment {
   tipoId?: string;
   tipoAtendimento?: "Comum" | "Especial";
   tipoServicoNome?: string;
+  geraReceita?: boolean;
+  envolveDispensacao?: boolean;
   data: string;
   hora: string;
   status:

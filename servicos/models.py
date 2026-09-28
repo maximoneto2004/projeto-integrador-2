@@ -45,6 +45,16 @@ class Servico(BaseModel):
         choices=TIPO_MARCACAO_CHOICES,
         default="AGENDAMENTO"
     )
+    gera_receita = models.BooleanField(
+        verbose_name="Gera receita",
+        default=False,
+        help_text="Habilita a emissão de receita durante o atendimento deste serviço.",
+    )
+    envolve_dispensacao = models.BooleanField(
+        verbose_name="Envolve dispensação de medicamentos",
+        default=False,
+        help_text="Atendimento de entrega de medicamentos, ligado ao estoque da unidade.",
+    )
     # tempo_atendimento = models.PositiveIntegerField(
     #     default=20,
     #     verbose_name="Tempo de Atendimento (minutos)"

@@ -39,14 +39,6 @@ export type AppointmentActionVisibility = {
   showVerDetalhes: boolean;
 };
 
-const normalize = (value?: string) =>
-  typeof value === "string"
-    ? value
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .toLowerCase()
-    : "";
-
 const STATUS_PERMITE_CHAMAR: Appointment["status"][] = ["Aguardando", "Ativado - Aguardando Atendimento"];
 
 export function getAppointmentActionVisibility({
@@ -64,16 +56,16 @@ export function getAppointmentActionVisibility({
 
   const isSupervisor = user.userRole === "supervisor";
   const isAtendente = isProfissionalSaude(user.userRole);
-  const tipoServicoNormalizado = normalize(appointment.tipoServicoNome || appointment.tipoAtendimento || "");
-  const isComum = tipoServicoNormalizado.includes("comum");
-  const podePrescrever = user.userRole === "medico";
+  // O Supervisor é o responsável pelo estoque: só atende serviços de dispensação de medicamentos.
+  const supervisorPodeAtender = isSupervisor && !!appointment.envolveDispensacao;
+  const podePrescrever = user.userRole === "medico" && !!appointment.geraReceita;
 
   return {
     showConfirmarChegada: permissions.canConfirmArrival && canAct && appointment.status === "Marcado",
     showChamar:
       canAct &&
       STATUS_PERMITE_CHAMAR.includes(appointment.status) &&
-      (!isSupervisor || isComum) &&
+      (!isSupervisor || supervisorPodeAtender) &&
       (permissions.canCall || permissions.canAssume) &&
       podeExibirBotaoChamar(appointment),
     showRegistrarReceita: podePrescrever && permissions.canRegister && appointment.status === "Atendimento" && canAct,
@@ -85,15 +77,13 @@ export function getAppointmentActionVisibility({
       (!appointment.registrosPosAtendimento || appointment.registrosPosAtendimento < 2),
     showAssumirAguardando:
       permissions.canAssume &&
-      isSupervisor &&
-      isComum &&
+      supervisorPodeAtender &&
       canAct &&
       appointment.status === "Aguardando" &&
       !isAgendamentoAssumidoPorMim(appointment),
     showAssumirEmAtendimento:
       permissions.canAssume &&
-      isSupervisor &&
-      isComum &&
+      supervisorPodeAtender &&
       appointment.status === "Atendimento" &&
       !isAgendamentoAssumidoPorMim(appointment),
     showEditar: permissions.canEdit && canAct && (appointment.status === "Marcado" || appointment.status === "Aguardando"),

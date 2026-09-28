@@ -20,6 +20,7 @@ from app.static_data import (
 from cidadaos.models import Cidadao
 from fila_espera.models import FilaEspera
 from prontuario.models import MembroComposicao, PessoaReferencia, Prontuario
+from servicos.catalogo_saude import TIPOS_POR_GRUPO
 from servicos.models import Servico
 from unidade_posto.models import Guiche, UnidadePosto
 from usuarios.models import EscalaTrabalho, Usuario
@@ -130,6 +131,7 @@ class Command(BaseCommand):
     def _criar_profissionais(self, unidades, servicos, por_unidade):
         dia_codigos = [d[0] for d in DIA_SEMANA_CHOICES if d[0] in {"SEG", "TER", "QUA", "QUI", "SEX"}]
         tipos_servico = list({s.tipo_servico for s in servicos if s.tipo_servico_id})
+        tipos_por_nome = {t.nome: t for t in tipos_servico}
 
         for nome_grupo in ("Médico", "Enfermeiro", "Supervisor", "Gestor"):
             Group.objects.get_or_create(name=nome_grupo)
@@ -164,17 +166,23 @@ class Command(BaseCommand):
                         is_active=True,
                     )
                     user.unidades_lotacao.add(unidade)
-                    user.tipo_ofertados.add(*random.sample(tipos_servico, k=min(len(tipos_servico), random.randint(1, 3))))
                     user.guiche_atual = random.choice(guiches)
                     user.save(update_fields=["guiche_atual"])
 
                     if idx_p == 0:
-                        user.groups.add(Group.objects.get(name="Supervisor"))
+                        grupo = "Supervisor"
                     elif idx_p == 1:
-                        user.groups.add(Group.objects.get(name="Gestor"))
+                        grupo = "Gestor"
                     else:
                         grupo = "Médico" if idx_p % 2 == 0 else "Enfermeiro"
-                        user.groups.add(Group.objects.get(name=grupo))
+                    user.groups.add(Group.objects.get(name=grupo))
+
+                    tipos_do_grupo = [tipos_por_nome[n] for n in TIPOS_POR_GRUPO.get(grupo, []) if n in tipos_por_nome]
+                    if tipos_do_grupo:
+                        user.tipo_ofertados.add(*tipos_do_grupo)
+                    elif grupo != "Gestor":
+                        # Catálogo de saúde não carregado: mantém o comportamento antigo de sortear tipos.
+                        user.tipo_ofertados.add(*random.sample(tipos_servico, k=min(len(tipos_servico), random.randint(1, 3))))
 
                     EscalaTrabalho.objects.create(
                         profissional=user,
@@ -306,9 +314,10 @@ class Command(BaseCommand):
                     break
 
                 candidatos = tipos_por_servico.get(vaga.tipo_servico_id) or []
-                if not candidatos:
+                agendaveis = [s for s in candidatos if s.tipo_marcacao == "AGENDAMENTO"]
+                if not agendaveis:
                     continue
-                servico = random.choice(candidatos)
+                servico = random.choice(agendaveis)
                 cidadao = random.choice(cidadaos)
                 situacao = random.choice(status_pool)
 
@@ -368,7 +377,7 @@ class Command(BaseCommand):
                     break
 
                 cidadao = random.choice(cidadaos)
-                servico = random.choice(servicos)
+                servico = random.choice([s for s in servicos if s.tipo_marcacao == "AGENDAMENTO"] or servicos)
                 unidade = random.choice(unidades)
                 d = hoje - timedelta(days=random.randint(1, dias_passado))
                 if d.weekday() >= 5:

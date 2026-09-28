@@ -42,7 +42,7 @@ type ServicoOption = {
   id: string;
   nome: string;
   categoria: string;
-  tipoServicoNome: string;
+  tipoServicoId: string;
   isActive: boolean;
 };
 
@@ -79,8 +79,6 @@ const asServicoId = (servico: unknown) => {
   return String(servico || "");
 };
 
-const normalizeTipoServico = (value: string) => value.trim().toUpperCase();
-
 export function RegistrarServicos({ onSave, appointmentId }: Props) {
   const navigate = useNavigate();
 
@@ -90,6 +88,7 @@ export function RegistrarServicos({ onSave, appointmentId }: Props) {
   const [servicoPrincipalId, setServicoPrincipalId] = useState("");
   const [servicoPrincipalNome, setServicoPrincipalNome] = useState("");
   const [servicoPrincipalCategoria, setServicoPrincipalCategoria] = useState("");
+  const [servicoPrincipalTipoId, setServicoPrincipalTipoId] = useState("");
   const [statusFinalAtendimento, setStatusFinalAtendimento] = useState<StatusFinalAtendimento>("REALIZADO");
   const [observacoesGerais, setObservacoesGerais] = useState("");
   const [servicosAdicionaisIds, setServicosAdicionaisIds] = useState<string[]>([]);
@@ -107,9 +106,9 @@ export function RegistrarServicos({ onSave, appointmentId }: Props) {
   const servicosAdicionaisOpcoes = useMemo(
     () =>
       servicosDisponiveis.filter(
-        (item) => item.isActive && item.id !== servicoPrincipalId && normalizeTipoServico(item.tipoServicoNome) === "ESPECIALIZADO ADICIONAL",
+        (item) => item.isActive && item.id !== servicoPrincipalId && !!servicoPrincipalTipoId && item.tipoServicoId === servicoPrincipalTipoId,
       ),
-    [servicosDisponiveis, servicoPrincipalId],
+    [servicosDisponiveis, servicoPrincipalId, servicoPrincipalTipoId],
   );
 
   const labelsAdicionaisSelecionados = useMemo(
@@ -130,7 +129,7 @@ export function RegistrarServicos({ onSave, appointmentId }: Props) {
           id: String(item.id),
           nome: String(item.nome || ""),
           categoria: getCategoriaServico(item),
-          tipoServicoNome: String(item.tipo_servico?.nome || ""),
+          tipoServicoId: String(item.tipo_servico?.id || ""),
           isActive: item.is_active !== false,
         }));
         setServicosDisponiveis(options);
@@ -147,6 +146,9 @@ export function RegistrarServicos({ onSave, appointmentId }: Props) {
         setServicoPrincipalId(principalServicoId);
         setServicoPrincipalNome(principalServicoOption?.nome || String((agendamento.servico as any)?.nome || ""));
         setServicoPrincipalCategoria(principalServicoOption?.categoria || getCategoriaServico(agendamento.servico as any));
+        setServicoPrincipalTipoId(
+          principalServicoOption?.tipoServicoId || asServicoId((agendamento.servico as any)?.tipo_servico),
+        );
         setStatusFinalAtendimento((String(agendamento.final_atendimento || "REALIZADO") as StatusFinalAtendimento) || "REALIZADO");
         setObservacoesGerais(String(agendamento.observacoes_gerais || ""));
         setServicosAdicionaisIds(

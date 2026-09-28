@@ -9,8 +9,6 @@ import { getApiErrorMessage } from "@/lib/notifications";
 type SelectOption = { value: string; label: string };
 type HorarioOption = { value: string; label: string; complemento?: string };
 
-const normalizeCategoriaNome = (value: string) => value.trim().toUpperCase();
-
 type UseAgendamentoSelectsOptions = {
   agendamentoEmEdicao?: AgendamentoResponse | null;
   defaultUnidade?: string;
@@ -106,15 +104,10 @@ export function useAgendamentoSelects(options: UseAgendamentoSelectsOptions = {}
       setCarregandoCategorias(true);
       try {
         const resp = await agendarService.listarTipos(unidade);
-        const lista = (resp.data?.tipos || [])
-          .map((tipo) => ({
-            value: String(tipo.id),
-            label: tipo.nome,
-          }))
-          .filter((tipo) => {
-            const nome = normalizeCategoriaNome(tipo.label);
-            return nome === "COMUM" || nome === "ESPECIALIZADO";
-          }) as SelectOption[];
+        const lista = (resp.data?.tipos || []).map((tipo) => ({
+          value: String(tipo.id),
+          label: tipo.nome,
+        })) as SelectOption[];
         setOpcoesCategorias(lista);
       } catch (err) {
         console.error(err);

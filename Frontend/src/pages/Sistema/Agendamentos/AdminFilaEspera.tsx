@@ -47,12 +47,6 @@ const URGENCIA_OPTIONS: { value: UrgenciaAtendimento; label: string }[] = [
   { value: "ALTA", label: "Alta" },
   { value: "NORMAL", label: "Normal" },
 ];
-const normalizeCategoriaNome = (nome: string) =>
-  nome
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim()
-    .toUpperCase();
 
 const getPrioridadeBadge = (prioridade: Prioridade) => {
   const map: Record<Prioridade, { label: string; className: string }> = {
@@ -139,12 +133,10 @@ const AdminFilaEspera = () => {
       setCarregandoCategorias(true);
       try {
         const resp = await agendarService.listarTipos(unidade);
-        const lista = (resp.data?.tipos || [])
-          .map((tipo) => ({
-            value: String(tipo.id),
-            label: tipo.nome,
-          }))
-          .filter((tipo) => normalizeCategoriaNome(tipo.label) !== "ESPECIALIZADO ADICIONAL") as SelectOption[];
+        const lista = (resp.data?.tipos || []).map((tipo) => ({
+          value: String(tipo.id),
+          label: tipo.nome,
+        })) as SelectOption[];
         setOpcoesCategorias(lista);
         if (!categoria && lista.length) {
           setCategoria(lista[0].value);

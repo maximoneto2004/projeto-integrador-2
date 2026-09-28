@@ -15,9 +15,15 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script_stop: true
           script: |
+            set -e
             cd /root/projetointegrador-novo
-            git pull origin main
-            docker build -t projetointegrador-web:latest .
+            git remote -v
+            git status --short
+            git pull --ff-only origin main
+            echo "Commit em deploy: $(git log -1 --oneline)"
+            docker build -t projetointegrador-web:${{ github.sha }} -t projetointegrador-web:latest .
             docker stack deploy -c stack.yml cras
-            docker service update --force cras_web
+            docker service update --force --image projetointegrador-web:${{ github.sha }} cras_web
+            docker service ps cras_web --no-trunc | head -5

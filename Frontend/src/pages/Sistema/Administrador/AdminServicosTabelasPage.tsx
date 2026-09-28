@@ -58,6 +58,8 @@ type Servico = {
   tempoMin: string;
   ativo: boolean;
   tipoMarcacao: TipoMarcacao;
+  geraReceita: boolean;
+  envolveDispensacao: boolean;
 };
 
 const classeVazia: ClasseServico = { id: "", nome: "", descricao: "", ativo: true };
@@ -71,6 +73,8 @@ const servicoVazio: Servico = {
   tempoMin: "",
   ativo: true,
   tipoMarcacao: "AGENDAMENTO",
+  geraReceita: false,
+  envolveDispensacao: false,
 };
 
 export default function AdminServicosTabelasPage() {
@@ -170,6 +174,8 @@ export default function AdminServicosTabelasPage() {
         tempoMin: servico.tipo_servico?.tempo_atendimento ? String(servico.tipo_servico.tempo_atendimento) : "",
         ativo: servico.is_active ?? true,
         tipoMarcacao: servico.tipo_marcacao ?? "AGENDAMENTO",
+        geraReceita: !!servico.gera_receita,
+        envolveDispensacao: !!servico.envolve_dispensacao,
       })),
     [servicosData],
   );
@@ -400,6 +406,8 @@ export default function AdminServicosTabelasPage() {
       classe: servicoForm.classeId,
       tipo_servico: servicoForm.tipoId,
       tipo_marcacao: servicoForm.tipoMarcacao,
+      gera_receita: servicoForm.geraReceita,
+      envolve_dispensacao: servicoForm.envolveDispensacao,
       is_active: servicoForm.ativo,
     };
 
@@ -1127,6 +1135,28 @@ export default function AdminServicosTabelasPage() {
                 <div className="text-right">
                   <span className="text-[10px] font-bold text-slate-400 uppercase block">Tempo Estimado</span>
                   <span className="text-sm font-bold text-[#f05a28]">{servicoForm.tempoMin || 0} min</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 p-4 rounded-xl border border-slate-100">
+                <Switch
+                  checked={servicoForm.geraReceita}
+                  onCheckedChange={(c) => setServicoForm((a) => ({ ...a, geraReceita: c }))}
+                />
+                <div>
+                  <Label className="text-sm font-bold text-slate-700">Gera receita</Label>
+                  <p className="text-xs text-muted-foreground">Permite ao médico emitir receita neste atendimento.</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 p-4 rounded-xl border border-slate-100">
+                <Switch
+                  checked={servicoForm.envolveDispensacao}
+                  onCheckedChange={(c) => setServicoForm((a) => ({ ...a, envolveDispensacao: c }))}
+                />
+                <div>
+                  <Label className="text-sm font-bold text-slate-700">Dispensação de medicamentos</Label>
+                  <p className="text-xs text-muted-foreground">Atendimento de entrega de medicamentos, feito pelo supervisor.</p>
                 </div>
               </div>
             </div>

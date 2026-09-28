@@ -27,4 +27,14 @@ class ServicoListDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Servico
-        fields = ["id", "nome", "tipo_marcacao", "descricao", "classe", "tipo_servico", "is_active"]
+        fields = [
+            "id",
+            "nome",
+            "tipo_marcacao",
+            "gera_receita",
+            "envolve_dispensacao",
+            "descricao",
+            "classe",
+            "tipo_servico",
+            "is_active",
+        ]

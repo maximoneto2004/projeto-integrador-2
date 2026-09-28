@@ -15,7 +15,6 @@ import { cn } from "@/lib/utils";
 import type { AgendamentoResponse } from "@/types/api";
 import { agendamentoService } from "@/services/sistema/agendamentoService";
 import { servicoAdminService } from "@/services/sistema/servicoAdminService";
-import { tipoServicoService } from "@/services/sistema/tipoServicoService";
 
 type ServicoOption = { value: string; label: string };
 
@@ -31,35 +30,17 @@ const normalizeAgendamento = (raw: any): AgendamentoResponse | null => {
   return raw as AgendamentoResponse;
 };
 
-const normalizeTipoNome = (value: string) => value.trim().toUpperCase();
+const extrairId = (valor: unknown) =>
+  valor && typeof valor === "object" ? String((valor as { id?: unknown }).id ?? "") : String(valor ?? "");
 
-const resolveAtendenteTipoRaw = (agendamento?: AgendamentoResponse | null) => {
-  if (!agendamento) return [] as Array<string | { id?: string | number; nome?: string }>;
-  const atendente = agendamento.atendente as any;
-  const tipos = atendente?.tipo_ofertados;
-  if (!Array.isArray(tipos) || tipos.length === 0) return [] as string[];
-  return tipos as Array<string | { id?: string | number; nome?: string }>;
-};
-
-const resolveTipoBaseFromServicoAgendamento = (agendamento?: AgendamentoResponse | null) => {
-  if (!agendamento?.servico) return "";
-  const servico = agendamento.servico as any;
-  const tipoServico = servico?.tipo_servico;
-
-  if (typeof tipoServico === "string" || typeof tipoServico === "number") {
-    const nome = normalizeTipoNome(String(tipoServico));
-    if (nome === "COMUM") return "COMUM";
-    if (nome === "ESPECIALIZADO" || nome === "ESPECIALIZADO ADICIONAL") return "ESPECIALIZADO";
-    return "";
-  }
-
-  if (tipoServico && typeof tipoServico === "object") {
-    const nome = normalizeTipoNome(String((tipoServico as { nome?: unknown }).nome || ""));
-    if (nome === "COMUM") return "COMUM";
-    if (nome === "ESPECIALIZADO" || nome === "ESPECIALIZADO ADICIONAL") return "ESPECIALIZADO";
-  }
-
-  return "";
+// Serviços adicionais = serviços dos tipos que o atendente oferta; sem essa informação, usa o tipo do serviço principal.
+const resolveTiposAlvo = (agendamento?: AgendamentoResponse | null) => {
+  if (!agendamento) return [] as string[];
+  const tiposAtendente = (agendamento.atendente as any)?.tipo_ofertados;
+  const ids = Array.isArray(tiposAtendente) ? tiposAtendente.map(extrairId).filter(Boolean) : [];
+  if (ids.length) return Array.from(new Set(ids));
+  const tipoPrincipal = extrairId((agendamento.servico as any)?.tipo_servico);
+  return tipoPrincipal ? [tipoPrincipal] : [];
 };
 
 export function ModalServicosAgendamento({ open, agendamentoId, onOpenChange }: ModalServicosAgendamentoProps) {
@@ -102,7 +83,7 @@ export function ModalServicosAgendamento({ open, agendamentoId, onOpenChange }: 
     { value: "NAO_REALIZADO_RECURSO", label: "Não Realizado - Indisponibilidade de Recurso" },
     { value: "CANCELADO", label: "Cancelado" },
   ];
-  const tipoAtendenteRaw = useMemo(() => resolveAtendenteTipoRaw(agendamento), [agendamento]);
+  const tiposAlvo = useMemo(() => resolveTiposAlvo(agendamento), [agendamento]);
 
   useEffect(() => {
     if (!open || !agendamentoId) return;
@@ -133,66 +114,12 @@ export function ModalServicosAgendamento({ open, agendamentoId, onOpenChange }: 
     const carregarServicos = async () => {
       setCarregandoServicos(true);
       try {
-        const tiposServico = await tipoServicoService.listar();
-        const tipoNomeById = new Map<string, string>();
-        const tipoIdByNome = new Map<string, string>();
-
-        tiposServico.forEach((tipo) => {
-          const id = String(tipo.id || "");
-          const nomeNormalizado = normalizeTipoNome(String(tipo.nome || ""));
-          if (!id || !nomeNormalizado) return;
-          tipoNomeById.set(id, nomeNormalizado);
-          if (!tipoIdByNome.has(nomeNormalizado)) {
-            tipoIdByNome.set(nomeNormalizado, id);
-          }
-        });
-
-        const tipoBasesAtendente = new Set<string>();
-        tipoAtendenteRaw.forEach((tipo) => {
-          if (typeof tipo === "string" || typeof tipo === "number") {
-            const raw = String(tipo);
-            const nomePorId = tipoNomeById.get(raw);
-            const nome = normalizeTipoNome(nomePorId || raw);
-            if (nome === "COMUM" || nome === "ESPECIALIZADO") {
-              tipoBasesAtendente.add(nome);
-            }
-            return;
-          }
-
-          const nomeDireto = normalizeTipoNome(String(tipo?.nome || ""));
-          if (nomeDireto === "COMUM" || nomeDireto === "ESPECIALIZADO") {
-            tipoBasesAtendente.add(nomeDireto);
-            return;
-          }
-
-          const id = String(tipo?.id || "");
-          const nomePorId = normalizeTipoNome(tipoNomeById.get(id) || "");
-          if (nomePorId === "COMUM" || nomePorId === "ESPECIALIZADO") {
-            tipoBasesAtendente.add(nomePorId);
-          }
-        });
-
-        if (!tipoBasesAtendente.size) {
-          const tipoBaseServico = resolveTipoBaseFromServicoAgendamento(agendamento);
-          if (tipoBaseServico) {
-            tipoBasesAtendente.add(tipoBaseServico);
-          }
-        }
-
-        const nomesAlvo = new Set<string>();
-        if (tipoBasesAtendente.has("COMUM")) nomesAlvo.add("COMUM");
-        if (tipoBasesAtendente.has("ESPECIALIZADO")) nomesAlvo.add("ESPECIALIZADO ADICIONAL");
-
-        const tipoServicoIdsAlvo = Array.from(nomesAlvo)
-          .map((nome) => tipoIdByNome.get(nome) || "")
-          .filter(Boolean);
-
-        if (!tipoServicoIdsAlvo.length) {
+        if (!tiposAlvo.length) {
           setOpcoesServicos([]);
           return;
         }
 
-        const listas = await Promise.all(tipoServicoIdsAlvo.map((tipoId) => servicoAdminService.listar({ tipo_servico_id: tipoId })));
+        const listas = await Promise.all(tiposAlvo.map((tipoId) => servicoAdminService.listar({ tipo_servico_id: tipoId })));
         const combinada = listas.flat();
 
         const opcoesMap = new Map<string, ServicoOption>();
@@ -213,7 +140,7 @@ export function ModalServicosAgendamento({ open, agendamentoId, onOpenChange }: 
     };
 
     carregarServicos();
-  }, [open, tipoAtendenteRaw, agendamento]);
+  }, [open, tiposAlvo]);
 
   useEffect(() => {
     if (open) return;

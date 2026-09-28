@@ -48,6 +48,8 @@ const mapAgendamentoParaAppointment = (ag: AgendamentoResponse, guicheNomePorId?
     categoria: typeof classe === "object" ? (classe?.nome ?? "") : (classe ?? ""),
     servico: ag.servico?.nome ?? "-",
     tipoServicoNome: typeof tipoServico === "object" ? (tipoServico?.nome ?? "") : String(tipoServico ?? ""),
+    geraReceita: !!(ag.servico as any)?.gera_receita,
+    envolveDispensacao: !!(ag.servico as any)?.envolve_dispensacao,
     data: ag.data,
     hora: (ag.horario || "").slice(0, 5),
     status: SITUACAO_PARA_STATUS[ag.situacao],

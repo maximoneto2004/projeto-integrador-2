@@ -29,7 +29,7 @@ from cidadaos.requests_fd import check_auth_sso, get_valid_token_or_none
 from servicos.models import Servico, TipoServico
 from unidade_posto.models import ServicoUnidadePosto, UnidadePosto
 from app.permissions import DjangoModelPermissionsWithView
-from app.static_data import GRUPOS_PROFISSIONAIS_SAUDE
+from app.static_data import GRUPOS_PROFISSIONAIS_SAUDE, TIPO_MARCACAO_AGENDAMENTO
 from cidadaos.authentication import SSOAuthentication
 from cidadaos.serializers import CidadaoSerializer
 from rest_framework.permissions import AllowAny
@@ -139,15 +139,20 @@ class TelaAgendamentoView(TemplateView):
         return ctx
 
 
-def ajax_carregar_tipos(request, unidade_id):
-    # Buscar todos os tipos atendidos nessa unidade
-    tipos_ids = (
-        ServicoUnidadePosto.objects.filter(unidade_id=unidade_id)
-        .values_list("servico__tipo_servico_id", flat=True)
-        .distinct()
+def _ofertas_agendaveis(unidade_id):
+    """Serviços que a recepção pode marcar; os de encaminhamento interno são registrados só como adicionais."""
+    return ServicoUnidadePosto.objects.filter(
+        unidade_id=unidade_id,
+        is_active=True,
+        servico__is_active=True,
+        servico__tipo_marcacao=TIPO_MARCACAO_AGENDAMENTO,
     )
 
-    tipos = TipoServico.objects.filter(id__in=tipos_ids)
+
+def ajax_carregar_tipos(request, unidade_id):
+    tipos_ids = _ofertas_agendaveis(unidade_id).values_list("servico__tipo_servico_id", flat=True).distinct()
+
+    tipos = TipoServico.objects.filter(id__in=tipos_ids, is_active=True).order_by("nome")
 
     data = [{"id": str(t.id), "nome": t.nome} for t in tipos]
 
@@ -174,14 +179,14 @@ def ajax_carregar_vagas(request, unidade_id, tipo_id, data):
 
 
 def ajax_carregar_servicos_por_tipo(request, unidade_id, tipo_id):
-    su = ServicoUnidadePosto.objects.filter(
-        unidade_id=unidade_id, servico__tipo_servico_id=tipo_id
-    ).select_related("servico")
+    servicos_ids = (
+        _ofertas_agendaveis(unidade_id)
+        .filter(servico__tipo_servico_id=tipo_id)
+        .values_list("servico_id", flat=True)
+        .distinct()
+    )
 
-    # Remove duplicados
-    servicos_ids = su.values_list("servico_id", flat=True).distinct()
-
-    servicos = Servico.objects.filter(id__in=servicos_ids)
+    servicos = Servico.objects.filter(id__in=servicos_ids).order_by("nome")
 
     data = [{"id": str(s.id), "nome": s.nome} for s in servicos]
 

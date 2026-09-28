@@ -75,6 +75,8 @@ VIA_ADMINISTRACAO_CHOICES = [
     ("TRANSDERMICA", "Transdérmica"),
 ]
 
+TIPO_MARCACAO_AGENDAMENTO = "AGENDAMENTO"
+
 TIPO_MARCACAO_CHOICES = [
     ("AGENDAMENTO", "Atendimento por agendamento"),
     ("ENCAMINHAMENTO", "Atendimento por encaminhamento interno"),
