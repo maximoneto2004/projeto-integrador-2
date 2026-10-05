@@ -20,6 +20,9 @@ import {
   Boxes,
   PackageCheck,
   Pill,
+  Package,
+  ArrowRightLeft,
+  TriangleAlert,
 } from "lucide-react";
 
 import { NavLink } from "./NavLink";
@@ -158,16 +161,40 @@ const menuGroups: MenuGroup[] = [
         roles: ["supervisor"],
       },
       {
-        title: "Estoque",
-        url: "/sistema/estoque",
-        icon: Boxes,
-        roles: ["supervisor", "medico", "enfermeiro", "admin"],
-      },
-      {
         title: "Buscar Receitas",
         url: "/sistema/buscar-receitas",
         icon: FileText,
         roles: ["medico", "enfermeiro", "supervisor"],
+      },
+    ],
+  },
+
+  {
+    label: "Estoque",
+    items: [
+      {
+        title: "Saldo",
+        url: "/sistema/estoque/saldo",
+        icon: Boxes,
+        roles: ["supervisor", "medico", "enfermeiro", "admin"],
+      },
+      {
+        title: "Lotes",
+        url: "/sistema/estoque/lotes",
+        icon: Package,
+        roles: ["supervisor", "admin"],
+      },
+      {
+        title: "Movimentações",
+        url: "/sistema/estoque/movimentacoes",
+        icon: ArrowRightLeft,
+        roles: ["supervisor", "admin"],
+      },
+      {
+        title: "Alertas",
+        url: "/sistema/estoque/alertas",
+        icon: TriangleAlert,
+        roles: ["supervisor", "admin"],
       },
     ],
   },

@@ -11,14 +11,9 @@ import { useUnidadeTrabalho } from "@/hooks/sistema/useUnidadeTrabalho";
 import { receitaService, type Receita, type ReceitaMedicamento } from "@/services/prontuario/receitaService";
 import { estoqueService } from "@/services/sistema/estoqueService";
 import { formatCpf } from "@/utils/cpfFormater";
+import { formatarData } from "@/utils/dataFormater";
 import { getApiErrorMessage } from "@/lib/notifications";
 import { toast } from "@/lib/sonner";
-
-function formatarData(iso?: string | null) {
-  if (!iso) return "-";
-  const d = /^\d{4}-\d{2}-\d{2}$/.test(iso) ? new Date(`${iso}T00:00:00`) : new Date(iso);
-  return Number.isNaN(d.getTime()) ? "-" : d.toLocaleDateString("pt-BR");
-}
 
 function LinhaItem({
   item,
