@@ -5,6 +5,7 @@ from django.http import Http404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, permissions, status
 from rest_framework.exceptions import ValidationError
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -115,6 +116,7 @@ def _filtrar_por_unidades(queryset, user, campo_unidade):
 
 class LoteMedicamentoListCreateView(generics.ListCreateAPIView):
     permission_classes = PERMISSOES_ESTOQUE
+    pagination_class = LimitOffsetPagination
     queryset = LoteMedicamento.objects.all()
     serializer_class = LoteMedicamentoSerializer
     filter_backends = [DjangoFilterBackend]
@@ -164,6 +166,7 @@ class LoteMedicamentoRetrieveUpdateView(generics.RetrieveUpdateAPIView):
 
 class MovimentacaoEstoqueListCreateView(generics.ListCreateAPIView):
     permission_classes = PERMISSOES_ESTOQUE
+    pagination_class = LimitOffsetPagination
     queryset = MovimentacaoEstoque.objects.all()
     serializer_class = MovimentacaoEstoqueSerializer
     filter_backends = [DjangoFilterBackend]

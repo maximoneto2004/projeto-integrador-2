@@ -33,11 +33,11 @@ export function ModalConfirmarChegada({ open, onOpenChange, appointment, onConfi
               <div className="bg-emerald-50 p-3 rounded-2xl text-emerald-600">
                 <UserCheck className="h-6 w-6" />
               </div>
-              <div className="text-left">
+              <div className="min-w-0 text-left">
                 <AlertDialogTitle className="text-xl font-bold text-slate-800">Confirmar chegada</AlertDialogTitle>
                 <AlertDialogDescription className="text-slate-500">
                   O status do agendamento será alterado para{" "}
-                  <span className="text-emerald-600 font-bold uppercase text-[10px] bg-emerald-50 px-1.5 py-0.5 rounded">Aguardando</span>.
+                  <span className="whitespace-nowrap text-emerald-600 font-bold uppercase text-[10px] bg-emerald-50 px-1.5 py-0.5 rounded">Aguardando</span>.
                 </AlertDialogDescription>
               </div>
             </div>

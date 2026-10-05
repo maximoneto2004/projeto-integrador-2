@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { format } from "date-fns";
-import { Volume2, MapPin, Clock } from "lucide-react";
+import { Volume2, VolumeX, MapPin, Clock } from "lucide-react";
 import { usePainelChamadas } from "@/hooks/sistema/usePainelChamadas";
+import { useAnunciosPainel } from "@/hooks/sistema/useAnunciosPainel";
 import { BrandLogo } from "@/components/BrandLogo";
 
 type ChamadoDisplay = {
@@ -12,9 +13,9 @@ type ChamadoDisplay = {
 };
 
 export default function PainelPublico() {
-  const { data: chamadas = [] } = usePainelChamadas();
-  const ultimoChamadoId = useRef<string | null>(null);
-  const [vozSelecionada, setVozSelecionada] = useState<SpeechSynthesisVoice | null>(null);
+  const { data } = usePainelChamadas();
+  const chamadas = useMemo(() => data ?? [], [data]);
+  const { somAtivo, ativarSom } = useAnunciosPainel(data);
 
   const historico = useMemo<ChamadoDisplay[]>(() => {
     return chamadas.map((item) => ({
@@ -25,49 +26,6 @@ export default function PainelPublico() {
   }, [chamadas]);
 
   const ultimoChamado = useMemo(() => historico[0], [historico]);
-
-  useEffect(() => {
-    if (typeof window === "undefined" || !window.speechSynthesis) return;
-    const synth = window.speechSynthesis;
-
-    const selecionarVoz = () => {
-      const vozes = synth.getVoices();
-      if (!vozes.length) return;
-      const ptBr =
-        vozes.find((voz) => voz.lang?.toLowerCase() === "pt-br") ||
-        vozes.find((voz) => voz.lang?.toLowerCase().startsWith("pt")) ||
-        vozes[0];
-      setVozSelecionada(ptBr || null);
-    };
-
-    selecionarVoz();
-    synth.addEventListener("voiceschanged", selecionarVoz);
-    return () => {
-      synth.removeEventListener("voiceschanged", selecionarVoz);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!ultimoChamado) return;
-    if (typeof window === "undefined" || !window.speechSynthesis) return;
-    if (!vozSelecionada) return;
-
-    const currentId = `${ultimoChamado.nomeCidadao}-${ultimoChamado.mesa}-${ultimoChamado.hora}`;
-    if (ultimoChamadoId.current === currentId) return;
-    ultimoChamadoId.current = currentId;
-
-    const msg = new SpeechSynthesisUtterance(`${ultimoChamado.nomeCidadao}, dirigir-se ao ${ultimoChamado.mesa}`);
-    msg.voice = vozSelecionada;
-    msg.lang = vozSelecionada.lang || "pt-BR";
-    msg.rate = 1;
-    msg.pitch = 1;
-
-    const synth = window.speechSynthesis;
-    synth.cancel();
-    setTimeout(() => {
-      synth.speak(msg);
-    }, 50);
-  }, [ultimoChamado, vozSelecionada]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200 px-3 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-8 font-sans">
@@ -85,6 +43,17 @@ export default function PainelPublico() {
             </div>
           </div>
         </header>
+
+        {!somAtivo && (
+          <button
+            type="button"
+            onClick={ativarSom}
+            className="mb-4 flex w-full items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-primary bg-primary/10 px-4 py-4 text-lg font-bold text-primary transition-colors hover:bg-primary/20 md:mb-6 md:text-2xl"
+          >
+            <VolumeX className="h-6 w-6 md:h-8 md:w-8" />
+            Clique aqui para ativar o som das chamadas
+          </button>
+        )}
 
         <main className="flex flex-grow flex-col gap-4 md:gap-6">
           {ultimoChamado ? (

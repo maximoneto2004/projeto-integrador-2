@@ -230,3 +230,35 @@ class SaldoAlertasTests(EstoqueBaseTest):
     def test_parametro_invalido(self):
         self.assertEqual(self.client.get(URL_ALERTAS, {"dias": "abc"}).status_code, 400)
         self.assertEqual(self.client.get(URL_SALDO, {"unidade": "nao-e-uuid"}).status_code, 400)
+
+
+class ListagemPaginadaTests(EstoqueBaseTest):
+    def setUp(self):
+        super().setUp()
+        for i in range(3):
+            criar_lote(self.medicamento, self.posto_a, f"L00{i}", 10, 90 + i)
+        self.outro = Medicamento.objects.create(**{**PAYLOAD, "nome": "Amoxicilina", "principio_ativo": "Amoxicilina"})
+        criar_lote(self.outro, self.posto_a, "AMX1", 5, 90)
+
+    def test_lotes_paginados_com_limit_offset(self):
+        resp = self.client.get(URL_LOTE, {"unidade": str(self.posto_a.id), "limit": 2, "offset": 2})
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.data["count"], 4)
+        self.assertEqual(len(resp.data["results"]["result"]), 2)
+
+    def test_lotes_sem_limit_continuam_sem_paginacao(self):
+        resp = self.client.get(URL_LOTE, {"unidade": str(self.posto_a.id)})
+        self.assertEqual(len(resp.data["result"]), 4)
+
+    def test_busca_lote_por_medicamento_ou_numero(self):
+        por_nome = self.client.get(URL_LOTE, {"busca": "amoxi"}).data["result"]
+        self.assertEqual([l["numero_lote"] for l in por_nome], ["AMX1"])
+        por_numero = self.client.get(URL_LOTE, {"busca": "l001"}).data["result"]
+        self.assertEqual([l["numero_lote"] for l in por_numero], ["L001"])
+
+    def test_movimentacoes_paginadas_e_com_busca(self):
+        for lote in LoteMedicamento.objects.all():
+            self.client.post(URL_MOV, {"lote": str(lote.id), "tipo": "SAIDA", "quantidade": 1}, format="json")
+        resp = self.client.get(URL_MOV, {"busca": "amoxicilina", "limit": 10})
+        self.assertEqual(resp.data["count"], 1)
+        self.assertEqual(resp.data["results"]["result"][0]["lote_numero"], "AMX1")

@@ -759,6 +759,8 @@ class UltimasChamadasPainelAPIView(APIView):
             resultados.append(
                 {
                     "id": str(chamada.agendamento_id),
+                    # Cada chamada (inclusive rechamadas do mesmo agendamento) tem id próprio; o painel usa para anunciar.
+                    "chamada_id": str(chamada.id),
                     "cidadao": chamada.cidadao_nome or None,
                     "unidade": chamada.unidade.nome if chamada.unidade_id else None,
                     "situacao": "CHAMANDO",

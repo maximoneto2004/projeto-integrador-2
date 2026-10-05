@@ -79,16 +79,26 @@ export type Alertas = {
   vencidos: Lote[];
 };
 
+export type Pagina<T> = { itens: T[]; total: number };
+
 type ApiEnvelope<T> = { success?: boolean; result: T };
+// Com limit/offset o DRF (LimitOffsetPagination) devolve o envelope dentro de "results".
+type ApiPaginada<T> = { count: number; results: ApiEnvelope<T[]> };
 type Filtros = Record<string, string | number | boolean | undefined>;
 
 const limpar = (params?: Filtros) =>
   Object.fromEntries(Object.entries(params ?? {}).filter(([, v]) => v !== undefined && v !== ""));
 
+const extrairPagina = <T>(data: ApiPaginada<T> | ApiEnvelope<T[]>): Pagina<T> => {
+  if ("count" in data) return { itens: data.results?.result ?? [], total: data.count };
+  const itens = data.result ?? [];
+  return { itens, total: itens.length };
+};
+
 export const estoqueService = {
-  async listarLotes(params?: Filtros): Promise<Lote[]> {
-    const { data } = await api.get<ApiEnvelope<Lote[]>>(`/estoque/lote/`, { params: limpar(params) });
-    return data.result ?? [];
+  async listarLotes(params?: Filtros): Promise<Pagina<Lote>> {
+    const { data } = await api.get<ApiPaginada<Lote> | ApiEnvelope<Lote[]>>(`/estoque/lote/`, { params: limpar(params) });
+    return extrairPagina(data);
   },
 
   async criarLote(payload: LotePayload): Promise<Lote> {
@@ -101,11 +111,11 @@ export const estoqueService = {
     return data.result;
   },
 
-  async listarMovimentacoes(params?: Filtros): Promise<Movimentacao[]> {
-    const { data } = await api.get<ApiEnvelope<Movimentacao[]>>(`/estoque/movimentacao/`, {
+  async listarMovimentacoes(params?: Filtros): Promise<Pagina<Movimentacao>> {
+    const { data } = await api.get<ApiPaginada<Movimentacao> | ApiEnvelope<Movimentacao[]>>(`/estoque/movimentacao/`, {
       params: limpar(params),
     });
-    return data.result ?? [];
+    return extrairPagina(data);
   },
 
   async movimentar(payload: MovimentacaoPayload): Promise<Movimentacao> {

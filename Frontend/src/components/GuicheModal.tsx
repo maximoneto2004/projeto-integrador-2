@@ -34,11 +34,11 @@ export function GuicheModal({ open, onConfirm }: GuicheModalProps) {
 
         if (!disponiveis.length) {
           setOptionsError(
-            "Todos os guichês estao ocupados no momento. Fale com um coordenador para criar outro guichê ou com um supervisor para liberar um guichê ocupado."
+            "Todas as salas estão ocupadas no momento. Fale com um coordenador para criar outra sala ou com um supervisor para liberar uma sala ocupada."
           );
         }
       })
-      .catch(() => setOptionsError("Não foi possível carregar os guichês."))
+      .catch(() => setOptionsError("Não foi possível carregar as salas."))
       .finally(() => setOptionsLoading(false));
   }, [open]);
 
@@ -51,7 +51,7 @@ export function GuicheModal({ open, onConfirm }: GuicheModalProps) {
       const res = await guicheService.definir({ guiche_id: selectedGuicheId });
       onConfirm(res.data);
     } catch {
-      setError("Não foi possível definir o guichê. Tente novamente.");
+      setError("Não foi possível definir a sala. Tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -61,17 +61,17 @@ export function GuicheModal({ open, onConfirm }: GuicheModalProps) {
     <Dialog open={open} modal={true}>
       <DialogContent className="sm:max-w-md" onInteractOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle>Selecione seu guichê de atendimento</DialogTitle>
-          <DialogDescription>Escolha o guichê onde você irá realizar os atendimentos hoje.</DialogDescription>
+          <DialogTitle>Selecione sua sala de atendimento</DialogTitle>
+          <DialogDescription>Escolha a sala onde você irá realizar os atendimentos hoje.</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="guiche">Guichê/Mesa</Label>
+            <Label htmlFor="guiche">Sala</Label>
             <Select value={selectedGuicheId} onValueChange={setSelectedGuicheId} disabled={optionsLoading || guiches.length === 0}>
               <SelectTrigger id="guiche">
                 <SelectValue
-                  placeholder={optionsLoading ? "Carregando..." : guiches.length === 0 ? "Nenhum guichê disponivel" : "Selecione um guichê"}
+                  placeholder={optionsLoading ? "Carregando..." : guiches.length === 0 ? "Nenhuma sala disponível" : "Selecione uma sala"}
                 />
               </SelectTrigger>
               <SelectContent>

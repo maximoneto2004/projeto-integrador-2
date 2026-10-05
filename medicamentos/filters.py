@@ -32,6 +32,7 @@ class MedicamentoFilter(filters.FilterSet):
 
 
 class LoteMedicamentoFilter(filters.FilterSet):
+    busca = django_filters.CharFilter(method="filtrar_busca")
     numero_lote = django_filters.CharFilter(field_name="numero_lote", lookup_expr="icontains")
     validade_ate = django_filters.DateFilter(field_name="validade", lookup_expr="lte")
     vencido = django_filters.BooleanFilter(method="filtrar_vencido")
@@ -39,7 +40,14 @@ class LoteMedicamentoFilter(filters.FilterSet):
 
     class Meta:
         model = LoteMedicamento
-        fields = ["medicamento", "unidade", "numero_lote", "validade_ate", "vencido", "com_saldo", "is_active"]
+        fields = ["busca", "medicamento", "unidade", "numero_lote", "validade_ate", "vencido", "com_saldo", "is_active"]
+
+    def filtrar_busca(self, queryset, name, value):
+        return queryset.filter(
+            Q(medicamento__nome__icontains=value)
+            | Q(medicamento__principio_ativo__icontains=value)
+            | Q(numero_lote__icontains=value)
+        )
 
     def filtrar_vencido(self, queryset, name, value):
         hoje = timezone.localdate()
@@ -50,6 +58,7 @@ class LoteMedicamentoFilter(filters.FilterSet):
 
 
 class MovimentacaoEstoqueFilter(filters.FilterSet):
+    busca = django_filters.CharFilter(method="filtrar_busca")
     medicamento = django_filters.UUIDFilter(field_name="lote__medicamento_id")
     unidade = django_filters.UUIDFilter(field_name="lote__unidade_id")
     data_inicio = django_filters.DateFilter(field_name="data", lookup_expr="date__gte")
@@ -57,4 +66,11 @@ class MovimentacaoEstoqueFilter(filters.FilterSet):
 
     class Meta:
         model = MovimentacaoEstoque
-        fields = ["lote", "medicamento", "unidade", "tipo", "receita_item", "data_inicio", "data_fim"]
+        fields = ["busca", "lote", "medicamento", "unidade", "tipo", "receita_item", "data_inicio", "data_fim"]
+
+    def filtrar_busca(self, queryset, name, value):
+        return queryset.filter(
+            Q(lote__medicamento__nome__icontains=value)
+            | Q(lote__medicamento__principio_ativo__icontains=value)
+            | Q(lote__numero_lote__icontains=value)
+        )
