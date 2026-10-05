@@ -262,3 +262,20 @@ class ListagemPaginadaTests(EstoqueBaseTest):
         resp = self.client.get(URL_MOV, {"busca": "amoxicilina", "limit": 10})
         self.assertEqual(resp.data["count"], 1)
         self.assertEqual(resp.data["results"]["result"][0]["lote_numero"], "AMX1")
+
+
+class CoordenadorEstoqueTests(EstoqueBaseTest):
+    def setUp(self):
+        super().setUp()
+        self.coordenador = criar_usuario("coord@teste.local", "86288366757", "coordenador")
+        self.coordenador.unidades_lotacao.add(self.posto_a)
+        self.lote = criar_lote(self.medicamento, self.posto_a, "L1", 10, 90)
+        self.client.force_authenticate(self.coordenador)
+
+    def test_coordenador_consulta_estoque_da_unidade(self):
+        for url in (URL_LOTE, URL_MOV, URL_SALDO, URL_ALERTAS):
+            self.assertEqual(self.client.get(url).status_code, 200, url)
+
+    def test_coordenador_nao_registra_nem_movimenta(self):
+        resp = self.client.post(URL_MOV, {"lote": str(self.lote.id), "tipo": "SAIDA", "quantidade": 1}, format="json")
+        self.assertEqual(resp.status_code, 403)

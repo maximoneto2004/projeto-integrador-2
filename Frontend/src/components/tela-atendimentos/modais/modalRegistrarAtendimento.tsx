@@ -17,6 +17,9 @@ import {
   type RegistroAtendimentoPayload,
 } from "@/services/prontuario/prontuarioService";
 import { toast } from "@/lib/sonner";
+import { useAuth } from "@/contexts/AuthContext";
+import { deriveRoleFromGroups } from "@/lib/authHelpers";
+import { ACCESS } from "@/security/acess";
 
 interface ModalRegistrarAtendimentoProps {
   open: boolean;
@@ -68,6 +71,9 @@ function paraPayload(form: Formulario, agendamento: string): RegistroAtendimento
 
 export function ModalRegistrarAtendimento({ open, onOpenChange, appointment }: ModalRegistrarAtendimentoProps) {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const role = deriveRoleFromGroups(user?.grupos);
+  const podeVerProntuario = !!role && (ACCESS.prontuarioClinico as readonly string[]).includes(role);
   const [form, setForm] = useState<Formulario>(formularioVazio);
   const [registroId, setRegistroId] = useState<string | null>(null);
   const [paciente, setPaciente] = useState<CidadaoProntuario | null>(null);
@@ -249,7 +255,7 @@ export function ModalRegistrarAtendimento({ open, onOpenChange, appointment }: M
             </div>
 
             <div className="flex flex-wrap justify-between gap-2">
-              {appointment?.cidadaoId ? (
+              {appointment?.cidadaoId && podeVerProntuario ? (
                 <Button
                   type="button"
                   variant="ghost"
