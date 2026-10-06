@@ -6,6 +6,9 @@ GRUPOS_PROFISSIONAIS_SAUDE = [GRUPO_MEDICO, GRUPO_ENFERMEIRO]
 
 FORMA_FARMACEUTICA_CHOICES = [
     ("COMPRIMIDO", "Comprimido"),
+    ("COMPRIMIDO_ORODISPERSIVEL", "Comprimido orodispersível"),
+    ("COMPRIMIDO_SOLUVEL", "Comprimido solúvel"),
+    ("COMPRIMIDO_LIB_RETARDADA", "Comprimido de liberação retardada"),
     ("CAPSULA", "Cápsula"),
     ("DRAGEA", "Drágea"),
     ("SOLUCAO_ORAL", "Solução oral"),
@@ -13,8 +16,16 @@ FORMA_FARMACEUTICA_CHOICES = [
     ("XAROPE", "Xarope"),
     ("GOTAS", "Gotas"),
     ("SOLUCAO_INJETAVEL", "Solução injetável"),
+    ("PO_SOLUCAO_INJETAVEL", "Pó para solução injetável"),
+    ("SUSPENSAO_INJETAVEL", "Suspensão injetável"),
+    ("PO_SUSP_INJETAVEL", "Pó para suspensão injetável"),
+    ("SOL_INJETAVEL_5ML", "Solução injetável 5 mL"),
+    ("SOL_INJETAVEL_10ML", "Solução injetável 10 mL"),
+    ("SOL_INJETAVEL_100ML", "Solução injetável 100 mL"),
+    ("SOL_INJETAVEL_500ML", "Solução injetável 500 mL"),
     ("POMADA", "Pomada"),
     ("CREME", "Creme"),
+    ("CREME_VAGINAL", "Creme vaginal"),
     ("GEL", "Gel"),
     ("COLIRIO", "Colírio"),
     ("SPRAY", "Spray"),
@@ -22,6 +33,10 @@ FORMA_FARMACEUTICA_CHOICES = [
     ("SUPOSITORIO", "Supositório"),
     ("ADESIVO", "Adesivo"),
     ("PO", "Pó"),
+    ("GOMA_MASCAR", "Goma de mascar"),
+    ("PASTILHA", "Pastilha"),
+    ("PRESERVATIVO_160X49", "Preservativo 160 mm x 49 mm"),
+    ("PRESERVATIVO_160X52", "Preservativo 160 mm x 52 mm"),
     ("OUTRO", "Outro"),
 ]
 
@@ -35,6 +50,7 @@ UNIDADE_MEDIDA_CHOICES = [
     ("UI", "UI"),
     ("UI_ML", "UI/mL"),
     ("PERCENTUAL", "%"),
+    ("NAO_SE_APLICA", "Não se aplica / não identificada"),
 ]
 
 TIPO_MOVIMENTACAO_ENTRADA = "ENTRADA"
@@ -81,6 +97,7 @@ VIA_ADMINISTRACAO_CHOICES = [
     ("RETAL", "Retal"),
     ("VAGINAL", "Vaginal"),
     ("TRANSDERMICA", "Transdérmica"),
+    ("NAO_INFORMADA", "Não informada"),
 ]
 
 TIPO_MARCACAO_AGENDAMENTO = "AGENDAMENTO"

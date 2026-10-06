@@ -1,8 +1,8 @@
 from django.db import transaction
+from django.db.models import Q
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
-from django.utils import timezone
 from utils.email import send_email_in_thread
 from .models import Agendamento, AgendaVaga
 from rest_framework.response import Response
@@ -12,13 +12,42 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
+def sincronizar_capacidade_vagas(vagas):
+    """Reconcilia vagas apó criar, alterar ou remover bloqueios de horário."""
+    from unidade_posto.models import BloqueioHorario
+
+    ids = list(vagas.values_list("pk", flat=True))
+    with transaction.atomic():
+        for vaga in AgendaVaga.objects.select_for_update().filter(pk__in=ids):
+            bloqueada = BloqueioHorario.objects.filter(
+                unidades=vaga.unidade,
+                is_active=True,
+                data__lte=vaga.data,
+                hora_inicio__lte=vaga.horario,
+                hora_fim__gt=vaga.horario,
+            ).filter(Q(data_final__gte=vaga.data) | Q(data_final__isnull=True, data=vaga.data)).exists()
+            if bloqueada:
+                ocupadas = vaga.vagas
+            else:
+                ocupadas = min(
+                    Agendamento.objects.filter(vaga_id=vaga.pk)
+                    .exclude(situacao__in=Agendamento.STATUS_LIBERAM_VAGA)
+                    .count(),
+                    vaga.vagas,
+                )
+            if vaga.vagas_ocupadas != ocupadas:
+                vaga.vagas_ocupadas = ocupadas
+                vaga.save(update_fields=["vagas_ocupadas", "updated_at"])
+
 # FALTA VALIDAR CANCELAMENTO
 def cancelar_agendamento(agendamento_id, origem="CANCELADO_CRAS", liberar_vaga=True):
     """
-    Cancela um agendamento e pode notificar ou não o cidadão.
-    Se o cancelamento foi pelo cidadão, ele libera a vaga e não manda email.
-    Se o cancelamento foi pelo cras por motivo de bloqueio de horario, ele não libera a vaga mas manda o email
-    Se o cancelamento foi pelo cras sem ser por bloqueio de horario, ele libera a vaga e manda o email.
+    Cancela um agendamento; a liberação da vaga ocorre exclusivamente no model.
+
+    ``liberar_vaga`` foi mantido apenas por compatibilidade de chamada. Bloqueios de
+    horário passam a ocupar a capacidade separadamente, sem atribuir a vaga a um
+    agendamento cancelado.
     """
     with transaction.atomic():
         try:
@@ -31,33 +60,20 @@ def cancelar_agendamento(agendamento_id, origem="CANCELADO_CRAS", liberar_vaga=T
 
         if "CANCELADO" in agendamento.situacao:
             raise ValidationError("Agendamento já está cancelado.")
-        
-        vaga = None
-        # só libera a vaga se liberar_vaga for True (cidadão ou CRAS)
-        # Se for bloqueio de horario (CRAS) a vaga não é liberada
-        if liberar_vaga and agendamento.vaga_id:
-            try:
-                vaga = AgendaVaga.objects.select_for_update().get(
-                    pk=agendamento.vaga_id
-                )
-                #libera vaga no banco
-                if vaga.vagas_ocupadas > 0:
-                    vaga.vagas_ocupadas -= 1
-                    vaga.save(update_fields=["vagas_ocupadas","updated_at"])
-            except AgendaVaga.DoesNotExist:
-                if liberar_vaga:
-                    raise ValidationError("A vaga associada a este agendamento não existe mais.")
-
-        # atualizando status do agendamento
-        agendamento.situacao = origem 
-        agendamento.updated_at = timezone.now()
-        agendamento.save(update_fields=["situacao", "updated_at"])
+        tinha_vaga = bool(agendamento.vaga_id)
+        agendamento.situacao = origem
+        try:
+            agendamento.save(update_fields=["situacao", "updated_at"])
+        except Exception as error:
+            if hasattr(error, "message_dict"):
+                raise ValidationError(error.message_dict)
+            raise
         
         # Só envia email se a origem for do CRAS
         if origem == "CANCELADO_CRAS":
-            _send_agendamento_cancelado_email(agendamento)
+            transaction.on_commit(lambda: _send_agendamento_cancelado_email(agendamento))
     mensagem = "Agendamento marcado como cancelado."
-    if liberar_vaga:
+    if tinha_vaga:
         mensagem += " Vaga liberada."
 
     return mensagem

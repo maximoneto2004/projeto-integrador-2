@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.utils import timezone
 from agendamentos.models import AgendaVaga
 from agendamentos.models import Agendamento
@@ -33,6 +34,10 @@ class AgendamentoSerializer(serializers.ModelSerializer):
             unidade = unidade or self.instance.unidade
             servico = servico or self.instance.servico
             situacao = situacao or self.instance.situacao
+            try:
+                Agendamento.validar_transicao(self.instance.situacao, situacao)
+            except DjangoValidationError as error:
+                raise serializers.ValidationError(error.message_dict)
         else:
             situacao = situacao or "AGENDADO"
 

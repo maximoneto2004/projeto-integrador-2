@@ -217,24 +217,17 @@ class AgendamentoAtivadoAusenteAPIView(APIView):
                     status=status.HTTP_200_OK,
                 )
 
-            vaga = None
-            if agendamento.vaga_id:
-                try:
-                    vaga = AgendaVaga.objects.select_for_update().get(
-                        pk=agendamento.vaga_id
-                    )
-                except AgendaVaga.DoesNotExist:
-                    vaga = None
-
+            tinha_vaga = bool(agendamento.vaga_id)
             agendamento.situacao = "ATIVADO_AUSENTE"
-            agendamento.save(update_fields=["situacao", "updated_at"])
-
-            if vaga and vaga.vagas_ocupadas > 0:
-                vaga.vagas_ocupadas -= 1
-                vaga.save(update_fields=["vagas_ocupadas", "updated_at"])
+            try:
+                agendamento.save(update_fields=["situacao", "updated_at"])
+            except Exception as error:
+                if hasattr(error, "message_dict"):
+                    return Response(error.message_dict, status=status.HTTP_400_BAD_REQUEST)
+                raise
 
         mensagem = "Agendamento marcado como ATIVADO_AUSENTE."
-        if vaga:
+        if tinha_vaga:
             mensagem += " Vaga liberada."
 
         return Response({"detail": mensagem}, status=status.HTTP_200_OK)

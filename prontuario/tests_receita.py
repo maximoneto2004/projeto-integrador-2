@@ -25,6 +25,7 @@ class ReceitaBaseTest(TestCase):
             nome="Consulta Clínica Geral",
             classe=ClasseServico.objects.create(nome="Atenção Básica"),
             tipo_servico=TipoServico.objects.create(nome="Consulta Médica"),
+            gera_receita=True,
         )
         self.cidadao = Cidadao.objects.create(nome="Maria Silva", cpf="15350946056")
         # bulk_create evita a lógica de ocupação de vagas do Agendamento.save, irrelevante aqui.
@@ -49,7 +50,11 @@ class ReceitaBaseTest(TestCase):
         self.medico = criar_usuario("medico@teste.local", "11144477735", "Médico")
         self.enfermeiro = criar_usuario("enf@teste.local", "39053344705", "Enfermeiro")
         self.supervisor = criar_usuario("sup@teste.local", "52998224725", "Supervisor")
+        self.medico.unidades_lotacao.add(self.unidade)
+        self.enfermeiro.unidades_lotacao.add(self.unidade)
         self.supervisor.unidades_lotacao.add(self.unidade)
+        Agendamento.objects.filter(pk=self.agendamento.pk).update(atendente=self.medico)
+        self.agendamento.atendente = self.medico
 
     def _item(self, medicamento, quantidade=10, **extra):
         return {
@@ -119,6 +124,28 @@ class ReceitaCriacaoTests(ReceitaBaseTest):
         item = self.client.get(f"{URL_RECEITA}{receita.id}/").json()["result"]["medicamentos"][0]
         self.assertEqual((item["medicamento"], item["legado"], item["nome"]), (None, True, "Dipirona 500mg"))
 
+    def test_servico_sem_permissao_de_receita(self):
+        self.agendamento.servico.gera_receita = False
+        self.agendamento.servico.save()
+        self.assertEqual(self._criar_receita().status_code, 400)
+
+    def test_profissional_nao_atribuido(self):
+        Agendamento.objects.filter(pk=self.agendamento.pk).update(atendente=self.enfermeiro)
+        self.assertEqual(self._criar_receita().status_code, 403)
+
+    def test_profissional_fora_da_unidade(self):
+        self.medico.unidades_lotacao.clear()
+        self.assertEqual(self._criar_receita().status_code, 403)
+
+    def test_cidadao_divergente(self):
+        outro = Cidadao.objects.create(nome="Outro", cpf="52998224725")
+        self.assertEqual(self._criar_receita(cidadao=str(outro.id)).status_code, 400)
+
+    def test_estado_invalido(self):
+        Agendamento.objects.filter(pk=self.agendamento.pk).update(situacao="AGENDADO")
+        self.agendamento.situacao = "AGENDADO"
+        self.assertEqual(self._criar_receita().status_code, 400)
+
 
 class ReceitaAposDispensacaoTests(ReceitaBaseTest):
     def setUp(self):
@@ -173,6 +200,20 @@ class ReceitaFiltrosTests(ReceitaBaseTest):
         self.assertEqual(ids({"pendente_dispensacao": "true"}), {pendente, vencida})
         self.assertEqual(ids({"pendente_dispensacao": "false"}), {dispensada})
         self.assertEqual(ids({"medicamento": str(self.dipirona.id)}), {pendente, vencida, dispensada})
+
+    def test_listagem_nao_expoe_receita_de_outra_unidade(self):
+        visivel = self._criar_receita().json()["result"]["id"]
+        outra_unidade = criar_unidade("Posto B")
+        outro_agendamento = Agendamento.objects.bulk_create([Agendamento(
+            cidadao=self.cidadao, unidade=outra_unidade, servico=self.agendamento.servico,
+            atendente=self.medico, data=HOJE, horario=time(12), situacao="ATENDIMENTO",
+        )])[0]
+        oculta = Receita.objects.create(
+            agendamento=outro_agendamento, cidadao=self.cidadao, profissional=self.medico,
+        )
+        ids = {item["id"] for item in self.client.get(URL_RECEITA).json()["result"]}
+        self.assertEqual(ids, {visivel})
+        self.assertNotIn(str(oculta.id), ids)
 
 
 class DispensacaoPorReceitaTests(ReceitaBaseTest):

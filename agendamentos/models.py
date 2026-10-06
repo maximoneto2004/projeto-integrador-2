@@ -1,4 +1,5 @@
-from django.db import models
+from django.core.exceptions import ValidationError
+from django.db import models, transaction
 from django.utils import timezone
 
 from app.mixins import BaseModel
@@ -40,6 +41,24 @@ class Agendamento(BaseModel):
         "AUSENCIA_CIDADAO",
         "ATIVADO_AUSENTE",
         "FINALIZADO",
+    }
+    STATUS_LIBERAM_VAGA = {
+        "CANCELADO_CIDADAO",
+        "CANCELADO_CRAS",
+        "AUSENCIA_CIDADAO",
+        "ATIVADO_AUSENTE",
+    }
+    TRANSICOES_PERMITIDAS = {
+        "AGENDADO": {"ATIVADO", "CANCELADO_CIDADAO", "CANCELADO_CRAS", "AUSENCIA_CIDADAO"},
+        "ATIVADO": {"CHAMANDO", "CANCELADO_CIDADAO", "CANCELADO_CRAS", "AUSENCIA_CIDADAO"},
+        "AGUARDANDO_FILA": {"CHAMANDO", "CANCELADO_CIDADAO", "CANCELADO_CRAS", "AUSENCIA_CIDADAO"},
+        "CHAMANDO": {"ATENDIMENTO", "ATIVADO_AUSENTE", "CANCELADO_CIDADAO", "CANCELADO_CRAS", "AUSENCIA_CIDADAO"},
+        "ATENDIMENTO": {"FINALIZADO", "CANCELADO_CIDADAO", "CANCELADO_CRAS", "AUSENCIA_CIDADAO"},
+        "FINALIZADO": set(),
+        "CANCELADO_CIDADAO": set(),
+        "CANCELADO_CRAS": set(),
+        "AUSENCIA_CIDADAO": set(),
+        "ATIVADO_AUSENTE": set(),
     }
 
     cidadao = models.ForeignKey(Cidadao, verbose_name="Cidadão", on_delete=models.CASCADE, related_name="agendamentos")
@@ -102,81 +121,97 @@ class Agendamento(BaseModel):
             qs = qs.exclude(pk=exclude_pk)
         return qs.exists()
 
+    @classmethod
+    def validar_transicao(cls, situacao_anterior, nova_situacao):
+        if situacao_anterior == nova_situacao:
+            return
+        if nova_situacao not in cls.TRANSICOES_PERMITIDAS.get(situacao_anterior, set()):
+            raise ValidationError(
+                {"situacao": f"Transição inválida: {situacao_anterior} → {nova_situacao}."}
+            )
+
+    @classmethod
+    def _reserva_vaga(cls, situacao, vaga_id):
+        return bool(vaga_id) and situacao not in cls.STATUS_LIBERAM_VAGA
+
+    @staticmethod
+    def _alterar_ocupacao(vaga, delta):
+        nova_ocupacao = max(vaga.vagas_ocupadas + delta, 0) if delta < 0 else vaga.vagas_ocupadas + delta
+        if nova_ocupacao > vaga.vagas:
+            raise ValidationError(
+                {"vaga": "A ocupação da vaga ficaria fora do limite permitido."}
+            )
+        vaga.vagas_ocupadas = nova_ocupacao
+        vaga.save(update_fields=["vagas_ocupadas", "updated_at"])
+
     def save(self, *args, **kwargs):
-        is_new = self.pk is None
-        cancelado = {"CANCELADO_CIDADAO", "CANCELADO_CRAS", "AUSENCIA_CIDADAO"}
-        old_situacao = None
-        old_vaga_id = None
-        if not is_new:
-            prev = (
-                Agendamento.objects.filter(pk=self.pk)
-                .values("situacao", "vaga_id")
-                .first()
+        is_new = self._state.adding
+        with transaction.atomic():
+            anterior = None
+            if not is_new:
+                anterior = Agendamento.objects.select_for_update().filter(pk=self.pk).first()
+                if anterior is None:
+                    is_new = True
+
+            situacao_anterior = anterior.situacao if anterior else None
+            vaga_anterior_id = anterior.vaga_id if anterior else None
+            if anterior:
+                self.validar_transicao(situacao_anterior, self.situacao)
+
+            ids_vagas = sorted(
+                {vaga_id for vaga_id in (vaga_anterior_id, self.vaga_id) if vaga_id},
+                key=str,
             )
-            if prev:
-                old_situacao = prev["situacao"]
-                old_vaga_id = prev["vaga_id"]
-        vaga_changed = not is_new and old_vaga_id != self.vaga_id
-
-        # Sempre sincroniza data e horário com a vaga, quando houver
-        if self.vaga:
-            self.data = self.vaga.data
-            self.horario = self.vaga.horario
-
-        # Validações
-        exige_vaga = self.origem != "FILA"
-        if is_new:
-            if exige_vaga:
-                if not self.vaga:
-                    raise ValueError("Vaga é obrigatória para novos agendamentos.")
-                if self.vaga.vagas_ocupadas >= self.vaga.vagas:
-                    raise ValueError("Não há vagas disponíveis neste horário.")
-                if self.vaga.tipo_servico != self.servico.tipo_servico:
-                    raise ValueError("O serviço selecionado não pertence ao tipo desta vaga.")
-        else:
-            ativo = self.situacao not in cancelado
-            if exige_vaga and ativo and not self.vaga:
-                raise ValueError("Vaga é obrigatória enquanto o agendamento estiver ativo.")
-            if vaga_changed and ativo and self.vaga and exige_vaga:
-                if self.vaga.vagas_ocupadas >= self.vaga.vagas:
-                    raise ValueError("Não há vagas disponíveis neste horário.")
-                if self.vaga.tipo_servico != self.servico.tipo_servico:
-                    raise ValueError("O serviço selecionado não pertence ao tipo desta vaga.")
-
-        super().save(*args, **kwargs)
-
-        # Ocupa/libera vaga
-        if is_new:
-            self.vaga.vagas_ocupadas += 1
-            self.vaga.save()
-        else:
-            moved_to_cancel = (
-                old_vaga_id
-                and old_situacao not in cancelado
-                and self.situacao in cancelado
+            vagas = {
+                vaga.pk: vaga
+                for vaga in AgendaVaga.objects.select_for_update().filter(pk__in=ids_vagas)
+            }
+            vaga_nova = vagas.get(self.vaga_id)
+            exige_vaga = self.origem != "FILA"
+            reserva_nova = self._reserva_vaga(self.situacao, self.vaga_id)
+            reserva_anterior = bool(anterior) and self._reserva_vaga(
+                situacao_anterior, vaga_anterior_id
             )
-            if moved_to_cancel:
-                try:
-                    vaga = AgendaVaga.objects.get(pk=old_vaga_id)
-                except AgendaVaga.DoesNotExist:
-                    vaga = None
 
-                if vaga and vaga.vagas_ocupadas > 0:
-                    vaga.vagas_ocupadas -= 1
-                    vaga.save(update_fields=["vagas_ocupadas", "updated_at"])
-                Agendamento.objects.filter(pk=self.pk).update(vaga=None)
-            elif vaga_changed:
-                if old_vaga_id:
-                    try:
-                        vaga_antiga = AgendaVaga.objects.get(pk=old_vaga_id)
-                    except AgendaVaga.DoesNotExist:
-                        vaga_antiga = None
-                    if vaga_antiga and vaga_antiga.vagas_ocupadas > 0:
-                        vaga_antiga.vagas_ocupadas -= 1
-                        vaga_antiga.save(update_fields=["vagas_ocupadas", "updated_at"])
-                if self.vaga:
-                    self.vaga.vagas_ocupadas += 1
-                    self.vaga.save(update_fields=["vagas_ocupadas", "updated_at"])
+            if exige_vaga and self.situacao not in self.STATUS_LIBERAM_VAGA and not self.vaga_id:
+                raise ValidationError({"vaga": "Vaga é obrigatória para agendamentos programados ativos."})
+            if vaga_nova:
+                if vaga_nova.tipo_servico_id != self.servico.tipo_servico_id:
+                    raise ValidationError({"vaga": "O serviço selecionado não pertence ao tipo desta vaga."})
+                self.vaga = vaga_nova
+                self.unidade = vaga_nova.unidade
+                self.data = vaga_nova.data
+                self.horario = vaga_nova.horario
+
+            precisa_ocupar_nova = reserva_nova and (
+                not reserva_anterior or vaga_anterior_id != self.vaga_id
+            )
+            if precisa_ocupar_nova and (
+                vaga_nova is None or vaga_nova.vagas_ocupadas >= vaga_nova.vagas
+            ):
+                raise ValidationError({"vaga": "Não há vagas disponíveis neste horário."})
+
+            liberar_antiga = reserva_anterior and (
+                not reserva_nova or vaga_anterior_id != self.vaga_id
+            )
+            if self.situacao in self.STATUS_LIBERAM_VAGA:
+                self.vaga = None
+
+            update_fields = kwargs.get("update_fields")
+            if update_fields is not None:
+                campos = set(update_fields)
+                if self.vaga_id != vaga_anterior_id:
+                    campos.add("vaga")
+                if vaga_nova:
+                    campos.update({"unidade", "data", "horario"})
+                kwargs["update_fields"] = list(campos)
+
+            super().save(*args, **kwargs)
+
+            if liberar_antiga:
+                self._alterar_ocupacao(vagas[vaga_anterior_id], -1)
+            if precisa_ocupar_nova:
+                self._alterar_ocupacao(vaga_nova, 1)
 
     @classmethod
     def marcar_vencidos_como_ausencia(cls):
@@ -193,11 +228,20 @@ class Agendamento(BaseModel):
             "CHAMANDO",
             "AGUARDANDO_FILA",
         )
-        agora = timezone.now()
-        return (
+        ids = list(
             cls.objects.filter(data__lt=hoje, situacao__in=status_abertos)
-            .update(situacao="AUSENCIA_CIDADAO", updated_at=agora)
+            .values_list("pk", flat=True)
         )
+        total = 0
+        for agendamento_id in ids:
+            with transaction.atomic():
+                agendamento = cls.objects.select_for_update().get(pk=agendamento_id)
+                if agendamento.situacao not in status_abertos:
+                    continue
+                agendamento.situacao = "AUSENCIA_CIDADAO"
+                agendamento.save(update_fields=["situacao", "updated_at"])
+                total += 1
+        return total
 
 
 class ChamadaPainel(BaseModel):

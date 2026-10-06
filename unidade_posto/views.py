@@ -22,11 +22,12 @@ from .filters import (
     ServicoUnidadePostoUnidadeFilter,
     BloqueioHorarioUnidadeFilter,
 )
-from agendamentos.services import cancelar_agendamento
+from agendamentos.services import cancelar_agendamento, sincronizar_capacidade_vagas
 from datetime import datetime
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils import timezone
 from django.utils.dateparse import parse_date
+from django.db import transaction
 from django.db.models import Avg, Count, DurationField, ExpressionWrapper, F
 from agendamentos.models import Agendamento, AgendaVaga
 from django.db.models import Avg, Count, DurationField, ExpressionWrapper, F, Prefetch, Q
@@ -988,38 +989,31 @@ class BloqueioHorarioCreateListView(generics.ListCreateAPIView):
     filterset_class = BloqueioHorarioUnidadeFilter
 
     def perform_create(self, serializer):
-        bloqueio = serializer.save()
-        data_final = bloqueio.data_final or bloqueio.data
-
-        #CANCELA AGENDAMENTOS
-        agendamentos_cancelar = Agendamento.objects.filter(
-            unidade__in=bloqueio.unidades.all(),
-            data__range=[bloqueio.data, data_final],
-            horario__gte=bloqueio.hora_inicio,
-            horario__lt=bloqueio.hora_fim,
-            situacao__in=["ATIVADO", "AGENDADO"],
-        )
-
-        for agendamento in agendamentos_cancelar:
-            try:
-                cancelar_agendamento(
-                    agendamento_id=agendamento.id,
-                    origem="CANCELADO_CRAS",
-                    liberar_vaga=False
-                )
-            except Exception as error:
-                raise Exception(f"Erro ao cancelar agendamento por bloqueio de horário: {error}")
-            
-        #BLOQUEIA VAGAS LIVRES
-        vagas_periodo = AgendaVaga.objects.filter(
-            unidade__in=bloqueio.unidades.all(),
-            data__range=[bloqueio.data, data_final],
-            horario__gte=bloqueio.hora_inicio,
-            horario__lt=bloqueio.hora_fim,
-        )
-        for vaga in vagas_periodo:
-            vaga.vagas_ocupadas = vaga.vagas
-            vaga.save(update_fields=['vagas_ocupadas', 'updated_at'])
+        with transaction.atomic():
+            bloqueio = serializer.save()
+            data_final = bloqueio.data_final or bloqueio.data
+            agendamentos_cancelar = Agendamento.objects.filter(
+                unidade__in=bloqueio.unidades.all(),
+                data__range=[bloqueio.data, data_final],
+                horario__gte=bloqueio.hora_inicio,
+                horario__lt=bloqueio.hora_fim,
+                situacao__in=["ATIVADO", "AGENDADO"],
+            )
+            for agendamento in agendamentos_cancelar:
+                try:
+                    cancelar_agendamento(
+                        agendamento_id=agendamento.id,
+                        origem="CANCELADO_CRAS",
+                    )
+                except Exception as error:
+                    raise Exception(f"Erro ao cancelar agendamento por bloqueio de horário: {error}")
+            vagas_periodo = AgendaVaga.objects.filter(
+                unidade__in=bloqueio.unidades.all(),
+                data__range=[bloqueio.data, data_final],
+                horario__gte=bloqueio.hora_inicio,
+                horario__lt=bloqueio.hora_fim,
+            )
+            sincronizar_capacidade_vagas(vagas_periodo)
 
 
     def get_serializer_class(self):
@@ -1089,6 +1083,7 @@ class BloqueioHorarioRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPI
 
         return Response({"success": True, "data": serializer.data})
 
+    @transaction.atomic
     def update(self, request, *args, **kwargs):
 
         partial = kwargs.pop("partial", False)
@@ -1101,6 +1096,14 @@ class BloqueioHorarioRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPI
             "unidades": list(instance.unidades.values_list("id", flat=True)),
             "is_active": getattr(instance, "is_active", True),
         }
+        vagas_antigas_ids = list(
+            AgendaVaga.objects.filter(
+                unidade_id__in=bloqueio_antigo["unidades"],
+                data__range=[bloqueio_antigo["data_inicio"], bloqueio_antigo["data_final"]],
+                horario__gte=bloqueio_antigo["hora_inicio"],
+                horario__lt=bloqueio_antigo["hora_fim"],
+            ).values_list("pk", flat=True)
+        )
 
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
@@ -1118,12 +1121,7 @@ class BloqueioHorarioRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPI
         }
 
         if bloqueio_antigo != bloqueio_novo:
-            AgendaVaga.objects.filter(
-                unidade__in=instance.unidades.all(),
-                data__range=[bloqueio_antigo["data_inicio"], bloqueio_antigo["data_final"]],
-                horario__gte=bloqueio_antigo["hora_inicio"],
-                horario__lt=bloqueio_antigo["hora_fim"]
-            ).update(vagas_ocupadas=0, updated_at=timezone.now())
+            sincronizar_capacidade_vagas(AgendaVaga.objects.filter(pk__in=vagas_antigas_ids))
 
             if bloqueio_novo["is_active"]:
                 agendamentos_cancelar = Agendamento.objects.filter(
@@ -1137,15 +1135,14 @@ class BloqueioHorarioRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPI
                     cancelar_agendamento(
                         agendamento_id=agendamento.id,
                         origem="CANCELADO_CRAS",
-                        liberar_vaga=False
                     )
                     
-                AgendaVaga.objects.filter(
+                sincronizar_capacidade_vagas(AgendaVaga.objects.filter(
                     unidade__in=instance.unidades.all(),
                     data__range=[bloqueio_novo["data_inicio"], bloqueio_novo["data_final"]],
                     horario__gte=bloqueio_novo["hora_inicio"],
                     horario__lt=bloqueio_novo["hora_fim"]
-                ).update(vagas_ocupadas=F('vagas'), updated_at=timezone.now())
+                ))
 
         
         return Response(
@@ -1153,6 +1150,7 @@ class BloqueioHorarioRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPI
             status=status.HTTP_200_OK,
         )
 
+    @transaction.atomic
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         data_inicio = instance.data
@@ -1163,12 +1161,12 @@ class BloqueioHorarioRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPI
 
         self.perform_destroy(instance)
 
-        AgendaVaga.objects.filter(
+        sincronizar_capacidade_vagas(AgendaVaga.objects.filter(
             unidade__in=unidades,
             data__range=[data_inicio, data_final],
             horario__gte=hora_inicio,
             horario__lt=hora_fim
-        ).update(vagas_ocupadas=0, updated_at=timezone.now())
+        ))
 
         return Response(
             {"success": True, "result": "Bloqueio de horário deletado com sucesso."},

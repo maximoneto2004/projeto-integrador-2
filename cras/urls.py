@@ -44,6 +44,7 @@ urlpatterns = [
     path("api/prontuario/", include("prontuario.urls")),
     path("api/v1/", include("servicos.urls")),
     path("api/v1/", include("medicamentos.urls")),
+    path("api/v1/integracao/", include("integracao.urls")),
 ]
 
 if settings.DEBUG:

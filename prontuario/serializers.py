@@ -2,8 +2,11 @@ import re
 
 from django.db import transaction
 from rest_framework import serializers
+from rest_framework.exceptions import PermissionDenied
 
 from app.static_data import (
+    GRUPO_ENFERMEIRO,
+    GRUPO_MEDICO,
     STATUS_DISPENSACAO_DISPENSADO,
     STATUS_DISPENSACAO_PARCIAL,
     STATUS_DISPENSACAO_PENDENTE,
@@ -13,6 +16,7 @@ from medicamentos.models import Medicamento
 from prontuario.models import Receita, ReceitaMedicamento, RegistroAtendimento
 
 SITUACOES_QUE_PERMITEM_REGISTRO = {"ATENDIMENTO", "FINALIZADO"}
+SITUACOES_QUE_PERMITEM_RECEITA = {"ATENDIMENTO"}
 CID10_REGEX = re.compile(r"^[A-Z][0-9]{2}(\.[0-9A-Z]{1,2})?$")
 
 
@@ -117,6 +121,22 @@ class ReceitaSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {"medicamentos": "A receita já teve medicamentos dispensados; os itens não podem ser alterados."}
             )
+        request = self.context.get("request")
+        user = request.user if request else None
+        agendamento = attrs.get("agendamento", self.instance.agendamento if self.instance else None)
+        if not user or not user.groups.filter(name=GRUPO_MEDICO).exists():
+            raise PermissionDenied("Somente médicos podem criar ou alterar receitas.")
+        if agendamento.atendente_id != user.id:
+            raise PermissionDenied("Somente o profissional atribuído ao atendimento pode prescrever.")
+        if not user.unidades_lotacao.filter(pk=agendamento.unidade_id).exists():
+            raise PermissionDenied("O profissional não está lotado na unidade do atendimento.")
+        if not agendamento.servico.gera_receita:
+            raise serializers.ValidationError({"agendamento": "Este serviço não permite emissão de receita."})
+        if agendamento.situacao not in SITUACOES_QUE_PERMITEM_RECEITA:
+            raise serializers.ValidationError({"agendamento": "A receita só pode ser emitida durante o atendimento."})
+        cidadao_informado = self.initial_data.get("cidadao") if hasattr(self, "initial_data") else None
+        if cidadao_informado and str(cidadao_informado) != str(agendamento.cidadao_id):
+            raise serializers.ValidationError({"cidadao": "O cidadão deve corresponder ao agendamento."})
         return attrs
 
     @transaction.atomic
@@ -199,6 +219,23 @@ class RegistroAtendimentoSerializer(serializers.ModelSerializer):
         return agendamento
 
     def validate(self, attrs):
+        request = self.context.get("request")
+        user = request.user if request else None
+        agendamento = attrs.get("agendamento", self.instance.agendamento if self.instance else None)
+        if not user or not user.groups.filter(name__in=[GRUPO_MEDICO, GRUPO_ENFERMEIRO]).exists():
+            raise PermissionDenied("Somente profissionais de saúde podem registrar o atendimento.")
+        if self.instance and self.instance.profissional_id != user.id and not user.is_superuser:
+            raise PermissionDenied("Somente o profissional que fez o registro pode alterá-lo.")
+        if agendamento.atendente_id != user.id:
+            raise PermissionDenied("Somente o profissional atribuído ao atendimento pode registrar dados clínicos.")
+        if not user.unidades_lotacao.filter(pk=agendamento.unidade_id).exists():
+            raise PermissionDenied("O profissional não está lotado na unidade do atendimento.")
+        if agendamento.situacao not in SITUACOES_QUE_PERMITEM_REGISTRO:
+            raise serializers.ValidationError({"agendamento": "Só é possível registrar atendimentos em andamento ou finalizados."})
+        for campo, esperado in (("cidadao", agendamento.cidadao_id), ("unidade", agendamento.unidade_id)):
+            informado = self.initial_data.get(campo) if hasattr(self, "initial_data") else None
+            if informado and str(informado) != str(esperado):
+                raise serializers.ValidationError({campo: f"{campo.capitalize()} deve corresponder ao agendamento."})
         sistolica = attrs.get("pressao_sistolica", getattr(self.instance, "pressao_sistolica", None))
         diastolica = attrs.get("pressao_diastolica", getattr(self.instance, "pressao_diastolica", None))
         if (sistolica is None) != (diastolica is None):

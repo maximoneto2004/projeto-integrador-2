@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.utils import timezone
 from django.http import Http404
 from django.core.cache import cache
+from django.db import transaction
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, status, permissions
 from rest_framework.pagination import LimitOffsetPagination
@@ -179,7 +180,6 @@ class FilaEsperaChamarProximoAPIView(APIView):
     queryset = FilaEspera.objects.all()
 
     def get_queryset(self):
-        print("Teste fila")
         return _get_fila_queryset_for_user(self.request.user)
 
     def post(self, request, *args, **kwargs):
@@ -197,50 +197,46 @@ class FilaEsperaChamarProximoAPIView(APIView):
         else:
             lock_key = None
 
-        itens = list(self.get_queryset())
-        if not itens:
-            return Response(
-                {"success": False, "result": "Nenhuma pessoa na fila para chamar."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        proximo = itens[0]
-        agora = timezone.localtime()
-
-        atendente = None
-        user = request.user
-        if user and user.is_authenticated:
-            if hasattr(user, "groups") and user.groups.filter(name__in=[*GRUPOS_PROFISSIONAIS_SAUDE, GRUPO_SUPERVISOR]).exists():
-                atendente = user
-            hoje = timezone.localdate()
-            agendamentos_usuario = Agendamento.objects.filter(
-                atendente=user,
-                data=hoje,
-                situacao__in=["CHAMANDO", "ATENDIMENTO"],
-            ).values("id", "situacao", "data", "horario")
-            print("AGENDAMENTOS DO USUARIO:", list(agendamentos_usuario))
-            if agendamentos_usuario.exists():
+        with transaction.atomic():
+            proximo = self.get_queryset().select_for_update().first()
+            if proximo is None:
                 return Response(
-                    {
-                        "success": False,
-                        "result": "Atendente já possui agendamento em aberto.",
-                    },
-                    status=status.HTTP_409_CONFLICT,
+                    {"success": False, "result": "Nenhuma pessoa na fila para chamar."},
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
 
-        agendamento = Agendamento.objects.create(
-            cidadao=proximo.cidadao,
-            servico=proximo.servico,
-            unidade=proximo.unidade,
-            vaga=None,
-            data=agora.date(),
-            horario=agora.time(),
-            situacao="CHAMANDO",
-            origem="FILA",
-            atendente=atendente,
-        )
+            agora = timezone.localtime()
+            atendente = None
+            user = request.user
+            if user and user.is_authenticated:
+                if hasattr(user, "groups") and user.groups.filter(name__in=[*GRUPOS_PROFISSIONAIS_SAUDE, GRUPO_SUPERVISOR]).exists():
+                    atendente = user
+                hoje = timezone.localdate()
+                if Agendamento.objects.select_for_update().filter(
+                    atendente=user,
+                    data=hoje,
+                    situacao__in=["CHAMANDO", "ATENDIMENTO"],
+                ).exists():
+                    return Response(
+                        {
+                            "success": False,
+                            "result": "Atendente já possui agendamento em aberto.",
+                        },
+                        status=status.HTTP_409_CONFLICT,
+                    )
 
-        proximo.delete()
+            agendamento = Agendamento.objects.create(
+                cidadao=proximo.cidadao,
+                servico=proximo.servico,
+                unidade=proximo.unidade,
+                vaga=None,
+                data=agora.date(),
+                horario=agora.time(),
+                situacao="CHAMANDO",
+                origem="FILA",
+                atendente=atendente,
+            )
+            proximo.delete()
 
         return Response(
             {"success": True, "result": AgendamentoDetailSerializer(agendamento).data},

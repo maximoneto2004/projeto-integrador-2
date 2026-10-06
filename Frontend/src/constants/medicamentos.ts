@@ -3,6 +3,9 @@ type Opcao = { value: string; label: string };
 
 export const FORMAS_FARMACEUTICAS: Opcao[] = [
   { value: "COMPRIMIDO", label: "Comprimido" },
+  { value: "COMPRIMIDO_ORODISPERSIVEL", label: "Comprimido orodispersível" },
+  { value: "COMPRIMIDO_SOLUVEL", label: "Comprimido solúvel" },
+  { value: "COMPRIMIDO_LIB_RETARDADA", label: "Comprimido de liberação retardada" },
   { value: "CAPSULA", label: "Cápsula" },
   { value: "DRAGEA", label: "Drágea" },
   { value: "SOLUCAO_ORAL", label: "Solução oral" },
@@ -10,8 +13,16 @@ export const FORMAS_FARMACEUTICAS: Opcao[] = [
   { value: "XAROPE", label: "Xarope" },
   { value: "GOTAS", label: "Gotas" },
   { value: "SOLUCAO_INJETAVEL", label: "Solução injetável" },
+  { value: "PO_SOLUCAO_INJETAVEL", label: "Pó para solução injetável" },
+  { value: "SUSPENSAO_INJETAVEL", label: "Suspensão injetável" },
+  { value: "PO_SUSP_INJETAVEL", label: "Pó para suspensão injetável" },
+  { value: "SOL_INJETAVEL_5ML", label: "Solução injetável 5 mL" },
+  { value: "SOL_INJETAVEL_10ML", label: "Solução injetável 10 mL" },
+  { value: "SOL_INJETAVEL_100ML", label: "Solução injetável 100 mL" },
+  { value: "SOL_INJETAVEL_500ML", label: "Solução injetável 500 mL" },
   { value: "POMADA", label: "Pomada" },
   { value: "CREME", label: "Creme" },
+  { value: "CREME_VAGINAL", label: "Creme vaginal" },
   { value: "GEL", label: "Gel" },
   { value: "COLIRIO", label: "Colírio" },
   { value: "SPRAY", label: "Spray" },
@@ -19,6 +30,10 @@ export const FORMAS_FARMACEUTICAS: Opcao[] = [
   { value: "SUPOSITORIO", label: "Supositório" },
   { value: "ADESIVO", label: "Adesivo" },
   { value: "PO", label: "Pó" },
+  { value: "GOMA_MASCAR", label: "Goma de mascar" },
+  { value: "PASTILHA", label: "Pastilha" },
+  { value: "PRESERVATIVO_160X49", label: "Preservativo 160 mm x 49 mm" },
+  { value: "PRESERVATIVO_160X52", label: "Preservativo 160 mm x 52 mm" },
   { value: "OUTRO", label: "Outro" },
 ];
 
@@ -32,6 +47,7 @@ export const UNIDADES_MEDIDA: Opcao[] = [
   { value: "UI", label: "UI" },
   { value: "UI_ML", label: "UI/mL" },
   { value: "PERCENTUAL", label: "%" },
+  { value: "NAO_SE_APLICA", label: "Não se aplica / não identificada" },
 ];
 
 export const VIAS_ADMINISTRACAO: Opcao[] = [
@@ -48,6 +64,7 @@ export const VIAS_ADMINISTRACAO: Opcao[] = [
   { value: "RETAL", label: "Retal" },
   { value: "VAGINAL", label: "Vaginal" },
   { value: "TRANSDERMICA", label: "Transdérmica" },
+  { value: "NAO_INFORMADA", label: "Não informada" },
 ];
 
 export type TipoMovimentacao = "ENTRADA" | "SAIDA" | "AJUSTE" | "PERDA";

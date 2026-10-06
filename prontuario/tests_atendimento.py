@@ -4,6 +4,7 @@ from agendamentos.models import Agendamento
 from cidadaos.models import Cidadao
 from prontuario.models import RegistroAtendimento
 from prontuario.tests_receita import HOJE, ReceitaBaseTest
+from medicamentos.tests_estoque import criar_unidade
 
 URL_ATENDIMENTO = "/api/prontuario/atendimento/"
 
@@ -30,7 +31,10 @@ class RegistroAtendimentoBaseTest(ReceitaBaseTest):
         }
 
     def _registrar(self, usuario=None, **extra):
-        self.client.force_authenticate(usuario or self.medico)
+        usuario = usuario or self.medico
+        agendamento_id = extra.get("agendamento", self.agendamento.id)
+        Agendamento.objects.filter(pk=agendamento_id).update(atendente=usuario)
+        self.client.force_authenticate(usuario)
         return self.client.post(URL_ATENDIMENTO, self._payload(**extra), format="json")
 
     def _novo_agendamento(self, situacao="ATENDIMENTO"):
@@ -96,6 +100,22 @@ class CriacaoRegistroTests(RegistroAtendimentoBaseTest):
         self.client.force_authenticate(self.supervisor)
         self.assertEqual(self.client.get(url_prontuario(self.cidadao)).status_code, 403)
 
+    def test_profissional_nao_atribuido_nao_registra(self):
+        Agendamento.objects.filter(pk=self.agendamento.pk).update(atendente=self.enfermeiro)
+        self.client.force_authenticate(self.medico)
+        self.assertEqual(self.client.post(URL_ATENDIMENTO, self._payload(), format="json").status_code, 403)
+
+    def test_profissional_fora_da_unidade_nao_registra(self):
+        self.medico.unidades_lotacao.clear()
+        Agendamento.objects.filter(pk=self.agendamento.pk).update(atendente=self.medico)
+        self.client.force_authenticate(self.medico)
+        self.assertEqual(self.client.post(URL_ATENDIMENTO, self._payload(), format="json").status_code, 403)
+
+    def test_cidadao_e_unidade_divergentes_sao_rejeitados(self):
+        outro = Cidadao.objects.create(nome="Outro", cpf="52998224725")
+        resp = self._registrar(cidadao=str(outro.id))
+        self.assertEqual(resp.status_code, 400)
+
 
 class EdicaoRegistroTests(RegistroAtendimentoBaseTest):
     def setUp(self):
@@ -154,7 +174,23 @@ class ProntuarioCidadaoTests(RegistroAtendimentoBaseTest):
 
         outro = Cidadao.objects.create(nome="João", cpf="52998224725")
         resp = self.client.patch(f"{url_prontuario(outro)}dados-clinicos/", {"cns": "898001012345678"}, format="json")
-        self.assertEqual(resp.status_code, 400)
+        self.assertEqual(resp.status_code, 404)
 
         self.client.force_authenticate(self.supervisor)
         self.assertEqual(self.client.patch(url, {"alergias": "X"}, format="json").status_code, 403)
+
+    def test_listagem_nao_expoe_registro_de_outra_unidade(self):
+        visivel_id = self._registrar().json()["result"]["id"]
+        outra_unidade = criar_unidade("Posto B")
+        outro_agendamento = Agendamento.objects.bulk_create([Agendamento(
+            cidadao=self.cidadao, unidade=outra_unidade, servico=self.agendamento.servico,
+            atendente=self.medico, data=HOJE, horario=time(12), situacao="ATENDIMENTO",
+        )])[0]
+        oculto = RegistroAtendimento.objects.create(
+            agendamento=outro_agendamento, cidadao=self.cidadao, unidade=outra_unidade,
+            profissional=self.medico, queixa_principal="Oculto",
+        )
+        self.client.force_authenticate(self.medico)
+        ids = {item["id"] for item in self.client.get(URL_ATENDIMENTO).json()["result"]}
+        self.assertEqual(ids, {visivel_id})
+        self.assertNotIn(str(oculto.id), ids)

@@ -19,7 +19,9 @@ class Medicamento(BaseModel):
         verbose_name="Forma Farmacêutica", max_length=30, choices=FORMA_FARMACEUTICA_CHOICES
     )
     concentracao = models.CharField(
-        verbose_name="Dosagem/Concentração", max_length=50, help_text="Ex.: 500, 10, 2,5"
+        verbose_name="Dosagem/Concentração",
+        max_length=300,
+        help_text="Ex.: 500, 10, 2,5. Descrições complexas do catálogo também são aceitas.",
     )
     unidade_medida = models.CharField(
         verbose_name="Unidade de Medida", max_length=20, choices=UNIDADE_MEDIDA_CHOICES
@@ -35,7 +37,7 @@ class Medicamento(BaseModel):
     codigo_registro = models.CharField(
         verbose_name="Código/Registro ANVISA", max_length=50, blank=True, null=True, unique=True
     )
-    observacoes = models.TextField(verbose_name="Observações", blank=True, null=True, max_length=600)
+    observacoes = models.TextField(verbose_name="Observações", blank=True, null=True, max_length=1000)
     estoque_minimo = models.PositiveIntegerField(
         verbose_name="Estoque Mínimo por Unidade",
         default=0,

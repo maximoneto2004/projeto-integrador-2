@@ -29,10 +29,15 @@ db/
 db.sqlite3
 
 *.local
+*.tmp
 
 # Large local fixtures (generated)
 Collection/carga_dados_large_125k.json
 Collection/carga_dados_series_temporais_*.json
+
+# Catálogos externos e relatórios locais de importação
+medicamentos.csv
+importacao_medicamentos_pendencias.csv
 
 # Editor directories and files
 .vscode/*

@@ -76,6 +76,7 @@ INSTALLED_APPS = [\
     "django.contrib.postgres",
     "duvidas_frequentes",
     "medicamentos",
+    "integracao",
     # "csp",
 ]
 
@@ -292,6 +293,14 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
 }
+
+CITIZEN_AUTH_MOCK_ENABLED = os.getenv("CITIZEN_AUTH_MOCK_ENABLED", "False").lower() == "true"
+CITIZEN_AUTH_MOCK_CODE = os.getenv("CITIZEN_AUTH_MOCK_CODE", "")
+CITIZEN_AUTH_MOCK_EXPOSE_CODE = os.getenv("CITIZEN_AUTH_MOCK_EXPOSE_CODE", "False").lower() == "true"
+INTEGRATION_LOGIN_API_KEY = os.getenv("INTEGRATION_LOGIN_API_KEY", "")
+CITIZEN_AUTH_CHALLENGE_MINUTES = int(os.getenv("CITIZEN_AUTH_CHALLENGE_MINUTES", "10"))
+CITIZEN_AUTH_MAX_ATTEMPTS = int(os.getenv("CITIZEN_AUTH_MAX_ATTEMPTS", "5"))
+CITIZEN_SESSION_HOURS = int(os.getenv("CITIZEN_SESSION_HOURS", "24"))
 
 
 CORS_ALLOWED_ORIGINS = _split_env_list(os.getenv("CORS_ALLOWED_ORIGINS", ""))

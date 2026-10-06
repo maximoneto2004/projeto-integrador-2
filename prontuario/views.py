@@ -8,6 +8,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from app.permissions import DjangoModelPermissionsWithView
+from app.static_data import GRUPO_ADMINISTRADOR, GRUPO_MEDICO
+from agendamentos.models import Agendamento
 from cidadaos.models import Cidadao
 from prontuario.filters import ReceitaFilter, RegistroAtendimentoFilter
 from prontuario.models import Receita, RegistroAtendimento
@@ -21,6 +23,27 @@ from prontuario.serializers import (
 PERMISSOES_PADRAO = [permissions.IsAuthenticated, DjangoModelPermissionsWithView]
 
 
+def _unidades_permitidas(user):
+    if user.is_superuser or user.groups.filter(name__iexact=GRUPO_ADMINISTRADOR).exists():
+        return None
+    return user.unidades_lotacao.all()
+
+
+def _limitar_por_unidade(queryset, user, campo="unidade"):
+    unidades = _unidades_permitidas(user)
+    if unidades is None:
+        return queryset
+    return queryset.filter(**{f"{campo}__in": unidades}).distinct()
+
+
+def _garantir_acesso_cidadao(user, cidadao):
+    unidades = _unidades_permitidas(user)
+    if unidades is not None and not Agendamento.objects.filter(
+        cidadao=cidadao, unidade__in=unidades
+    ).exists():
+        raise Http404
+
+
 class ReceitaListCreateView(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated, DjangoModelPermissionsWithView]
     queryset = Receita.objects.select_related("cidadao", "profissional", "agendamento").prefetch_related(
@@ -30,6 +53,9 @@ class ReceitaListCreateView(generics.ListCreateAPIView):
     filter_backends = [DjangoFilterBackend]
     filterset_class = ReceitaFilter
     pagination_class = LimitOffsetPagination
+
+    def get_queryset(self):
+        return _limitar_por_unidade(super().get_queryset(), self.request.user, "agendamento__unidade")
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
@@ -64,6 +90,9 @@ class ReceitaRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     )
     serializer_class = ReceitaSerializer
 
+    def get_queryset(self):
+        return _limitar_por_unidade(super().get_queryset(), self.request.user, "agendamento__unidade")
+
     def handle_exception(self, exc):
         if isinstance(exc, Http404):
             return Response(
@@ -86,6 +115,11 @@ class ReceitaRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
+        if (
+            instance.profissional_id != request.user.id
+            or not request.user.groups.filter(name=GRUPO_MEDICO).exists()
+        ):
+            raise PermissionDenied("Somente o médico que emitiu a receita pode removê-la.")
         if instance.possui_dispensacao:
             return Response(
                 {"success": False, "result": "A receita já teve medicamentos dispensados e não pode ser removida."},
@@ -107,7 +141,7 @@ class RegistroAtendimentoListCreateView(generics.ListCreateAPIView):
     filterset_class = RegistroAtendimentoFilter
 
     def get_queryset(self):
-        return _registros_queryset()
+        return _limitar_por_unidade(_registros_queryset(), self.request.user)
 
     def list(self, request, *args, **kwargs):
         serializer = self.get_serializer(self.filter_queryset(self.get_queryset()), many=True)
@@ -128,7 +162,7 @@ class RegistroAtendimentoRetrieveUpdateView(generics.RetrieveUpdateAPIView):
     serializer_class = RegistroAtendimentoSerializer
 
     def get_queryset(self):
-        return _registros_queryset()
+        return _limitar_por_unidade(_registros_queryset(), self.request.user)
 
     def handle_exception(self, exc):
         if isinstance(exc, Http404):
@@ -159,12 +193,15 @@ class ProntuarioCidadaoView(APIView):
 
     def get(self, request, cidadao_id):
         cidadao = get_object_or_404(Cidadao, pk=cidadao_id)
-        atendimentos = _registros_queryset().filter(cidadao=cidadao)
-        receitas = (
+        _garantir_acesso_cidadao(request.user, cidadao)
+        atendimentos = _limitar_por_unidade(
+            _registros_queryset().filter(cidadao=cidadao), request.user
+        )
+        receitas = _limitar_por_unidade((
             Receita.objects.filter(cidadao=cidadao)
             .select_related("profissional", "cidadao")
             .prefetch_related("medicamentos__medicamento")
-        )
+        ), request.user, "agendamento__unidade")
         return Response(
             {
                 "success": True,
@@ -184,6 +221,7 @@ class DadosClinicosCidadaoView(APIView):
 
     def patch(self, request, cidadao_id):
         cidadao = get_object_or_404(Cidadao, pk=cidadao_id)
+        _garantir_acesso_cidadao(request.user, cidadao)
         serializer = DadosClinicosCidadaoSerializer(cidadao, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
