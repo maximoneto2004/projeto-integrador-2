@@ -30,6 +30,7 @@ export type Receita = {
   agendamento: string;
   cidadao_nome: string;
   cidadao_cpf: string;
+  unidade_nome?: string;
   profissional_nome?: string;
   data_emissao: string;
   validade_dias: number;
@@ -43,6 +44,8 @@ export type Receita = {
 
 export type ReceitaPayload = {
   agendamento: string;
+  /** Obrigatório: o médico informa se o cidadão retira o medicamento agora (vai para a fila da farmácia). */
+  retirada_imediata: boolean;
   validade_dias?: number;
   diagnostico?: string;
   observacoes?: string;

@@ -3,7 +3,7 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { deriveRoleFromGroups, getMesaFromStorage, setMesaInStorage, type MesaGuiche } from "@/lib/authHelpers";
 import type { UserRole } from "@/types/auth";
-import { isProfissionalSaude } from "@/security/acess";
+import { precisaDeGuiche } from "@/security/acess";
 import { GuicheModal } from "./GuicheModal";
 import type { GuicheDefineResponse } from "@/types/api";
 
@@ -22,7 +22,7 @@ export function ProtectedRouteWithGuiche({
   const [, setMesaAtual] = useState<MesaGuiche | undefined>(() => getMesaFromStorage());
 
   useEffect(() => {
-    if (isProfissionalSaude(userRole) && !getMesaFromStorage()) {
+    if (precisaDeGuiche(userRole) && !getMesaFromStorage()) {
       setShowGuicheModal(true);
     }
   }, [userRole]);

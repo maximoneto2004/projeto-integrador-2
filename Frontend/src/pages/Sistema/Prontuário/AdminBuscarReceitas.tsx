@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Search, Eye } from "lucide-react";
+import { Search, Eye, Printer } from "lucide-react";
 import { formatCpf } from "@/utils/cpfFormater";
+import { imprimirReceita } from "@/utils/imprimirReceita";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { receitaService, type Receita, type StatusDispensacao } from "@/services/prontuario/receitaService";
 import { toast } from "@/lib/sonner";
@@ -193,6 +194,12 @@ export default function AdminBuscarReceitas() {
         <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Detalhes da receita</DialogTitle>
+            {receitaSelecionada && (
+              <Button type="button" variant="outline" size="sm" className="w-fit gap-1" onClick={() => imprimirReceita(receitaSelecionada)}>
+                <Printer className="h-4 w-4" />
+                Imprimir receita
+              </Button>
+            )}
           </DialogHeader>
           {receitaSelecionada && (
             <div className="space-y-3">

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { ArrowLeft, FileHeart, Pencil, ReceiptText, Search, Stethoscope } from "lucide-react";
+import { ArrowLeft, FileHeart, Pencil, Printer, ReceiptText, Search, Stethoscope } from "lucide-react";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { RoleBasedSidebar } from "@/components/RoleBasedSidebar";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatCpf } from "@/utils/cpfFormater";
+import { imprimirReceita } from "@/utils/imprimirReceita";
 import { cidadaoService } from "@/services/sistema/cidadaoService";
 import {
   CLASSIFICACAO_RISCO_OPCOES,
@@ -106,6 +107,10 @@ function CartaoReceita({ r }: { r: Receita }) {
           <ReceiptText className="h-4 w-4 text-indigo-700" />
           <CardTitle className="text-base">Receita</CardTitle>
           {r.vencida && <Badge variant="destructive">Vencida</Badge>}
+          <Button type="button" variant="outline" size="sm" className="ml-auto gap-1" onClick={() => imprimirReceita(r)}>
+            <Printer className="h-4 w-4" />
+            Imprimir
+          </Button>
         </div>
         <p className="text-xs text-muted-foreground">
           {formatarData(r.data_emissao, true)} · {r.profissional_nome || "-"} · válida até {formatarData(r.data_validade)}

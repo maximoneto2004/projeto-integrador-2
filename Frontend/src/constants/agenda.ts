@@ -13,6 +13,8 @@ export const SITUACAO_PARA_STATUS: Record<Situacao, Appointment["status"]> = {
   CHAMANDO: "Ativado - Aguardando Atendimento",
   ATIVADO_AUSENTE: "Não Compareceu",
   AGUARDANDO_FILA: "Aguardando fila",
+  AGUARDANDO_RETIRADA: "Aguardando retirada de medicamento",
+  CHAMANDO_RETIRADA: "Chamado para retirada de medicamento",
   FINALIZADO: "Finalizado",
 };
 //faltando o finalizado
@@ -23,6 +25,8 @@ export const APPOINTMENT_STATUS_OPTIONS: StatusOption[] = [
   { value: "Aguardando fila", label: "Aguardando fila", colorClass: "bg-slate-200 text-slate-800" },
   { value: "Ativado - Aguardando Atendimento", label: "Chamado", colorClass: "bg-indigo-100 text-indigo-800" },
   { value: "Atendimento", label: "Em atendimento", colorClass: "bg-cyan-100 text-cyan-800" },
+  { value: "Aguardando retirada de medicamento", label: "Aguardando retirada", colorClass: "bg-lime-100 text-lime-800" },
+  { value: "Chamado para retirada de medicamento", label: "Chamado p/ retirada", colorClass: "bg-emerald-100 text-emerald-800" },
   { value: "Finalizado", label: "Finalizado", colorClass: "bg-green-100 text-green-800" },
   { value: "Cancelado/Cidadão", label: "Cancelado por Cidadão", colorClass: "bg-red-100 text-red-800" },
   { value: "Cancelado/Cras", label: "Cancelado por Cras", colorClass: "bg-red-100 text-red-800" },

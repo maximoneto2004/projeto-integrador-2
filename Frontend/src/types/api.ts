@@ -46,6 +46,8 @@ export type Situacao =
   | "CHAMANDO"
   | "ATIVADO_AUSENTE"
   | "AGUARDANDO_FILA"
+  | "AGUARDANDO_RETIRADA"
+  | "CHAMANDO_RETIRADA"
   | "FINALIZADO";
 
 export type Origem = "156" | "RECEPCAO" | "SITE" | "FILA";
@@ -254,6 +256,8 @@ export type AgendamentoResponse = {
   id: string;
   cidadao: Cidadao;
   atendente: Usuario | null;
+  farmaceutico?: Usuario | null;
+  retirar_medicamento?: boolean;
   servico: Servico;
   unidade: UnidadePosto;
   data: string; // date

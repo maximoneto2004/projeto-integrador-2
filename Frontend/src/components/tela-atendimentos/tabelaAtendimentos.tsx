@@ -1,5 +1,5 @@
 ﻿import type { Appointment } from "@/types/agenda";
-import { Eye, Edit, Phone, UserCheck, CircleX, ClipboardList, CheckCircle2, ReceiptText, Stethoscope, PackageCheck } from "lucide-react";
+import { Eye, Edit, Phone, UserCheck, CircleX, ClipboardList, CheckCircle2, ReceiptText, Stethoscope, PackageCheck, PillBottle } from "lucide-react";
 import { getAppointmentActionVisibility } from "./appointmentActionRules";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -29,6 +29,8 @@ interface TabelaAtendimentosProps {
   onRegistrarReceita: (a: Appointment) => void;
   onRegistrarAtendimento: (a: Appointment) => void;
   onDispensar: (a: Appointment) => void;
+  onChamarRetirada: (a: Appointment) => void;
+  onAbrirRetirada: (a: Appointment) => void;
   onAssumir: (a: Appointment) => void;
   onFinalizar: (a: Appointment) => void;
   onAbrirServicos: (a: Appointment) => void;
@@ -62,6 +64,8 @@ export function TabelaAtendimentos({
   onRegistrarReceita,
   onRegistrarAtendimento,
   onDispensar,
+  onChamarRetirada,
+  onAbrirRetirada,
   onAssumir,
   onFinalizar,
   onAbrirServicos,
@@ -148,6 +152,26 @@ export function TabelaAtendimentos({
                           onClick={() => onChamar(appointment)}
                         >
                           <Phone className="w-5 h-5 text-green-600" />
+                        </button>
+                      )}
+
+                      {actions.showChamarRetirada && (
+                        <button
+                          className="p-2 rounded-full hover:bg-green-500/10 transition-colors"
+                          title="Chamar para retirada de medicamento"
+                          onClick={() => onChamarRetirada(appointment)}
+                        >
+                          <Phone className="w-5 h-5 text-green-600" />
+                        </button>
+                      )}
+
+                      {actions.showAbrirRetirada && (
+                        <button
+                          className="p-2 hover:bg-emerald-100 rounded-full"
+                          title="Dispensar medicamentos"
+                          onClick={() => onAbrirRetirada(appointment)}
+                        >
+                          <PillBottle className="w-5 h-5 text-emerald-700" />
                         </button>
                       )}
 

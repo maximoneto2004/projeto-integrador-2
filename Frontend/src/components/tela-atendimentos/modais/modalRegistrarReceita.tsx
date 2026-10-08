@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { CheckCircle2, Printer } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,7 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { SeletorMedicamento } from "@/components/medicamentos/SeletorMedicamento";
 import type { Appointment } from "@/types/agenda";
-import { receitaService, type ReceitaMedicamentoPayload } from "@/services/prontuario/receitaService";
+import { receitaService, type Receita, type ReceitaMedicamentoPayload } from "@/services/prontuario/receitaService";
+import { imprimirReceita } from "@/utils/imprimirReceita";
 import { medicamentoService, type Medicamento } from "@/services/sistema/medicamentoService";
 import { toast } from "@/lib/sonner";
 
@@ -15,7 +17,11 @@ interface ModalRegistrarReceitaProps {
   onOpenChange: (open: boolean) => void;
   appointment: Appointment | null;
   profissional?: string;
+  /** Chamado depois de salvar: com retirada imediata o agendamento muda de situação. */
+  onSalvo?: () => void;
 }
+
+type Retirada = "" | "imediata" | "posterior";
 
 type ItemForm = Omit<ReceitaMedicamentoPayload, "quantidade_prescrita"> & { quantidade_prescrita: string };
 
@@ -40,7 +46,7 @@ function extrairMensagemErro(err: unknown): string {
   return typeof texto === "string" ? texto : "Erro ao registrar receita. Verifique os campos.";
 }
 
-export function ModalRegistrarReceita({ open, onOpenChange, appointment }: ModalRegistrarReceitaProps) {
+export function ModalRegistrarReceita({ open, onOpenChange, appointment, onSalvo }: ModalRegistrarReceitaProps) {
   const [diagnostico, setDiagnostico] = useState("");
   const [observacoes, setObservacoes] = useState("");
   const [validadeDias, setValidadeDias] = useState(VALIDADE_PADRAO_DIAS);
@@ -48,6 +54,8 @@ export function ModalRegistrarReceita({ open, onOpenChange, appointment }: Modal
   const [catalogo, setCatalogo] = useState<Medicamento[]>([]);
   const [carregandoCatalogo, setCarregandoCatalogo] = useState(false);
   const [salvando, setSalvando] = useState(false);
+  const [retirada, setRetirada] = useState<Retirada>("");
+  const [receitaSalva, setReceitaSalva] = useState<Receita | null>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -64,6 +72,8 @@ export function ModalRegistrarReceita({ open, onOpenChange, appointment }: Modal
     setObservacoes("");
     setValidadeDias(VALIDADE_PADRAO_DIAS);
     setItens([emptyItem()]);
+    setRetirada("");
+    setReceitaSalva(null);
   };
 
   const updateItem = (index: number, patch: Partial<ItemForm>) => {
@@ -105,11 +115,16 @@ export function ModalRegistrarReceita({ open, onOpenChange, appointment }: Modal
       toast.error("A validade deve ser de 1 a 365 dias.");
       return;
     }
+    if (!retirada) {
+      toast.error("Informe se a retirada do medicamento será imediata ou posterior.");
+      return;
+    }
 
     setSalvando(true);
     try {
-      await receitaService.criar({
+      const { data } = await receitaService.criar({
         agendamento: appointment.id,
+        retirada_imediata: retirada === "imediata",
         validade_dias: validade,
         diagnostico: diagnostico.trim() || undefined,
         observacoes: observacoes.trim() || undefined,
@@ -122,9 +137,13 @@ export function ModalRegistrarReceita({ open, onOpenChange, appointment }: Modal
           quantidade_prescrita: Number(i.quantidade_prescrita),
         })),
       });
-      toast.success("Receita registrada com sucesso.");
-      reset();
-      onOpenChange(false);
+      toast.success(
+        retirada === "imediata"
+          ? "Receita registrada. O cidadão foi encaminhado para a retirada do medicamento."
+          : "Receita registrada com sucesso.",
+      );
+      setReceitaSalva(data.result ?? null);
+      onSalvo?.();
     } catch (err) {
       toast.error(extrairMensagemErro(err));
     } finally {
@@ -142,8 +161,43 @@ export function ModalRegistrarReceita({ open, onOpenChange, appointment }: Modal
     >
       <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Registrar receita</DialogTitle>
+          <DialogTitle>{receitaSalva ? "Receita registrada" : "Registrar receita"}</DialogTitle>
         </DialogHeader>
+
+        {receitaSalva && (
+          <div className="space-y-4">
+            <div className="flex items-start gap-3 rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900">
+              <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0" />
+              <div>
+                <p className="font-medium">A receita de {receitaSalva.cidadao_nome} foi registrada.</p>
+                <p>
+                  {retirada === "imediata"
+                    ? "O cidadão foi encaminhado para a fila da farmácia e será chamado para retirar o medicamento."
+                    : "O cidadão poderá retirar o medicamento depois, apresentando a receita enquanto ela estiver válida."}
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Button type="button" className="gap-2" onClick={() => imprimirReceita(receitaSalva)}>
+                <Printer className="h-4 w-4" />
+                Imprimir receita
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  reset();
+                  onOpenChange(false);
+                }}
+              >
+                Fechar
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {!receitaSalva && (
+          <>
 
         {appointment && (
           <div className="text-sm text-muted-foreground">
@@ -230,6 +284,35 @@ export function ModalRegistrarReceita({ open, onOpenChange, appointment }: Modal
           ))}
         </div>
 
+        <fieldset className="mt-4 space-y-2 rounded-lg border p-3">
+          <legend className="px-1 text-sm font-medium">Retirada do medicamento *</legend>
+          <label className="flex cursor-pointer items-start gap-2 text-sm">
+            <input
+              type="radio"
+              name="retirada-medicamento"
+              className="mt-1"
+              checked={retirada === "imediata"}
+              onChange={() => setRetirada("imediata")}
+            />
+            <span>
+              <strong>Imediata</strong> — o cidadão segue agora para a farmácia. O atendimento é encerrado e ele entra na fila de
+              retirada.
+            </span>
+          </label>
+          <label className="flex cursor-pointer items-start gap-2 text-sm">
+            <input
+              type="radio"
+              name="retirada-medicamento"
+              className="mt-1"
+              checked={retirada === "posterior"}
+              onChange={() => setRetirada("posterior")}
+            />
+            <span>
+              <strong>Posterior</strong> — o cidadão retira depois, com a receita, enquanto ela estiver válida.
+            </span>
+          </label>
+        </fieldset>
+
         <div className="flex gap-2 mt-4">
           <Button type="button" variant="outline" onClick={adicionarItem}>
             Adicionar medicamento
@@ -238,6 +321,8 @@ export function ModalRegistrarReceita({ open, onOpenChange, appointment }: Modal
             {salvando ? "Salvando..." : "Salvar receita"}
           </Button>
         </div>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );

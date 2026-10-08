@@ -13,6 +13,8 @@ const GROUP_ROLE_MAP: Record<string, UserRole> = {
   medico: "medico",
   enfermeiro: "enfermeiro",
   coordenador: "coordenador",
+  farmacêutico: "farmaceutico",
+  farmaceutico: "farmaceutico",
 };
 
 const DEFAULT_REDIRECT_BY_ROLE: Record<UserRole, string> = {
@@ -23,6 +25,7 @@ const DEFAULT_REDIRECT_BY_ROLE: Record<UserRole, string> = {
   enfermeiro: "/sistema/agendamentos",
   recepcionista: "/sistema/agendamentos",
   coordenador: "/sistema/dashboard",
+  farmaceutico: "/sistema/agendamentos",
 };
 
 export function getDefaultRouteByRole(role?: UserRole): string {

@@ -309,3 +309,23 @@ body.vlibras-hidden-route [vw-plugin-wrapper] {
     margin: 0 !important;
   }
 }
+
+/* Impressão da receita: esconde o app e mostra só o receituário (veja utils/imprimirReceita.tsx). */
+#area-impressao-receita {
+  display: none;
+}
+
+@page {
+  size: A4;
+  margin: 12mm;
+}
+
+@media print {
+  body.imprimindo-receita > *:not(#area-impressao-receita) {
+    display: none !important;
+  }
+
+  body.imprimindo-receita #area-impressao-receita {
+    display: block !important;
+  }
+}

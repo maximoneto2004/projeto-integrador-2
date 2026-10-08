@@ -6,6 +6,7 @@ export const ROLES = {
   ENFERMEIRO: "enfermeiro",
   RECEPCIONISTA: "recepcionista",
   COORDENADOR: "coordenador",
+  FARMACEUTICO: "farmaceutico",
 } as const;
 
 export const PROFISSIONAIS_SAUDE = [ROLES.MEDICO, ROLES.ENFERMEIRO] as const;
@@ -23,18 +24,23 @@ export function isCargoProfissionalSaude(cargoNome?: string | null): boolean {
   return isProfissionalSaude(normalizado);
 }
 
+// Quem escolhe uma sala/guichê ao entrar: é por ela que o cidadão é chamado no painel.
+export function precisaDeGuiche(role?: string | null): boolean {
+  return isProfissionalSaude(role) || role === ROLES.FARMACEUTICO;
+}
+
 export const ACCESS = {
-  adminAgendamentos: [...PROFISSIONAIS_SAUDE, ROLES.SUPERVISOR, ROLES.GESTOR, ROLES.ADMIN, ROLES.RECEPCIONISTA, ROLES.COORDENADOR],
+  adminAgendamentos: [...PROFISSIONAIS_SAUDE, ROLES.SUPERVISOR, ROLES.GESTOR, ROLES.ADMIN, ROLES.RECEPCIONISTA, ROLES.COORDENADOR, ROLES.FARMACEUTICO],
   atendimentoPublico: [ROLES.RECEPCIONISTA, ROLES.ADMIN],
   filaEspera: [ROLES.RECEPCIONISTA, ...PROFISSIONAIS_SAUDE, ROLES.SUPERVISOR, ROLES.ADMIN],
   confirmarChegada: [ROLES.RECEPCIONISTA, ROLES.ADMIN, ...PROFISSIONAIS_SAUDE],
   registrarServicos: [...PROFISSIONAIS_SAUDE, ROLES.SUPERVISOR, ROLES.ADMIN],
-  prontuario: [...PROFISSIONAIS_SAUDE, ROLES.SUPERVISOR, ROLES.ADMIN],
+  prontuario: [...PROFISSIONAIS_SAUDE, ROLES.SUPERVISOR, ROLES.ADMIN, ROLES.FARMACEUTICO],
   prontuarioClinico: [ROLES.MEDICO],
   medicamentosAdmin: [ROLES.ADMIN],
-  estoqueSaldo: [ROLES.SUPERVISOR, ROLES.ADMIN, ROLES.COORDENADOR, ...PROFISSIONAIS_SAUDE],
+  estoqueSaldo: [ROLES.SUPERVISOR, ROLES.ADMIN, ROLES.COORDENADOR, ROLES.FARMACEUTICO, ...PROFISSIONAIS_SAUDE],
   estoqueGestao: [ROLES.SUPERVISOR, ROLES.ADMIN, ROLES.COORDENADOR],
-  dispensacao: [ROLES.SUPERVISOR],
+  dispensacao: [ROLES.SUPERVISOR, ROLES.FARMACEUTICO],
   configurarServicos: [ROLES.SUPERVISOR, ROLES.ADMIN, ROLES.COORDENADOR],
   bloquearHorarios: [ROLES.SUPERVISOR, ROLES.GESTOR, ROLES.ADMIN, ROLES.COORDENADOR],
   gerenciarProfissionais: [ROLES.SUPERVISOR, ROLES.GESTOR, ROLES.ADMIN, ROLES.COORDENADOR],

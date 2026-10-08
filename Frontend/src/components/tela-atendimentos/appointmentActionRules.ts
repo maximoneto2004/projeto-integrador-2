@@ -31,6 +31,8 @@ export type AppointmentActionVisibility = {
   showRegistrarReceita: boolean;
   showRegistrarAtendimento: boolean;
   showDispensar: boolean;
+  showChamarRetirada: boolean;
+  showAbrirRetirada: boolean;
   showFinalizarAtendimento: boolean;
   showServicosAtendimento: boolean;
   showRegistrarPosAtendimento: boolean;
@@ -42,6 +44,8 @@ export type AppointmentActionVisibility = {
 };
 
 const STATUS_PERMITE_CHAMAR: Appointment["status"][] = ["Aguardando", "Ativado - Aguardando Atendimento"];
+const STATUS_AGUARDANDO_RETIRADA: Appointment["status"] = "Aguardando retirada de medicamento";
+const STATUS_CHAMADO_RETIRADA: Appointment["status"] = "Chamado para retirada de medicamento";
 
 export function getAppointmentActionVisibility({
   appointment,
@@ -61,6 +65,11 @@ export function getAppointmentActionVisibility({
   // O Supervisor é o responsável pelo estoque: só atende serviços de dispensação de medicamentos.
   const supervisorPodeAtender = isSupervisor && !!appointment.envolveDispensacao;
   const podePrescrever = user.userRole === "medico" && !!appointment.geraReceita;
+  // Retirada de medicamento: etapa da farmácia, aberta quando o médico prescreve com retirada imediata.
+  const isFarmaceutico = user.userRole === "farmaceutico";
+  const chamadoPorMim =
+    appointment.status === STATUS_CHAMADO_RETIRADA &&
+    (!appointment.farmaceuticoId || appointment.farmaceuticoId === user.currentUserId);
 
   return {
     showConfirmarChegada: permissions.canConfirmArrival && canAct && appointment.status === "Marcado",
@@ -71,8 +80,15 @@ export function getAppointmentActionVisibility({
       (permissions.canCall || permissions.canAssume) &&
       podeExibirBotaoChamar(appointment),
     showRegistrarAtendimento:
-      isAtendente && canAct && (appointment.status === "Atendimento" || appointment.status === "Finalizado"),
+      isAtendente &&
+      canAct &&
+      (appointment.status === "Atendimento" ||
+        appointment.status === "Finalizado" ||
+        appointment.status === STATUS_AGUARDANDO_RETIRADA ||
+        appointment.status === STATUS_CHAMADO_RETIRADA),
     showDispensar: supervisorPodeAtender && canAct && appointment.status === "Atendimento",
+    showChamarRetirada: isFarmaceutico && appointment.status === STATUS_AGUARDANDO_RETIRADA,
+    showAbrirRetirada: isFarmaceutico && chamadoPorMim,
     showRegistrarReceita: podePrescrever && permissions.canRegister && appointment.status === "Atendimento" && canAct,
     showFinalizarAtendimento: permissions.canRegister && canAct && appointment.status === "Atendimento",
     showServicosAtendimento: isAtendente && appointment.status === "Finalizado",

@@ -5,7 +5,8 @@ export type UserRole =
   | "enfermeiro"
   | "supervisor"
   | "gestor"
-  | "coordenador";
+  | "coordenador"
+  | "farmaceutico";
 
 export interface MockUser {
   id: string;

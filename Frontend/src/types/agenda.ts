@@ -42,6 +42,8 @@ export interface Appointment {
     | "Aguardando"
     | "Ativado - Aguardando Atendimento"
     | "Atendimento"
+    | "Aguardando retirada de medicamento"
+    | "Chamado para retirada de medicamento"
     | "Ausente"
     | "Aguardando fila"
     | "Não Compareceu";
@@ -64,4 +66,7 @@ export interface Appointment {
   tentativasChamada?: number;
   registrosPosAtendimento?: number;
   cidadaoId?: string;
+  retirarMedicamento?: boolean;
+  farmaceuticoId?: string;
+  farmaceutico?: string;
 }

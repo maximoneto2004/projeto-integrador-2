@@ -14,6 +14,7 @@ import { ModalChamada } from "@/components/tela-atendimentos/modais/modalChamada
 import { ModalAssumirAtendimento } from "@/components/tela-atendimentos/modais/modalAssumirAtendimento";
 import { ModalRegistrarReceita } from "@/components/tela-atendimentos/modais/modalRegistrarReceita";
 import { ModalRegistrarAtendimento } from "@/components/tela-atendimentos/modais/modalRegistrarAtendimento";
+import { ModalRetiradaMedicamento } from "@/components/tela-atendimentos/modais/modalRetiradaMedicamento";
 import { Filtro } from "@/components/tela-atendimentos/filtro";
 import { TabelaAtendimentos } from "@/components/tela-atendimentos/tabelaAtendimentos";
 import { AgendamentosHeader } from "@/components/tela-atendimentos/AgendamentosHeader";
@@ -32,7 +33,9 @@ import { toast } from "@/lib/sonner";
 import { getApiErrorMessage } from "@/lib/notifications";
 
 const mapAgendamentoParaAppointment = (ag: AgendamentoResponse, guicheNomePorId?: Map<string, string>): Appointment => {
-  const atendente = ag.atendente as any;
+  const farmaceutico = (ag as any).farmaceutico as any;
+  // Quando o cidadão já foi chamado para a retirada, quem responde por ele é o farmacêutico.
+  const atendente = (ag.situacao === "CHAMANDO_RETIRADA" && farmaceutico ? farmaceutico : ag.atendente) as any;
   const guicheAtual = atendente?.guiche_atual;
   const classe = (ag.servico as any)?.classe;
   const tipoServico = (ag.servico as any)?.tipo_servico;
@@ -62,6 +65,9 @@ const mapAgendamentoParaAppointment = (ag: AgendamentoResponse, guicheNomePorId?
     guiche: guicheNome,
     motivoOutraUnidade: (ag as any)?.motivo_territorio || undefined,
     cidadaoId: ag.cidadao?.id,
+    retirarMedicamento: !!(ag as any).retirar_medicamento,
+    farmaceuticoId: farmaceutico?.id || "",
+    farmaceutico: farmaceutico?.nome_completo || farmaceutico?.nome || "",
   };
 };
 
@@ -91,6 +97,7 @@ const AdminAgendamentos = () => {
   const [modalReceitaAberto, setModalReceitaAberto] = useState(false);
   const [agendamentoReceita, setAgendamentoReceita] = useState<Appointment | null>(null);
   const [agendamentoRegistro, setAgendamentoRegistro] = useState<Appointment | null>(null);
+  const [agendamentoRetirada, setAgendamentoRetirada] = useState<Appointment | null>(null);
   const [modalChamada, setModalChamada] = useState(false);
   const [agendamentoParaChamar, setAgendamentoParaChamar] = useState<Appointment | null>(null);
   const [modalAgendamentoAberto, setModalAgendamentoAberto] = useState(false);
@@ -498,6 +505,45 @@ const AdminAgendamentos = () => {
     }
   };
 
+  const onChamarRetirada = async (appointment: Appointment) => {
+    try {
+      await atualizarAgendamento.mutateAsync({ id: appointment.id, payload: { situacao: "CHAMANDO_RETIRADA" } });
+      toast.success("Cidadão chamado para a retirada do medicamento.");
+      setAgendamentoRetirada(appointment);
+      refetch();
+    } catch (err) {
+      console.error(err);
+      toast.error(getApiErrorMessage(err, "Não foi possível chamar para a retirada."));
+      refetch();
+    }
+  };
+
+  const concluirRetirada = async () => {
+    if (!agendamentoRetirada) return;
+    try {
+      await atualizarAgendamento.mutateAsync({ id: agendamentoRetirada.id, payload: { situacao: "FINALIZADO" } });
+      toast.success("Retirada de medicamento concluída.");
+      setAgendamentoRetirada(null);
+      refetch();
+    } catch (err) {
+      console.error(err);
+      toast.error(getApiErrorMessage(err, "Não foi possível concluir a retirada."));
+    }
+  };
+
+  const devolverRetiradaParaFila = async () => {
+    if (!agendamentoRetirada) return;
+    try {
+      await atualizarAgendamento.mutateAsync({ id: agendamentoRetirada.id, payload: { situacao: "AGUARDANDO_RETIRADA" } });
+      toast.success("Cidadão devolvido à fila da farmácia.");
+      setAgendamentoRetirada(null);
+      refetch();
+    } catch (err) {
+      console.error(err);
+      toast.error(getApiErrorMessage(err, "Não foi possível devolver à fila."));
+    }
+  };
+
   const onFinalizarAtendimento = (appointment: Appointment) => {
     if (appointment.status !== "Atendimento") return;
     setAppointmentFinalizar(appointment);
@@ -652,6 +698,8 @@ const AdminAgendamentos = () => {
             onRegistrarReceita={abrirModalRegistrarReceita}
             onRegistrarAtendimento={setAgendamentoRegistro}
             onDispensar={(a) => navigate(`/sistema/dispensacao?cidadao=${a.cidadaoId ?? ""}`)}
+            onChamarRetirada={onChamarRetirada}
+            onAbrirRetirada={setAgendamentoRetirada}
             onAssumir={abrirModalAssumir}
             onFinalizar={onFinalizarAtendimento}
             onAbrirServicos={abrirModalServicos}
@@ -798,6 +846,15 @@ const AdminAgendamentos = () => {
         }}
         appointment={agendamentoReceita}
         profissional={user?.nome}
+        onSalvo={() => refetch()}
+      />
+
+      <ModalRetiradaMedicamento
+        open={!!agendamentoRetirada}
+        onOpenChange={(open) => !open && setAgendamentoRetirada(null)}
+        appointment={agendamentoRetirada}
+        onConcluir={concluirRetirada}
+        onDevolver={devolverRetiradaParaFila}
       />
 
       <ModalRegistrarAtendimento
