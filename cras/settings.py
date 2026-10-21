@@ -333,7 +333,7 @@ EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Nome exibido nos e-mails; manter igual a APP_NAME em Frontend/src/constants/app.ts.
-NOME_SISTEMA = "Sistema de Postos de Saúde"
+NOME_SISTEMA = "Saúde Perto"
 
 # CSP CONFIGS
 # CSP_REPORT_ONLY = os.getenv("CSP_REPORT_ONLY", "True" if DEBUG else "False").lower() == "true"

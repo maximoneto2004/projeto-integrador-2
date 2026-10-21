@@ -14,7 +14,7 @@ export function ReceitaImpressao({ receita }: { receita: Receita }) {
   return (
     <article className="mx-auto w-full max-w-[190mm] bg-white p-8 font-sans text-[11pt] leading-snug text-black">
       <header className="border-b-2 border-black pb-3 text-center">
-        <p className="text-sm uppercase tracking-widest">Sistema de Postos de Saúde</p>
+        <p className="text-sm uppercase tracking-widest">Saúde Perto</p>
         <h1 className="mt-1 text-2xl font-bold">{receita.unidade_nome || "Unidade de saúde"}</h1>
         <p className="mt-2 text-lg font-semibold uppercase tracking-wide">Receituário</p>
       </header>
@@ -73,7 +73,7 @@ export function ReceitaImpressao({ receita }: { receita: Receita }) {
           <p className="text-sm">Médico(a) prescritor(a)</p>
         </div>
         <p className="mt-8 text-xs text-gray-600">
-          Receita nº {receita.id.slice(0, 8).toUpperCase()} · gerada pelo Sistema de Postos de Saúde. Retire os medicamentos
+          Receita nº {receita.id.slice(0, 8).toUpperCase()} · gerada pelo Saúde Perto. Retire os medicamentos
           dentro do prazo de validade.
         </p>
       </footer>

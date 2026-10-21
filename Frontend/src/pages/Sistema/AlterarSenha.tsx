@@ -54,6 +54,7 @@ const AlterarSenha = () => {
     <div className="min-h-screen bg-background flex">
       <div className="w-full lg:w-[40%] flex items-center justify-center p-8 lg:p-12">
         <div className="w-full max-w-md space-y-8">
+          <BrandLogo size="md" className="lg:hidden" />
           <div className="space-y-2 text-left">
             <h1 className="text-4xl font-extrabold tracking-tight text-slate-900">Alterar senha</h1>
             <p className="text-muted-foreground">Defina sua nova senha para continuar.</p>
