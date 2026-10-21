@@ -2,6 +2,7 @@ GRUPO_MEDICO = "Médico"
 GRUPO_ENFERMEIRO = "Enfermeiro"
 GRUPO_SUPERVISOR = "Supervisor"
 GRUPO_ADMINISTRADOR = "administrador"
+GRUPO_FARMACEUTICO = "Farmacêutico"
 GRUPOS_PROFISSIONAIS_SAUDE = [GRUPO_MEDICO, GRUPO_ENFERMEIRO]
 
 FORMA_FARMACEUTICA_CHOICES = [
@@ -140,8 +141,16 @@ SITUACAO_AGENDAMENTO_CHOICES = [
     ("CHAMANDO", "Chamando"),
     ("ATIVADO_AUSENTE", "Ativado, mas não compareceu"),
     ("AGUARDANDO_FILA", "Aguardando"),
+    ("AGUARDANDO_RETIRADA", "Aguardando retirada de medicamento"),
+    ("CHAMANDO_RETIRADA", "Chamado para retirada de medicamento"),
     ("FINALIZADO", "Finalizado"),
 ]
+
+# Etapa de retirada de medicamento: começa quando o médico prescreve com retirada imediata
+# e termina quando o farmacêutico conclui a dispensação.
+SITUACAO_AGUARDANDO_RETIRADA = "AGUARDANDO_RETIRADA"
+SITUACAO_CHAMANDO_RETIRADA = "CHAMANDO_RETIRADA"
+SITUACOES_RETIRADA = (SITUACAO_AGUARDANDO_RETIRADA, SITUACAO_CHAMANDO_RETIRADA)
 
 SEXO_CHOICES = [
     ("MASCULINO", "Masculino"),

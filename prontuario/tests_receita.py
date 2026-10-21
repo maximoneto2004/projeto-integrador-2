@@ -62,7 +62,12 @@ class ReceitaBaseTest(TestCase):
 
     def _criar_receita(self, itens=None, **extra):
         self.client.force_authenticate(self.medico)
-        payload = {"agendamento": str(self.agendamento.id), "medicamentos": itens or [self._item(self.dipirona)], **extra}
+        payload = {
+            "agendamento": str(self.agendamento.id),
+            "medicamentos": itens or [self._item(self.dipirona)],
+            "retirada_imediata": False,
+            **extra,
+        }
         return self.client.post(URL_RECEITA, payload, format="json")
 
 
@@ -90,7 +95,11 @@ class ReceitaCriacaoTests(ReceitaBaseTest):
 
     def test_enfermeiro_consulta_mas_nao_prescreve(self):
         self.client.force_authenticate(self.enfermeiro)
-        payload = {"agendamento": str(self.agendamento.id), "medicamentos": [self._item(self.dipirona)]}
+        payload = {
+            "agendamento": str(self.agendamento.id),
+            "medicamentos": [self._item(self.dipirona)],
+            "retirada_imediata": False,
+        }
         self.assertEqual(self.client.post(URL_RECEITA, payload, format="json").status_code, 403)
         self.assertEqual(self.client.get(URL_RECEITA).status_code, 200)
 

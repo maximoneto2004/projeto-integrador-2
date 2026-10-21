@@ -24,7 +24,14 @@ from agendamentos.serializers import (
 from servicos.models import Servico, TipoServico
 from unidade_posto.models import ServicoUnidadePosto, UnidadePosto
 from app.permissions import DjangoModelPermissionsWithView
-from app.static_data import GRUPOS_PROFISSIONAIS_SAUDE, TIPO_MARCACAO_AGENDAMENTO
+from app.static_data import (
+    GRUPO_FARMACEUTICO,
+    GRUPOS_PROFISSIONAIS_SAUDE,
+    SITUACAO_AGUARDANDO_RETIRADA,
+    SITUACAO_CHAMANDO_RETIRADA,
+    SITUACOES_RETIRADA,
+    TIPO_MARCACAO_AGENDAMENTO,
+)
 from usuarios.models import EscalaTrabalho
 from django.conf import settings
 from utils.email import send_email_in_thread
@@ -169,6 +176,10 @@ def ajax_carregar_servicos_por_tipo(request, unidade_id, tipo_id):
     data = [{"id": str(s.id), "nome": s.nome} for s in servicos]
 
     return JsonResponse({"servicos": data})
+
+
+def _eh_farmaceutico(user):
+    return bool(user and user.is_authenticated and user.groups.filter(name=GRUPO_FARMACEUTICO).exists())
 
 
 class AgendamentoAtivadoAusenteAPIView(APIView):
@@ -371,6 +382,12 @@ class AgendamentoListCreateView(generics.ListCreateAPIView):
         if is_atendente:
             tipos_ids = user.tipo_ofertados.values_list("id", flat=True)
             queryset = queryset.filter(servico__tipo_servico_id__in=tipos_ids)
+        elif _eh_farmaceutico(user):
+            # A farmácia só vê quem foi encaminhado pelo médico para retirar medicamento.
+            queryset = queryset.filter(
+                retirar_medicamento=True,
+                unidade__in=user.unidades_lotacao.all(),
+            )
 
         queryset = queryset.order_by("-data", "horario")
         # # filtro unidade
@@ -586,6 +603,9 @@ class AgendamentoRetrieveUpdateView(generics.RetrieveUpdateAPIView):
             and user.is_authenticated
             and user.groups.filter(name__in=GRUPOS_PROFISSIONAIS_SAUDE).exists()
         )
+        erro_retirada = self._validar_transicao_retirada(user, instance, nova_situacao, is_supervisor)
+        if erro_retirada is not None:
+            return erro_retirada
         atendente_atual_id = instance.atendente_id
         solicitante_id = str(user.id) if user and user.is_authenticated else ""
         atendente_atual_id_str = str(atendente_atual_id) if atendente_atual_id else ""
@@ -631,7 +651,8 @@ class AgendamentoRetrieveUpdateView(generics.RetrieveUpdateAPIView):
                     },
                     status=status.HTTP_409_CONFLICT,
                 )
-        if nova_situacao == "CHAMANDO" and instance.unidade_id:
+        chamando = nova_situacao in {"CHAMANDO", SITUACAO_CHAMANDO_RETIRADA} and instance.situacao != nova_situacao
+        if chamando and instance.unidade_id:
             lock_key = f"agendamento_chamando_lock:{instance.unidade_id}"
             if not cache.add(lock_key, True, timeout=CHAMADA_INTERVALO_SEGUNDOS):
                 return Response(
@@ -667,7 +688,12 @@ class AgendamentoRetrieveUpdateView(generics.RetrieveUpdateAPIView):
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         try:
-            self.perform_update(serializer)
+            if nova_situacao == SITUACAO_CHAMANDO_RETIRADA and instance.situacao != SITUACAO_CHAMANDO_RETIRADA:
+                serializer.save(farmaceutico=user)
+            elif nova_situacao == SITUACAO_AGUARDANDO_RETIRADA and instance.situacao == SITUACAO_CHAMANDO_RETIRADA:
+                serializer.save(farmaceutico=None)
+            else:
+                self.perform_update(serializer)
         except IntegrityError:
             return Response(
                 {
@@ -678,16 +704,75 @@ class AgendamentoRetrieveUpdateView(generics.RetrieveUpdateAPIView):
             )
 
         instance.refresh_from_db()
-        if situacao_anterior != "CHAMANDO" and instance.situacao == "CHAMANDO":
+        if situacao_anterior != instance.situacao and instance.situacao in {"CHAMANDO", SITUACAO_CHAMANDO_RETIRADA}:
             self._registrar_chamada_painel(instance)
 
         return Response({"success": True, "result": serializer.data})
 
     @staticmethod
+    def _validar_transicao_retirada(user, instance, nova_situacao, is_supervisor):
+        """Regras da etapa de retirada de medicamento; devolve uma Response de erro ou None."""
+        atual = instance.situacao
+        if nova_situacao == atual and atual not in SITUACOES_RETIRADA:
+            return None
+        pode_retirar = _eh_farmaceutico(user) or is_supervisor or user.is_superuser
+
+        devolvendo = nova_situacao == SITUACAO_AGUARDANDO_RETIRADA and atual == SITUACAO_CHAMANDO_RETIRADA
+        if nova_situacao == SITUACAO_AGUARDANDO_RETIRADA and atual != SITUACAO_AGUARDANDO_RETIRADA and not devolvendo:
+            return Response(
+                {"success": False, "result": "O encaminhamento para retirada é feito pelo médico ao registrar a receita."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if nova_situacao == SITUACAO_CHAMANDO_RETIRADA:
+            if not pode_retirar:
+                return Response(
+                    {"success": False, "result": "Somente o responsável pela retirada de medicamentos pode chamar este agendamento."},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+            if atual not in SITUACOES_RETIRADA:
+                return Response(
+                    {"success": False, "result": "O agendamento não está aguardando retirada de medicamento."},
+                    status=status.HTTP_409_CONFLICT,
+                )
+            if atual == SITUACAO_CHAMANDO_RETIRADA and instance.farmaceutico_id not in (None, user.id):
+                return Response(
+                    {"success": False, "result": "Agendamento já está sendo chamado por outro responsável pela retirada."},
+                    status=status.HTTP_409_CONFLICT,
+                )
+            em_aberto = Agendamento.objects.filter(
+                farmaceutico=user, situacao=SITUACAO_CHAMANDO_RETIRADA, data=instance.data
+            ).exclude(pk=instance.pk)
+            if atual != SITUACAO_CHAMANDO_RETIRADA and em_aberto.exists():
+                return Response(
+                    {"success": False, "result": "Você já possui uma retirada em aberto. Conclua-a antes de chamar a próxima."},
+                    status=status.HTTP_409_CONFLICT,
+                )
+            return None
+
+        if atual in SITUACOES_RETIRADA and nova_situacao != atual:
+            if nova_situacao not in {"FINALIZADO", SITUACAO_AGUARDANDO_RETIRADA} or atual != SITUACAO_CHAMANDO_RETIRADA:
+                return Response(
+                    {"success": False, "result": "Agendamento em retirada de medicamento só pode ser concluído após ser chamado."},
+                    status=status.HTTP_409_CONFLICT,
+                )
+            dono = instance.farmaceutico_id in (None, user.id)
+            if not pode_retirar or not (dono or is_supervisor or user.is_superuser):
+                return Response(
+                    {"success": False, "result": "Somente quem chamou o cidadão pode concluir ou devolver a retirada."},
+                    status=status.HTTP_409_CONFLICT,
+                )
+        return None
+
+    @staticmethod
     def _resolver_guiche_snapshot(agendamento):
         guiche_nome = None
         guiche_id = None
-        atendente = agendamento.atendente
+        atendente = (
+            agendamento.farmaceutico
+            if agendamento.situacao == SITUACAO_CHAMANDO_RETIRADA
+            else agendamento.atendente
+        )
 
         if not atendente:
             return guiche_nome, guiche_id

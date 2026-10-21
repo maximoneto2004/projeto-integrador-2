@@ -1,9 +1,13 @@
 import re
 
 from django.db import transaction
+from django.utils import timezone
 from rest_framework import serializers
 
+from agendamentos.models import Agendamento
 from app.static_data import (
+    SITUACAO_AGUARDANDO_RETIRADA,
+    SITUACOES_RETIRADA,
     STATUS_DISPENSACAO_DISPENSADO,
     STATUS_DISPENSACAO_PARCIAL,
     STATUS_DISPENSACAO_PENDENTE,
@@ -12,7 +16,7 @@ from cidadaos.models import Cidadao
 from medicamentos.models import Medicamento
 from prontuario.models import Receita, ReceitaMedicamento, RegistroAtendimento
 
-SITUACOES_QUE_PERMITEM_REGISTRO = {"ATENDIMENTO", "FINALIZADO"}
+SITUACOES_QUE_PERMITEM_REGISTRO = {"ATENDIMENTO", "FINALIZADO", *SITUACOES_RETIRADA}
 CID10_REGEX = re.compile(r"^[A-Z][0-9]{2}(\.[0-9A-Z]{1,2})?$")
 
 
@@ -61,14 +65,20 @@ class ReceitaSerializer(serializers.ModelSerializer):
     cidadao_nome = serializers.CharField(source="cidadao.nome", read_only=True)
     cidadao_cpf = serializers.CharField(source="cidadao.cpf", read_only=True)
     profissional_nome = serializers.CharField(source="profissional.nome_completo", read_only=True)
+    unidade_nome = serializers.CharField(source="agendamento.unidade.nome", read_only=True)
     vencida = serializers.BooleanField(read_only=True)
     status_dispensacao = serializers.SerializerMethodField()
+    # Só na criação: o médico precisa dizer se o cidadão retira o medicamento agora (vai para a fila da farmácia)
+    # ou depois (a receita fica disponível para dispensação enquanto estiver válida).
+    retirada_imediata = serializers.BooleanField(write_only=True, required=False)
 
     class Meta:
         model = Receita
         fields = [
             "id",
             "agendamento",
+            "unidade_nome",
+            "retirada_imediata",
             "cidadao",
             "cidadao_nome",
             "cidadao_cpf",
@@ -111,6 +121,15 @@ class ReceitaSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, attrs):
+        if self.instance is None:
+            if "retirada_imediata" not in attrs:
+                raise serializers.ValidationError(
+                    {"retirada_imediata": "Informe se a retirada do medicamento será imediata."}
+                )
+            if attrs["retirada_imediata"] and attrs["agendamento"].situacao != "ATENDIMENTO":
+                raise serializers.ValidationError(
+                    {"retirada_imediata": "A retirada imediata só pode ser indicada durante o atendimento."}
+                )
         if self.instance and "agendamento" in attrs and attrs["agendamento"] != self.instance.agendamento:
             raise serializers.ValidationError({"agendamento": "Não é possível trocar o agendamento de uma receita."})
         if self.instance and "medicamentos" in attrs and self.instance.possui_dispensacao:
@@ -122,17 +141,37 @@ class ReceitaSerializer(serializers.ModelSerializer):
     @transaction.atomic
     def create(self, validated_data):
         medicamentos_data = validated_data.pop("medicamentos")
+        retirada_imediata = validated_data.pop("retirada_imediata")
         agendamento = validated_data["agendamento"]
         validated_data["cidadao"] = agendamento.cidadao
         validated_data.setdefault("profissional", self.context["request"].user if self.context.get("request") else None)
         receita = Receita.objects.create(**validated_data)
         for med in medicamentos_data:
             ReceitaMedicamento.objects.create(receita=receita, **med)
+        if retirada_imediata:
+            self._encaminhar_para_retirada(agendamento)
         return receita
+
+    @staticmethod
+    def _encaminhar_para_retirada(agendamento):
+        """Encerra a consulta e coloca o agendamento na fila da farmácia."""
+        agendamento = Agendamento.objects.select_for_update().get(pk=agendamento.pk)
+        if agendamento.situacao != "ATENDIMENTO":
+            raise serializers.ValidationError(
+                {"retirada_imediata": "A retirada imediata só pode ser indicada durante o atendimento."}
+            )
+        # update() em vez de save(): a troca entre situações ativas não mexe na ocupação da vaga.
+        Agendamento.objects.filter(pk=agendamento.pk).update(
+            retirar_medicamento=True,
+            situacao=SITUACAO_AGUARDANDO_RETIRADA,
+            data_hora_fim_atendimento=agendamento.data_hora_fim_atendimento or timezone.localtime().time(),
+            updated_at=timezone.now(),
+        )
 
     @transaction.atomic
     def update(self, instance, validated_data):
         medicamentos_data = validated_data.pop("medicamentos", None)
+        validated_data.pop("retirada_imediata", None)  # só vale na criação da receita
         for campo, valor in validated_data.items():
             setattr(instance, campo, valor)
         instance.save()

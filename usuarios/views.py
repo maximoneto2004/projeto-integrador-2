@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.db import transaction, IntegrityError
-from django.db.models import ProtectedError
+from django.db.models import ProtectedError, Q
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
@@ -155,8 +155,8 @@ class LiberaGuicheView(generics.GenericAPIView):
         if atendente:
             print(atendente, " atendente")
             agendamento_em_aberto = Agendamento.objects.filter(
-                atendente=atendente,
-                situacao__in=["CHAMANDO", "ATENDIMENTO"],
+                Q(atendente=atendente, situacao__in=["CHAMANDO", "ATENDIMENTO"])
+                | Q(farmaceutico=atendente, situacao="CHAMANDO_RETIRADA")
             ).first()
             print(agendamento_em_aberto, " agendamento")
             if agendamento_em_aberto:
@@ -331,8 +331,8 @@ class UsuarioRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         )
         if guiche_sera_liberado:
             agendamento_em_aberto = Agendamento.objects.filter(
-                atendente=instance,
-                situacao__in=["CHAMANDO", "ATENDIMENTO"],
+                Q(atendente=instance, situacao__in=["CHAMANDO", "ATENDIMENTO"])
+                | Q(farmaceutico=instance, situacao="CHAMANDO_RETIRADA")
             ).first()
             if agendamento_em_aberto:
                 return Response(

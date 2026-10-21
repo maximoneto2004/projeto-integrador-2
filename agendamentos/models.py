@@ -6,6 +6,7 @@ from unidade_posto.models import UnidadePosto
 from servicos.models import Servico, TipoServico
 from cidadaos.models import Cidadao
 from app.static_data import (
+    GRUPO_FARMACEUTICO,
     GRUPO_SUPERVISOR,
     GRUPOS_PROFISSIONAIS_SAUDE,
     ORIGEM_CHOICES,
@@ -69,6 +70,20 @@ class Agendamento(BaseModel):
     origem = models.CharField(verbose_name="Origem do agendamento", choices=ORIGEM_CHOICES, max_length=50, null=True, blank=True)
     motivo_territorio = models.TextField(verbose_name="Motivo de agendamento fora do território", null=True, blank=True, max_length=600)
     final_atendimento = models.CharField(verbose_name="Status final de atendimento", choices=STATUS_FINAL_ATENDIMENTO_CHOICES, null=True, blank=True, max_length=200)
+    retirar_medicamento = models.BooleanField(
+        verbose_name="Retirar medicamento",
+        default=False,
+        help_text="Definido pelo médico ao prescrever com retirada imediata; coloca o cidadão na fila da farmácia.",
+    )
+    farmaceutico = models.ForeignKey(
+        Usuario,
+        verbose_name="Responsável pela retirada",
+        null=True,
+        blank=True,
+        limit_choices_to={"groups__name__in": [GRUPO_FARMACEUTICO, GRUPO_SUPERVISOR]},
+        on_delete=models.PROTECT,
+        related_name="retiradas_medicamento",
+    )
 
     class Meta:
         verbose_name = "Agendamento"
@@ -194,6 +209,11 @@ class Agendamento(BaseModel):
             "AGUARDANDO_FILA",
         )
         agora = timezone.now()
+        # Quem já foi atendido pelo médico e ficou sem retirar o medicamento não é ausente: a consulta
+        # aconteceu e a receita continua válida para retirada posterior.
+        cls.objects.filter(data__lt=hoje, situacao__in=("AGUARDANDO_RETIRADA", "CHAMANDO_RETIRADA")).update(
+            situacao="FINALIZADO", updated_at=agora
+        )
         return (
             cls.objects.filter(data__lt=hoje, situacao__in=status_abertos)
             .update(situacao="AUSENCIA_CIDADAO", updated_at=agora)

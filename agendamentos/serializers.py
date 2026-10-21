@@ -75,6 +75,8 @@ class AgendamentoSerializer(serializers.ModelSerializer):
         model = Agendamento
         fields = "__all__"
         validators = []
+        # Controlados pelo fluxo de prescrição/retirada, nunca pelo payload do cliente.
+        read_only_fields = ["retirar_medicamento", "farmaceutico"]
 
 
 class AgendamentoDetailSerializer(serializers.ModelSerializer):
@@ -82,6 +84,7 @@ class AgendamentoDetailSerializer(serializers.ModelSerializer):
     servico = ServicoListDetailSerializer()
     unidade = UnidadePostoSerializerDetail()
     atendente = UsuarioListDetailSerializer()
+    farmaceutico = UsuarioListDetailSerializer(read_only=True)
 
 
     class Meta:
@@ -90,6 +93,8 @@ class AgendamentoDetailSerializer(serializers.ModelSerializer):
             "id",
             "cidadao",
             "atendente",
+            "farmaceutico",
+            "retirar_medicamento",
             "servico",
             "unidade",
             "data",
