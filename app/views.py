@@ -10,12 +10,17 @@ from app.permissions import DjangoModelPermissionsWithView
 
 
 class BairroListCreateView(generics.ListCreateAPIView):
-    permission_classes = [permissions.IsAuthenticated, DjangoModelPermissionsWithView]
     queryset = Bairro.objects.all()
     serializer_class = BairroSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = BairroFilter
     pagination_class = LimitOffsetPagination
+
+    def get_permissions(self):
+        # Consulta pública, como a de unidades: o agendamento pelo cidadão parte do bairro.
+        if self.request.method == "GET":
+            return [permissions.AllowAny()]
+        return [permissions.IsAuthenticated(), DjangoModelPermissionsWithView()]
 
     def _validate_bairro_unique(self, bairro_nome: str) -> bool:
         return Bairro.objects.filter(nome__iexact=bairro_nome).exists()

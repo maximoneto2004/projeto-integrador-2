@@ -22,7 +22,7 @@ from agendamentos.serializers import (
     AgendamentoSerializer,
 )
 from servicos.models import Servico, TipoServico
-from unidade_posto.models import ServicoUnidadePosto, UnidadePosto
+from unidade_posto.models import UnidadePosto
 from app.permissions import DjangoModelPermissionsWithView
 from app.static_data import (
     GRUPO_FARMACEUTICO,
@@ -30,7 +30,6 @@ from app.static_data import (
     SITUACAO_AGUARDANDO_RETIRADA,
     SITUACAO_CHAMANDO_RETIRADA,
     SITUACOES_RETIRADA,
-    TIPO_MARCACAO_AGENDAMENTO,
 )
 from usuarios.models import EscalaTrabalho
 from django.conf import settings
@@ -39,25 +38,10 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.db.models import Q
 from django.db import IntegrityError
-from .services import cancelar_agendamento
+from .services import cancelar_agendamento, formatar_endereco_unidade, ofertas_agendaveis
 
 logger = logging.getLogger(__name__)
 CHAMADA_INTERVALO_SEGUNDOS = 15
-
-
-def _format_endereco_unidade(unidade):
-    if not unidade:
-        return ""
-    partes = [unidade.logradouro, unidade.numero]
-    if unidade.complemento:
-        partes.append(unidade.complemento)
-    endereco = ", ".join([p for p in partes if p])
-    bairro = unidade.bairro.nome if unidade.bairro_id else ""
-    if bairro:
-        endereco = f"{endereco} - {bairro}" if endereco else bairro
-    if unidade.cep:
-        endereco = f"{endereco} - CEP {unidade.cep}" if endereco else f"CEP {unidade.cep}"
-    return endereco
 
 
 def _send_agendamento_email(agendamento):
@@ -72,7 +56,7 @@ def _send_agendamento_email(agendamento):
     data = agendamento.data.strftime("%d/%m/%Y") if agendamento.data else ""
     horario = agendamento.horario.strftime("%H:%M") if agendamento.horario else ""
     unidade_nome = unidade.nome if unidade else ""
-    endereco = _format_endereco_unidade(unidade)
+    endereco = formatar_endereco_unidade(unidade)
     servico_nome = agendamento.servico.nome if agendamento.servico_id else ""
 
     subject = "Confirmação de agendamento"
@@ -124,18 +108,8 @@ def _send_agendamento_email(agendamento):
         logger.exception("Falha ao enviar email de agendamento para %s", email)
 
 
-def _ofertas_agendaveis(unidade_id):
-    """Serviços que a recepção pode marcar; os de encaminhamento interno são registrados só como adicionais."""
-    return ServicoUnidadePosto.objects.filter(
-        unidade_id=unidade_id,
-        is_active=True,
-        servico__is_active=True,
-        servico__tipo_marcacao=TIPO_MARCACAO_AGENDAMENTO,
-    )
-
-
 def ajax_carregar_tipos(request, unidade_id):
-    tipos_ids = _ofertas_agendaveis(unidade_id).values_list("servico__tipo_servico_id", flat=True).distinct()
+    tipos_ids = ofertas_agendaveis(unidade_id).values_list("servico__tipo_servico_id", flat=True).distinct()
 
     tipos = TipoServico.objects.filter(id__in=tipos_ids, is_active=True).order_by("nome")
 
@@ -165,7 +139,7 @@ def ajax_carregar_vagas(request, unidade_id, tipo_id, data):
 
 def ajax_carregar_servicos_por_tipo(request, unidade_id, tipo_id):
     servicos_ids = (
-        _ofertas_agendaveis(unidade_id)
+        ofertas_agendaveis(unidade_id)
         .filter(servico__tipo_servico_id=tipo_id)
         .values_list("servico_id", flat=True)
         .distinct()
@@ -358,6 +332,139 @@ class AgendaVagaListView(generics.ListAPIView):
         )
 
 
+def criar_agendamento(serializer, serializer_saida=None):
+    """Valida e cria o agendamento travando a vaga. Usado pela recepção e pela área do cidadão."""
+    try:
+        serializer.is_valid(raise_exception=True)
+    except Exception as exc:
+        if isinstance(exc, serializers.ValidationError):
+            detail = exc.detail
+            message = detail
+            if isinstance(detail, dict):
+                first_key = next(iter(detail.keys()), None)
+                if first_key is not None:
+                    value = detail[first_key]
+                    if isinstance(value, (list, tuple)) and value:
+                        message = value[0]
+                    else:
+                        message = value
+            return Response(
+                {"success": False, "result": message},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        raise
+    vaga = serializer.validated_data.get("vaga")
+    servico = serializer.validated_data.get("servico")
+    cidadao = serializer.validated_data.get("cidadao")
+    origem = serializer.validated_data.get("origem")
+    situacao = serializer.validated_data.get("situacao") or "AGENDADO"
+    is_fila = origem == "FILA"
+
+    # Para origem FILA, permite criar sem vaga (usa data/hora atuais).
+    if is_fila and not vaga:
+        agora = timezone.localtime()
+        agendamento = Agendamento.objects.create(
+            cidadao=cidadao,
+            servico=servico,
+            unidade=serializer.validated_data.get("unidade"),
+            vaga=None,
+            data=agora.date(),
+            horario=agora.time(),
+            situacao=situacao,
+            origem=origem,
+        )
+        _send_agendamento_email(agendamento)
+        return Response(
+            {
+                "success": True,
+                "result": AgendamentoDetailSerializer(agendamento).data,
+            },
+            status=status.HTTP_201_CREATED,
+        )
+
+    if not vaga:
+        return Response(
+            {
+                "success": False,
+                "result": "Vaga é obrigatória para criar agendamento.",
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    # Impede duplicidade de agendamento ativo para o mesmo cidadão/tipo de serviço.
+    if Agendamento.possui_ativo_por_tipo(
+        cidadao=cidadao,
+        tipo_servico=servico.tipo_servico,
+    ):
+        return Response(
+            {
+                "success": False,
+                "result": "Já existe um agendamento ativo deste tipo para você.",
+            },
+            status=status.HTTP_409_CONFLICT,
+        )
+
+    with transaction.atomic():
+        try:
+            vaga_locked = AgendaVaga.objects.select_for_update().get(pk=vaga.pk)
+        except AgendaVaga.DoesNotExist:
+            return Response(
+                {"success": False, "result": "Vaga não encontrada."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        if vaga_locked.vagas_ocupadas >= vaga_locked.vagas:
+            return Response(
+                {"success": False, "result": "Vaga já preenchida."},
+                status=status.HTTP_409_CONFLICT,
+            )
+
+        if servico.tipo_servico_id != vaga_locked.tipo_servico_id:
+            return Response(
+                {
+                    "success": False,
+                    "result": "Serviço não pertence a este tipo de vaga.",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        
+
+        # initial_ocupadas = vaga_locked.vagas_ocupadas
+
+        try:
+            # Garante unidade, data e horário alinhados com a vaga bloqueada
+            agendamento = serializer.save(
+                vaga=vaga_locked,
+                unidade=vaga_locked.unidade,
+                data=vaga_locked.data,
+                horario=vaga_locked.horario,
+                situacao=situacao,
+                origem=origem,
+            )
+        except IntegrityError:
+            return Response({
+                "success": False,
+                "result": "Já existe um agendamento ativo para este serviço e cidadão."
+            }, status=status.HTTP_409_CONFLICT)
+
+        # Se o modelo não incrementou, garante o incremento aqui
+        # vaga_locked.refresh_from_db(fields=["vagas_ocupadas"])
+        # if vaga_locked.vagas_ocupadas == initial_ocupadas:
+        #     AgendaVaga.objects.filter(pk=vaga_locked.pk).update(
+        #         vagas_ocupadas=F("vagas_ocupadas") + 1
+        #     )
+        #     vaga_locked.refresh_from_db(fields=["vagas_ocupadas"])
+
+    transaction.on_commit(lambda: _send_agendamento_email(agendamento))
+
+    resultado = serializer_saida(agendamento).data if serializer_saida else serializer.data
+    return Response(
+        {"success": True, "result": resultado},
+        status=status.HTTP_201_CREATED,
+    )
+
+
 class AgendamentoListCreateView(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated, DjangoModelPermissionsWithView]
     queryset = Agendamento.objects.all()
@@ -420,135 +527,7 @@ class AgendamentoListCreateView(generics.ListCreateAPIView):
         return Response({"success": True, "result": serializer.data})
 
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        try:
-            serializer.is_valid(raise_exception=True)
-        except Exception as exc:
-            if isinstance(exc, serializers.ValidationError):
-                detail = exc.detail
-                message = detail
-                if isinstance(detail, dict):
-                    first_key = next(iter(detail.keys()), None)
-                    if first_key is not None:
-                        value = detail[first_key]
-                        if isinstance(value, (list, tuple)) and value:
-                            message = value[0]
-                        else:
-                            message = value
-                return Response(
-                    {"success": False, "result": message},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-            raise
-        vaga = serializer.validated_data.get("vaga")
-        servico = serializer.validated_data.get("servico")
-        cidadao = serializer.validated_data.get("cidadao")
-        origem = serializer.validated_data.get("origem")
-        situacao = serializer.validated_data.get("situacao") or "AGENDADO"
-        is_fila = origem == "FILA"
-
-        # Para origem FILA, permite criar sem vaga (usa data/hora atuais).
-        if is_fila and not vaga:
-            agora = timezone.localtime()
-            agendamento = Agendamento.objects.create(
-                cidadao=cidadao,
-                servico=servico,
-                unidade=serializer.validated_data.get("unidade"),
-                vaga=None,
-                data=agora.date(),
-                horario=agora.time(),
-                situacao=situacao,
-                origem=origem,
-            )
-            _send_agendamento_email(agendamento)
-            return Response(
-                {
-                    "success": True,
-                    "result": AgendamentoDetailSerializer(agendamento).data,
-                },
-                status=status.HTTP_201_CREATED,
-            )
-
-        if not vaga:
-            return Response(
-                {
-                    "success": False,
-                    "result": "Vaga é obrigatória para criar agendamento.",
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        # Impede duplicidade de agendamento ativo para o mesmo cidadão/tipo de serviço.
-        if Agendamento.possui_ativo_por_tipo(
-            cidadao=cidadao,
-            tipo_servico=servico.tipo_servico,
-        ):
-            return Response(
-                {
-                    "success": False,
-                    "result": "Já existe um agendamento ativo deste tipo para você.",
-                },
-                status=status.HTTP_409_CONFLICT,
-            )
-
-        with transaction.atomic():
-            try:
-                vaga_locked = AgendaVaga.objects.select_for_update().get(pk=vaga.pk)
-            except AgendaVaga.DoesNotExist:
-                return Response(
-                    {"success": False, "result": "Vaga não encontrada."},
-                    status=status.HTTP_404_NOT_FOUND,
-                )
-
-            if vaga_locked.vagas_ocupadas >= vaga_locked.vagas:
-                return Response(
-                    {"success": False, "result": "Vaga já preenchida."},
-                    status=status.HTTP_409_CONFLICT,
-                )
-
-            if servico.tipo_servico_id != vaga_locked.tipo_servico_id:
-                return Response(
-                    {
-                        "success": False,
-                        "result": "Serviço não pertence a este tipo de vaga.",
-                    },
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-
-            
-
-            # initial_ocupadas = vaga_locked.vagas_ocupadas
-
-            try:
-                # Garante unidade, data e horário alinhados com a vaga bloqueada
-                agendamento = serializer.save(
-                    vaga=vaga_locked,
-                    unidade=vaga_locked.unidade,
-                    data=vaga_locked.data,
-                    horario=vaga_locked.horario,
-                    situacao=situacao,
-                    origem=origem,
-                )
-            except IntegrityError:
-                return Response({
-                    "success": False,
-                    "result": "Já existe um agendamento ativo para este serviço e cidadão."
-                }, status=status.HTTP_409_CONFLICT)
-
-            # Se o modelo não incrementou, garante o incremento aqui
-            # vaga_locked.refresh_from_db(fields=["vagas_ocupadas"])
-            # if vaga_locked.vagas_ocupadas == initial_ocupadas:
-            #     AgendaVaga.objects.filter(pk=vaga_locked.pk).update(
-            #         vagas_ocupadas=F("vagas_ocupadas") + 1
-            #     )
-            #     vaga_locked.refresh_from_db(fields=["vagas_ocupadas"])
-
-        transaction.on_commit(lambda: _send_agendamento_email(agendamento))
-
-        return Response(
-            {"success": True, "result": serializer.data},
-            status=status.HTTP_201_CREATED,
-        )
+        return criar_agendamento(self.get_serializer(data=request.data))
 
 
 class AgendamentoRetrieveUpdateView(generics.RetrieveUpdateAPIView):

@@ -2,15 +2,21 @@ from django.http import Http404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.utils import datetime_from_epoch
 
 from app.permissions import DjangoModelPermissionsWithView
 
+from .autenticacao import CidadaoAccessToken, LimiteEnvioPorCpfHora, LimiteEnvioPorCpfMinuto
 from .filters import CidadaoFilter
 from .models import Cidadao
 from .serializers import (
     CidadaoListDetailSerializer,
     CidadaoSerializer,
+    ConfirmarVerificacaoSerializer,
+    IniciarVerificacaoSerializer,
 )
+from .verificacao import confirmar_verificacao, iniciar_verificacao
 
 
 class CidadaoListCreateView(generics.ListCreateAPIView):
@@ -110,3 +116,50 @@ class CidadaoRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
             if old_value != new_value:
                 changes[field] = {"antes": old_value, "depois": new_value}
         return changes
+
+
+class IniciarVerificacaoView(APIView):
+    """Rota pública: envia um código de verificação para o e-mail cadastrado do cidadão."""
+
+    authentication_classes = []
+    permission_classes = [permissions.AllowAny]
+    throttle_classes = [LimiteEnvioPorCpfMinuto, LimiteEnvioPorCpfHora]
+
+    def post(self, request):
+        entrada = IniciarVerificacaoSerializer(data=request.data)
+        entrada.is_valid(raise_exception=True)
+        verificacao_id, expira_em = iniciar_verificacao(entrada.validated_data["cpf"])
+        return Response(
+            {
+                "success": True,
+                "result": {
+                    "mensagem": "Se o CPF estiver cadastrado com e-mail, um código de verificação foi enviado.",
+                    "verificacao_id": str(verificacao_id),
+                    "expira_em": expira_em,
+                },
+            },
+            status=status.HTTP_202_ACCEPTED,
+        )
+
+
+class ConfirmarVerificacaoView(APIView):
+    """Rota pública: confirma o código recebido por e-mail e devolve o token de acesso do cidadão."""
+
+    authentication_classes = []
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        entrada = ConfirmarVerificacaoSerializer(data=request.data)
+        entrada.is_valid(raise_exception=True)
+        cidadao = confirmar_verificacao(**entrada.validated_data)
+        token = CidadaoAccessToken.para_cidadao(cidadao)
+        return Response(
+            {
+                "success": True,
+                "result": {
+                    "access": str(token),
+                    "expira_em": datetime_from_epoch(token["exp"]),
+                    "cidadao": {"id": str(cidadao.id), "nome": cidadao.nome},
+                },
+            }
+        )

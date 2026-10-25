@@ -324,13 +324,23 @@ if not CSRF_TRUSTED_ORIGINS:
     ]
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtps.fortaleza.ce.gov.br'
-EMAIL_USE_TLS = True
-EMAIL_PORT = 587
+EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True").lower() == "true"
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
 FRONTEND_RESET_PASSWORD_URL = os.getenv("FRONTEND_RESET_PASSWORD_URL")
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+# No Gmail, usar uma senha de app (exige verificação em duas etapas), não a senha da conta.
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", EMAIL_HOST_USER)
+
+# Código de verificação do cidadão enviado por e-mail.
+CIDADAO_CODIGO_VALIDADE_MINUTOS = int(os.getenv("CIDADAO_CODIGO_VALIDADE_MINUTOS", "10"))
+CIDADAO_CODIGO_MAX_TENTATIVAS = int(os.getenv("CIDADAO_CODIGO_MAX_TENTATIVAS", "5"))
+# Limites de pedidos de código por CPF (a rota é pública).
+CIDADAO_CODIGO_ENVIOS_POR_MINUTO = int(os.getenv("CIDADAO_CODIGO_ENVIOS_POR_MINUTO", "1"))
+CIDADAO_CODIGO_ENVIOS_POR_HORA = int(os.getenv("CIDADAO_CODIGO_ENVIOS_POR_HORA", "5"))
+# Validade do token devolvido ao cidadão após confirmar o código.
+CIDADAO_TOKEN_VALIDADE_MINUTOS = int(os.getenv("CIDADAO_TOKEN_VALIDADE_MINUTOS", "60"))
 
 # Nome exibido nos e-mails; manter igual a APP_NAME em Frontend/src/constants/app.ts.
 NOME_SISTEMA = "Saúde Perto"

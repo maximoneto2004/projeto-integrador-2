@@ -123,3 +123,12 @@ class CidadaoListDetailSerializer(serializers.ModelSerializer):
             # "territorio",
             "unidade_origem"
         ]
+
+
+class IniciarVerificacaoSerializer(serializers.Serializer):
+    cpf = serializers.CharField(max_length=14)
+
+
+class ConfirmarVerificacaoSerializer(serializers.Serializer):
+    verificacao_id = serializers.UUIDField()
+    codigo = serializers.RegexField(r"^\d{6}$", error_messages={"invalid": "Informe o código de 6 dígitos."})

@@ -74,3 +74,23 @@ class Cidadao(BaseModel):
 
     def __str__(self):
         return self.nome
+
+
+class VerificacaoCidadao(BaseModel):
+    """Código de verificação enviado por e-mail para confirmar a identidade do cidadão."""
+
+    cidadao = models.ForeignKey(Cidadao, verbose_name="Cidadão", on_delete=models.CASCADE, related_name="verificacoes")
+    email = models.EmailField(verbose_name="E-mail de envio")
+    # Só o hash do código é persistido.
+    codigo_hash = models.CharField(verbose_name="Hash do código", max_length=128)
+    expira_em = models.DateTimeField(verbose_name="Expira em")
+    tentativas = models.PositiveSmallIntegerField(verbose_name="Tentativas", default=0)
+    utilizado_em = models.DateTimeField(verbose_name="Utilizado em", null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Verificação de cidadão"
+        verbose_name_plural = "Verificações de cidadão"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.cidadao} - {self.created_at:%d/%m/%Y %H:%M}"

@@ -3,6 +3,8 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
 from django.utils import timezone
+from app.static_data import TIPO_MARCACAO_AGENDAMENTO
+from unidade_posto.models import ServicoUnidadePosto
 from utils.email import send_email_in_thread
 from .models import Agendamento, AgendaVaga
 from rest_framework.response import Response
@@ -11,6 +13,31 @@ from rest_framework.exceptions import NotFound, ValidationError
 import logging
 
 logger = logging.getLogger(__name__)
+
+
+def ofertas_agendaveis(unidade_id):
+    """Serviços que a recepção pode marcar; os de encaminhamento interno são registrados só como adicionais."""
+    return ServicoUnidadePosto.objects.filter(
+        unidade_id=unidade_id,
+        is_active=True,
+        servico__is_active=True,
+        servico__tipo_marcacao=TIPO_MARCACAO_AGENDAMENTO,
+    )
+
+
+def formatar_endereco_unidade(unidade):
+    if not unidade:
+        return ""
+    partes = [unidade.logradouro, unidade.numero]
+    if unidade.complemento:
+        partes.append(unidade.complemento)
+    endereco = ", ".join([p for p in partes if p])
+    bairro = unidade.bairro.nome if unidade.bairro_id else ""
+    if bairro:
+        endereco = f"{endereco} - {bairro}" if endereco else bairro
+    if unidade.cep:
+        endereco = f"{endereco} - CEP {unidade.cep}" if endereco else f"CEP {unidade.cep}"
+    return endereco
 
 # FALTA VALIDAR CANCELAMENTO
 def cancelar_agendamento(agendamento_id, origem="CANCELADO_CRAS", liberar_vaga=True):
@@ -32,21 +59,11 @@ def cancelar_agendamento(agendamento_id, origem="CANCELADO_CRAS", liberar_vaga=T
         if "CANCELADO" in agendamento.situacao:
             raise ValidationError("Agendamento já está cancelado.")
         
-        vaga = None
-        # só libera a vaga se liberar_vaga for True (cidadão ou CRAS)
-        # Se for bloqueio de horario (CRAS) a vaga não é liberada
+        # A vaga é liberada pelo Agendamento.save() ao passar para cancelado; aqui ela só é travada.
+        # Descontar também aqui liberava a vaga duas vezes.
         if liberar_vaga and agendamento.vaga_id:
-            try:
-                vaga = AgendaVaga.objects.select_for_update().get(
-                    pk=agendamento.vaga_id
-                )
-                #libera vaga no banco
-                if vaga.vagas_ocupadas > 0:
-                    vaga.vagas_ocupadas -= 1
-                    vaga.save(update_fields=["vagas_ocupadas","updated_at"])
-            except AgendaVaga.DoesNotExist:
-                if liberar_vaga:
-                    raise ValidationError("A vaga associada a este agendamento não existe mais.")
+            if not AgendaVaga.objects.select_for_update().filter(pk=agendamento.vaga_id).exists():
+                raise ValidationError("A vaga associada a este agendamento não existe mais.")
 
         # atualizando status do agendamento
         agendamento.situacao = origem 
