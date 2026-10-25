@@ -1,0 +1,4937 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-10-25T15:17:56.000Z",
+  "__export_source": "insomnia.desktop.app:v9.0.0",
+  "resources": [
+    {
+      "_id": "wrk_saudeperto",
+      "_type": "workspace",
+      "parentId": null,
+      "name": "Saúde Perto API",
+      "description": "Coleção gerada a partir das rotas do Django (cras/urls.py).",
+      "scope": "collection",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "env_base",
+      "_type": "environment",
+      "parentId": "wrk_saudeperto",
+      "name": "Base Environment",
+      "data": {
+        "base_url": "http://localhost:8000",
+        "email": "admin@exemplo.com",
+        "password": "",
+        "token": "",
+        "refresh_token": "",
+        "agendamento_id": "",
+        "atendimento_id": "",
+        "bairro_id": "",
+        "bloqueio_id": "",
+        "cidadao_id": "",
+        "classe_servico_id": "",
+        "data": "2026-10-25",
+        "duvida_id": "",
+        "escala_id": "",
+        "fila_id": "",
+        "grupo_id": "",
+        "guiche_id": "",
+        "lote_id": "",
+        "medicamento_id": "",
+        "receita_id": "",
+        "servico_id": "",
+        "servico_unidade_id": "",
+        "tipo_servico_id": "",
+        "unidade_id": "",
+        "usuario_id": "",
+        "verificacao_id": ""
+      },
+      "dataPropertyOrder": {
+        "&": [
+          "base_url",
+          "email",
+          "password",
+          "token",
+          "refresh_token",
+          "agendamento_id",
+          "atendimento_id",
+          "bairro_id",
+          "bloqueio_id",
+          "cidadao_id",
+          "classe_servico_id",
+          "data",
+          "duvida_id",
+          "escala_id",
+          "fila_id",
+          "grupo_id",
+          "guiche_id",
+          "lote_id",
+          "medicamento_id",
+          "receita_id",
+          "servico_id",
+          "servico_unidade_id",
+          "tipo_servico_id",
+          "unidade_id",
+          "usuario_id",
+          "verificacao_id"
+        ]
+      },
+      "isPrivate": false,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "jar_base",
+      "_type": "cookie_jar",
+      "parentId": "wrk_saudeperto",
+      "name": "Default Jar",
+      "cookies": [],
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0001",
+      "_type": "request_group",
+      "parentId": "wrk_saudeperto",
+      "name": "01 - Autenticação",
+      "metaSortKey": -999000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0001",
+      "_type": "request",
+      "parentId": "fld_0001",
+      "name": "Solicitar reset de senha",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/authentication/password-reset/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"email\": \"usuario@exemplo.com\",\n  \"cpf\": \"000.000.000-00\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {},
+      "metaSortKey": 1,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0002",
+      "_type": "request",
+      "parentId": "fld_0001",
+      "name": "Confirmar reset de senha",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/authentication/password-reset/confirm/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"uid\": \"\",\n  \"token\": \"\",\n  \"new_password\": \"\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {},
+      "metaSortKey": 2,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0003",
+      "_type": "request",
+      "parentId": "fld_0001",
+      "name": "Login (obter token)",
+      "description": "Faz login e salva automaticamente o token no ambiente (Insomnia 9+).",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/authentication/token/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"email\": \"{{ _.email }}\",\n  \"password\": \"{{ _.password }}\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {},
+      "metaSortKey": 3,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591,
+      "afterResponseScript": "const body = insomnia.response.json();\nif (body.access) insomnia.environment.set('token', body.access);\nif (body.refresh) insomnia.environment.set('refresh_token', body.refresh);\n"
+    },
+    {
+      "_id": "req_0004",
+      "_type": "request",
+      "parentId": "fld_0001",
+      "name": "Logout",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/authentication/token/logout",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 4,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0005",
+      "_type": "request",
+      "parentId": "fld_0001",
+      "name": "Renovar token",
+      "description": "Takes a refresh type JSON web token and returns an access type JSON web\ntoken if the refresh token is valid.",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/authentication/token/refresh",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"refresh\": \"{{ _.refresh_token }}\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {},
+      "metaSortKey": 5,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0006",
+      "_type": "request",
+      "parentId": "fld_0001",
+      "name": "Verificar token",
+      "description": "Takes a token and indicates if it is valid.  This view provides no\ninformation about a token's fitness for a particular use.",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/authentication/token/verify",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"token\": \"{{ _.token }}\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {},
+      "metaSortKey": 6,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0002",
+      "_type": "request_group",
+      "parentId": "wrk_saudeperto",
+      "name": "02 - Usuários",
+      "metaSortKey": -998000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0003",
+      "_type": "request_group",
+      "parentId": "fld_0002",
+      "name": "Escalas de trabalho",
+      "metaSortKey": -997000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0007",
+      "_type": "request",
+      "parentId": "fld_0003",
+      "name": "Listar",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/usuarios/escalas/",
+      "body": {},
+      "headers": [],
+      "parameters": [
+        {
+          "name": "profissional",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "unidade",
+          "value": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 7,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0008",
+      "_type": "request",
+      "parentId": "fld_0003",
+      "name": "Criar",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/usuarios/escalas/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"is_active\": true,\n  \"dias_semana\": \"\",\n  \"turno1_inicio\": \"08:00:00\",\n  \"turno1_fim\": \"08:00:00\",\n  \"turno2_inicio\": \"08:00:00\",\n  \"turno2_fim\": \"08:00:00\",\n  \"profissional\": \"00000000-0000-0000-0000-000000000000\",\n  \"unidade\": \"00000000-0000-0000-0000-000000000000\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 8,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0009",
+      "_type": "request",
+      "parentId": "fld_0003",
+      "name": "Buscar por ID",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/usuarios/escalas/{{ _.escala_id }}/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 9,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0010",
+      "_type": "request",
+      "parentId": "fld_0003",
+      "name": "Atualizar (PUT)",
+      "description": "",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/api/v1/usuarios/escalas/{{ _.escala_id }}/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"is_active\": true,\n  \"dias_semana\": \"\",\n  \"turno1_inicio\": \"08:00:00\",\n  \"turno1_fim\": \"08:00:00\",\n  \"turno2_inicio\": \"08:00:00\",\n  \"turno2_fim\": \"08:00:00\",\n  \"profissional\": \"00000000-0000-0000-0000-000000000000\",\n  \"unidade\": \"00000000-0000-0000-0000-000000000000\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 10,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0011",
+      "_type": "request",
+      "parentId": "fld_0003",
+      "name": "Atualizar parcial (PATCH)",
+      "description": "",
+      "method": "PATCH",
+      "url": "{{ _.base_url }}/api/v1/usuarios/escalas/{{ _.escala_id }}/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"is_active\": true,\n  \"dias_semana\": \"\",\n  \"turno1_inicio\": \"08:00:00\",\n  \"turno1_fim\": \"08:00:00\",\n  \"turno2_inicio\": \"08:00:00\",\n  \"turno2_fim\": \"08:00:00\",\n  \"profissional\": \"00000000-0000-0000-0000-000000000000\",\n  \"unidade\": \"00000000-0000-0000-0000-000000000000\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 11,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0012",
+      "_type": "request",
+      "parentId": "fld_0003",
+      "name": "Excluir",
+      "description": "",
+      "method": "DELETE",
+      "url": "{{ _.base_url }}/api/v1/usuarios/escalas/{{ _.escala_id }}/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 12,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0004",
+      "_type": "request_group",
+      "parentId": "fld_0002",
+      "name": "Grupos (perfis)",
+      "metaSortKey": -996000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0013",
+      "_type": "request",
+      "parentId": "fld_0004",
+      "name": "Listar",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/usuarios/groups/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 13,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0014",
+      "_type": "request",
+      "parentId": "fld_0004",
+      "name": "Criar",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/usuarios/groups/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 14,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0015",
+      "_type": "request",
+      "parentId": "fld_0004",
+      "name": "Buscar por ID",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/usuarios/groups/{{ _.grupo_id }}/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 15,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0016",
+      "_type": "request",
+      "parentId": "fld_0004",
+      "name": "Atualizar (PUT)",
+      "description": "",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/api/v1/usuarios/groups/{{ _.grupo_id }}/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 16,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0017",
+      "_type": "request",
+      "parentId": "fld_0004",
+      "name": "Atualizar parcial (PATCH)",
+      "description": "",
+      "method": "PATCH",
+      "url": "{{ _.base_url }}/api/v1/usuarios/groups/{{ _.grupo_id }}/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 17,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0018",
+      "_type": "request",
+      "parentId": "fld_0004",
+      "name": "Excluir",
+      "description": "",
+      "method": "DELETE",
+      "url": "{{ _.base_url }}/api/v1/usuarios/groups/{{ _.grupo_id }}/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 18,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0005",
+      "_type": "request_group",
+      "parentId": "fld_0002",
+      "name": "Guichês",
+      "metaSortKey": -995000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0019",
+      "_type": "request",
+      "parentId": "fld_0005",
+      "name": "Guichês disponíveis",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/guiches/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 19,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0020",
+      "_type": "request",
+      "parentId": "fld_0005",
+      "name": "Guichê atual",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/guiches/atual/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 20,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0021",
+      "_type": "request",
+      "parentId": "fld_0005",
+      "name": "Definir guichê atual",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/guiches/definir/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"guiche_id\": \"{{ _.guiche_id }}\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 21,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0022",
+      "_type": "request",
+      "parentId": "fld_0005",
+      "name": "Liberar guichê",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/guiches/liberar/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"guiche_id\": \"{{ _.guiche_id }}\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 22,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0023",
+      "_type": "request",
+      "parentId": "fld_0005",
+      "name": "Listar",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/guiches/list/",
+      "body": {},
+      "headers": [],
+      "parameters": [
+        {
+          "name": "nome",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "unidade",
+          "value": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 23,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0024",
+      "_type": "request",
+      "parentId": "fld_0005",
+      "name": "Criar",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/guiches/list/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome\": \"\",\n  \"unidade\": \"00000000-0000-0000-0000-000000000000\",\n  \"is_active\": true\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 24,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0025",
+      "_type": "request",
+      "parentId": "fld_0005",
+      "name": "Buscar por ID",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/guiches/{{ _.guiche_id }}/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 25,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0026",
+      "_type": "request",
+      "parentId": "fld_0005",
+      "name": "Atualizar (PUT)",
+      "description": "",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/api/v1/guiches/{{ _.guiche_id }}/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome\": \"\",\n  \"unidade\": \"00000000-0000-0000-0000-000000000000\",\n  \"is_active\": true\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 26,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0027",
+      "_type": "request",
+      "parentId": "fld_0005",
+      "name": "Atualizar parcial (PATCH)",
+      "description": "",
+      "method": "PATCH",
+      "url": "{{ _.base_url }}/api/v1/guiches/{{ _.guiche_id }}/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome\": \"\",\n  \"unidade\": \"00000000-0000-0000-0000-000000000000\",\n  \"is_active\": true\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 27,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0028",
+      "_type": "request",
+      "parentId": "fld_0005",
+      "name": "Excluir",
+      "description": "",
+      "method": "DELETE",
+      "url": "{{ _.base_url }}/api/v1/guiches/{{ _.guiche_id }}/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 28,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0006",
+      "_type": "request_group",
+      "parentId": "fld_0002",
+      "name": "Usuários",
+      "metaSortKey": -994000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0029",
+      "_type": "request",
+      "parentId": "fld_0006",
+      "name": "Listar",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/usuarios/",
+      "body": {},
+      "headers": [],
+      "parameters": [
+        {
+          "name": "cpf",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "nome_completo",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "unidade",
+          "value": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 29,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0030",
+      "_type": "request",
+      "parentId": "fld_0006",
+      "name": "Criar",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/usuarios/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"is_active\": true,\n  \"email\": \"usuario@exemplo.com\",\n  \"nome_completo\": \"\",\n  \"cpf\": \"\",\n  \"telefone\": \"\",\n  \"groups\": [\n    1\n  ],\n  \"unidades_lotacao\": [\n    \"00000000-0000-0000-0000-000000000000\"\n  ],\n  \"tipo_ofertados\": [\n    \"00000000-0000-0000-0000-000000000000\"\n  ],\n  \"guiche_atual\": \"00000000-0000-0000-0000-000000000000\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 30,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0031",
+      "_type": "request",
+      "parentId": "fld_0006",
+      "name": "Buscar por ID",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/usuarios/{{ _.usuario_id }}/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 31,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0032",
+      "_type": "request",
+      "parentId": "fld_0006",
+      "name": "Atualizar (PUT)",
+      "description": "",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/api/v1/usuarios/{{ _.usuario_id }}/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"is_active\": true,\n  \"email\": \"usuario@exemplo.com\",\n  \"nome_completo\": \"\",\n  \"cpf\": \"\",\n  \"telefone\": \"\",\n  \"groups\": [\n    1\n  ],\n  \"unidades_lotacao\": [\n    \"00000000-0000-0000-0000-000000000000\"\n  ],\n  \"tipo_ofertados\": [\n    \"00000000-0000-0000-0000-000000000000\"\n  ],\n  \"guiche_atual\": \"00000000-0000-0000-0000-000000000000\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 32,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0033",
+      "_type": "request",
+      "parentId": "fld_0006",
+      "name": "Atualizar parcial (PATCH)",
+      "description": "",
+      "method": "PATCH",
+      "url": "{{ _.base_url }}/api/v1/usuarios/{{ _.usuario_id }}/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"is_active\": true,\n  \"email\": \"usuario@exemplo.com\",\n  \"nome_completo\": \"\",\n  \"cpf\": \"\",\n  \"telefone\": \"\",\n  \"groups\": [\n    1\n  ],\n  \"unidades_lotacao\": [\n    \"00000000-0000-0000-0000-000000000000\"\n  ],\n  \"tipo_ofertados\": [\n    \"00000000-0000-0000-0000-000000000000\"\n  ],\n  \"guiche_atual\": \"00000000-0000-0000-0000-000000000000\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 33,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0034",
+      "_type": "request",
+      "parentId": "fld_0006",
+      "name": "Excluir",
+      "description": "",
+      "method": "DELETE",
+      "url": "{{ _.base_url }}/api/v1/usuarios/{{ _.usuario_id }}/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 34,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0007",
+      "_type": "request_group",
+      "parentId": "wrk_saudeperto",
+      "name": "03 - Bairros",
+      "metaSortKey": -993000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0035",
+      "_type": "request",
+      "parentId": "fld_0007",
+      "name": "Listar",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/bairro/",
+      "body": {},
+      "headers": [],
+      "parameters": [
+        {
+          "name": "limit",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "nome",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "offset",
+          "value": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 35,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0036",
+      "_type": "request",
+      "parentId": "fld_0007",
+      "name": "Criar",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/bairro/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome\": \"\",\n  \"is_active\": true\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 36,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0037",
+      "_type": "request",
+      "parentId": "fld_0007",
+      "name": "Buscar por ID",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/bairro/{{ _.bairro_id }}",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 37,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0038",
+      "_type": "request",
+      "parentId": "fld_0007",
+      "name": "Atualizar (PUT)",
+      "description": "",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/api/v1/bairro/{{ _.bairro_id }}",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome\": \"\",\n  \"is_active\": true\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 38,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0039",
+      "_type": "request",
+      "parentId": "fld_0007",
+      "name": "Atualizar parcial (PATCH)",
+      "description": "",
+      "method": "PATCH",
+      "url": "{{ _.base_url }}/api/v1/bairro/{{ _.bairro_id }}",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome\": \"\",\n  \"is_active\": true\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 39,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0040",
+      "_type": "request",
+      "parentId": "fld_0007",
+      "name": "Excluir",
+      "description": "",
+      "method": "DELETE",
+      "url": "{{ _.base_url }}/api/v1/bairro/{{ _.bairro_id }}",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 40,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0008",
+      "_type": "request_group",
+      "parentId": "wrk_saudeperto",
+      "name": "04 - Unidades de Saúde",
+      "metaSortKey": -992000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0009",
+      "_type": "request_group",
+      "parentId": "fld_0008",
+      "name": "Bloqueios de horário",
+      "metaSortKey": -991000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0041",
+      "_type": "request",
+      "parentId": "fld_0009",
+      "name": "Listar",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/bloqueio_horario/",
+      "body": {},
+      "headers": [],
+      "parameters": [
+        {
+          "name": "limit",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "offset",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "unidade",
+          "value": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 41,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0042",
+      "_type": "request",
+      "parentId": "fld_0009",
+      "name": "Criar",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/bloqueio_horario/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"unidade\": [\n    \"00000000-0000-0000-0000-000000000000\"\n  ],\n  \"data\": \"2026-10-25\",\n  \"data_final\": \"2026-10-25\",\n  \"hora_inicio\": \"08:00:00\",\n  \"hora_fim\": \"08:00:00\",\n  \"motivo\": \"\",\n  \"criado_por\": \"00000000-0000-0000-0000-000000000000\",\n  \"alterado_por\": \"00000000-0000-0000-0000-000000000000\",\n  \"justificativa_alteracao\": \"\",\n  \"is_active\": true\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 42,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0043",
+      "_type": "request",
+      "parentId": "fld_0009",
+      "name": "Buscar por ID",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/bloqueio_horario/{{ _.bloqueio_id }}/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 43,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0044",
+      "_type": "request",
+      "parentId": "fld_0009",
+      "name": "Atualizar (PUT)",
+      "description": "",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/api/v1/bloqueio_horario/{{ _.bloqueio_id }}/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"unidade\": [\n    \"00000000-0000-0000-0000-000000000000\"\n  ],\n  \"data\": \"2026-10-25\",\n  \"data_final\": \"2026-10-25\",\n  \"hora_inicio\": \"08:00:00\",\n  \"hora_fim\": \"08:00:00\",\n  \"motivo\": \"\",\n  \"criado_por\": \"00000000-0000-0000-0000-000000000000\",\n  \"alterado_por\": \"00000000-0000-0000-0000-000000000000\",\n  \"justificativa_alteracao\": \"\",\n  \"is_active\": true\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 44,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0045",
+      "_type": "request",
+      "parentId": "fld_0009",
+      "name": "Atualizar parcial (PATCH)",
+      "description": "",
+      "method": "PATCH",
+      "url": "{{ _.base_url }}/api/v1/bloqueio_horario/{{ _.bloqueio_id }}/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"unidade\": [\n    \"00000000-0000-0000-0000-000000000000\"\n  ],\n  \"data\": \"2026-10-25\",\n  \"data_final\": \"2026-10-25\",\n  \"hora_inicio\": \"08:00:00\",\n  \"hora_fim\": \"08:00:00\",\n  \"motivo\": \"\",\n  \"criado_por\": \"00000000-0000-0000-0000-000000000000\",\n  \"alterado_por\": \"00000000-0000-0000-0000-000000000000\",\n  \"justificativa_alteracao\": \"\",\n  \"is_active\": true\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 45,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0046",
+      "_type": "request",
+      "parentId": "fld_0009",
+      "name": "Excluir",
+      "description": "",
+      "method": "DELETE",
+      "url": "{{ _.base_url }}/api/v1/bloqueio_horario/{{ _.bloqueio_id }}/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 46,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0010",
+      "_type": "request_group",
+      "parentId": "fld_0008",
+      "name": "Mapa (público)",
+      "metaSortKey": -990000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0047",
+      "_type": "request",
+      "parentId": "fld_0010",
+      "name": "Listar",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/mapa_unidades/",
+      "body": {},
+      "headers": [],
+      "parameters": [
+        {
+          "name": "bairro",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "nome",
+          "value": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": 47,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0048",
+      "_type": "request",
+      "parentId": "fld_0010",
+      "name": "Buscar por ID",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/mapa_unidades/{{ _.unidade_id }}/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {},
+      "metaSortKey": 48,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0011",
+      "_type": "request_group",
+      "parentId": "fld_0008",
+      "name": "Serviços da unidade",
+      "metaSortKey": -989000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0049",
+      "_type": "request",
+      "parentId": "fld_0011",
+      "name": "Listar",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/servico_unidade_posto/",
+      "body": {},
+      "headers": [],
+      "parameters": [
+        {
+          "name": "data",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "limit",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "offset",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "unidade",
+          "value": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 49,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0050",
+      "_type": "request",
+      "parentId": "fld_0011",
+      "name": "Criar",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/servico_unidade_posto/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"unidade\": \"00000000-0000-0000-0000-000000000000\",\n  \"servico\": \"00000000-0000-0000-0000-000000000000\",\n  \"dias_semana\": \"\",\n  \"mesmo_expediente\": true,\n  \"hora_manha_inicio\": \"08:00:00\",\n  \"hora_manha_fim\": \"08:00:00\",\n  \"hora_tarde_inicio\": \"08:00:00\",\n  \"hora_tarde_fim\": \"08:00:00\",\n  \"is_active\": true\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 50,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0051",
+      "_type": "request",
+      "parentId": "fld_0011",
+      "name": "Buscar por ID",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/servico_unidade_posto/{{ _.servico_unidade_id }}/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 51,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0052",
+      "_type": "request",
+      "parentId": "fld_0011",
+      "name": "Atualizar (PUT)",
+      "description": "",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/api/v1/servico_unidade_posto/{{ _.servico_unidade_id }}/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"unidade\": \"00000000-0000-0000-0000-000000000000\",\n  \"servico\": \"00000000-0000-0000-0000-000000000000\",\n  \"dias_semana\": \"\",\n  \"mesmo_expediente\": true,\n  \"hora_manha_inicio\": \"08:00:00\",\n  \"hora_manha_fim\": \"08:00:00\",\n  \"hora_tarde_inicio\": \"08:00:00\",\n  \"hora_tarde_fim\": \"08:00:00\",\n  \"is_active\": true\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 52,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0053",
+      "_type": "request",
+      "parentId": "fld_0011",
+      "name": "Atualizar parcial (PATCH)",
+      "description": "",
+      "method": "PATCH",
+      "url": "{{ _.base_url }}/api/v1/servico_unidade_posto/{{ _.servico_unidade_id }}/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"unidade\": \"00000000-0000-0000-0000-000000000000\",\n  \"servico\": \"00000000-0000-0000-0000-000000000000\",\n  \"dias_semana\": \"\",\n  \"mesmo_expediente\": true,\n  \"hora_manha_inicio\": \"08:00:00\",\n  \"hora_manha_fim\": \"08:00:00\",\n  \"hora_tarde_inicio\": \"08:00:00\",\n  \"hora_tarde_fim\": \"08:00:00\",\n  \"is_active\": true\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 53,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0054",
+      "_type": "request",
+      "parentId": "fld_0011",
+      "name": "Excluir",
+      "description": "",
+      "method": "DELETE",
+      "url": "{{ _.base_url }}/api/v1/servico_unidade_posto/{{ _.servico_unidade_id }}/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 54,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0012",
+      "_type": "request_group",
+      "parentId": "fld_0008",
+      "name": "Unidades",
+      "metaSortKey": -988000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0055",
+      "_type": "request",
+      "parentId": "fld_0012",
+      "name": "Listar",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/unidade_posto_list/",
+      "body": {},
+      "headers": [],
+      "parameters": [
+        {
+          "name": "bairro",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "limit",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "nome",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "offset",
+          "value": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 55,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0056",
+      "_type": "request",
+      "parentId": "fld_0012",
+      "name": "Criar",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/unidade_posto_list/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"is_active\": true,\n  \"nome\": \"\",\n  \"logradouro\": \"\",\n  \"numero\": \"\",\n  \"complemento\": \"\",\n  \"cep\": \"\",\n  \"telefone\": \"\",\n  \"email\": \"usuario@exemplo.com\",\n  \"hora_manha_inicio\": \"08:00:00\",\n  \"hora_manha_fim\": \"08:00:00\",\n  \"hora_tarde_inicio\": \"08:00:00\",\n  \"hora_tarde_fim\": \"08:00:00\",\n  \"latitude\": \"\",\n  \"longitude\": \"\",\n  \"bairro\": \"00000000-0000-0000-0000-000000000000\",\n  \"bairros_abrangencia\": [\n    \"00000000-0000-0000-0000-000000000000\"\n  ]\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 56,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0057",
+      "_type": "request",
+      "parentId": "fld_0012",
+      "name": "Buscar por ID",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/unidade_posto_list/{{ _.unidade_id }}/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 57,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0058",
+      "_type": "request",
+      "parentId": "fld_0012",
+      "name": "Atualizar (PUT)",
+      "description": "",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/api/v1/unidade_posto_list/{{ _.unidade_id }}/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"is_active\": true,\n  \"nome\": \"\",\n  \"logradouro\": \"\",\n  \"numero\": \"\",\n  \"complemento\": \"\",\n  \"cep\": \"\",\n  \"telefone\": \"\",\n  \"email\": \"usuario@exemplo.com\",\n  \"hora_manha_inicio\": \"08:00:00\",\n  \"hora_manha_fim\": \"08:00:00\",\n  \"hora_tarde_inicio\": \"08:00:00\",\n  \"hora_tarde_fim\": \"08:00:00\",\n  \"latitude\": \"\",\n  \"longitude\": \"\",\n  \"bairro\": \"00000000-0000-0000-0000-000000000000\",\n  \"bairros_abrangencia\": [\n    \"00000000-0000-0000-0000-000000000000\"\n  ]\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 58,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0059",
+      "_type": "request",
+      "parentId": "fld_0012",
+      "name": "Atualizar parcial (PATCH)",
+      "description": "",
+      "method": "PATCH",
+      "url": "{{ _.base_url }}/api/v1/unidade_posto_list/{{ _.unidade_id }}/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"is_active\": true,\n  \"nome\": \"\",\n  \"logradouro\": \"\",\n  \"numero\": \"\",\n  \"complemento\": \"\",\n  \"cep\": \"\",\n  \"telefone\": \"\",\n  \"email\": \"usuario@exemplo.com\",\n  \"hora_manha_inicio\": \"08:00:00\",\n  \"hora_manha_fim\": \"08:00:00\",\n  \"hora_tarde_inicio\": \"08:00:00\",\n  \"hora_tarde_fim\": \"08:00:00\",\n  \"latitude\": \"\",\n  \"longitude\": \"\",\n  \"bairro\": \"00000000-0000-0000-0000-000000000000\",\n  \"bairros_abrangencia\": [\n    \"00000000-0000-0000-0000-000000000000\"\n  ]\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 59,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0060",
+      "_type": "request",
+      "parentId": "fld_0012",
+      "name": "Excluir",
+      "description": "",
+      "method": "DELETE",
+      "url": "{{ _.base_url }}/api/v1/unidade_posto_list/{{ _.unidade_id }}/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 60,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0013",
+      "_type": "request_group",
+      "parentId": "wrk_saudeperto",
+      "name": "05 - Serviços",
+      "metaSortKey": -987000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0014",
+      "_type": "request_group",
+      "parentId": "fld_0013",
+      "name": "Classes de serviço",
+      "metaSortKey": -986000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0061",
+      "_type": "request",
+      "parentId": "fld_0014",
+      "name": "Listar",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/classe-servico/",
+      "body": {},
+      "headers": [],
+      "parameters": [
+        {
+          "name": "nome",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "unidade",
+          "value": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 61,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0062",
+      "_type": "request",
+      "parentId": "fld_0014",
+      "name": "Criar",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/classe-servico/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome\": \"\",\n  \"descricao\": \"\",\n  \"is_active\": true\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 62,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0063",
+      "_type": "request",
+      "parentId": "fld_0014",
+      "name": "Buscar por ID",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/classe-servico/{{ _.classe_servico_id }}",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 63,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0064",
+      "_type": "request",
+      "parentId": "fld_0014",
+      "name": "Atualizar (PUT)",
+      "description": "",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/api/v1/classe-servico/{{ _.classe_servico_id }}",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome\": \"\",\n  \"descricao\": \"\",\n  \"is_active\": true\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 64,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0065",
+      "_type": "request",
+      "parentId": "fld_0014",
+      "name": "Atualizar parcial (PATCH)",
+      "description": "",
+      "method": "PATCH",
+      "url": "{{ _.base_url }}/api/v1/classe-servico/{{ _.classe_servico_id }}",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome\": \"\",\n  \"descricao\": \"\",\n  \"is_active\": true\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 65,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0066",
+      "_type": "request",
+      "parentId": "fld_0014",
+      "name": "Excluir",
+      "description": "",
+      "method": "DELETE",
+      "url": "{{ _.base_url }}/api/v1/classe-servico/{{ _.classe_servico_id }}",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 66,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0015",
+      "_type": "request_group",
+      "parentId": "fld_0013",
+      "name": "Serviços",
+      "metaSortKey": -985000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0067",
+      "_type": "request",
+      "parentId": "fld_0015",
+      "name": "Listar",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/servico/",
+      "body": {},
+      "headers": [],
+      "parameters": [
+        {
+          "name": "classe_id",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "nome",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "servico_id",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "tipo_servico_id",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "unidade",
+          "value": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 67,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0068",
+      "_type": "request",
+      "parentId": "fld_0015",
+      "name": "Criar",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/servico/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"is_active\": true,\n  \"nome\": \"\",\n  \"descricao\": \"\",\n  \"tipo_marcacao\": \"AGENDAMENTO\",\n  \"gera_receita\": true,\n  \"envolve_dispensacao\": true,\n  \"classe\": \"00000000-0000-0000-0000-000000000000\",\n  \"tipo_servico\": \"00000000-0000-0000-0000-000000000000\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 68,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0069",
+      "_type": "request",
+      "parentId": "fld_0015",
+      "name": "Buscar por ID",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/servico/{{ _.servico_id }}",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 69,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0070",
+      "_type": "request",
+      "parentId": "fld_0015",
+      "name": "Atualizar (PUT)",
+      "description": "",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/api/v1/servico/{{ _.servico_id }}",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"is_active\": true,\n  \"nome\": \"\",\n  \"descricao\": \"\",\n  \"tipo_marcacao\": \"AGENDAMENTO\",\n  \"gera_receita\": true,\n  \"envolve_dispensacao\": true,\n  \"classe\": \"00000000-0000-0000-0000-000000000000\",\n  \"tipo_servico\": \"00000000-0000-0000-0000-000000000000\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 70,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0071",
+      "_type": "request",
+      "parentId": "fld_0015",
+      "name": "Atualizar parcial (PATCH)",
+      "description": "",
+      "method": "PATCH",
+      "url": "{{ _.base_url }}/api/v1/servico/{{ _.servico_id }}",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"is_active\": true,\n  \"nome\": \"\",\n  \"descricao\": \"\",\n  \"tipo_marcacao\": \"AGENDAMENTO\",\n  \"gera_receita\": true,\n  \"envolve_dispensacao\": true,\n  \"classe\": \"00000000-0000-0000-0000-000000000000\",\n  \"tipo_servico\": \"00000000-0000-0000-0000-000000000000\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 71,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0072",
+      "_type": "request",
+      "parentId": "fld_0015",
+      "name": "Excluir",
+      "description": "",
+      "method": "DELETE",
+      "url": "{{ _.base_url }}/api/v1/servico/{{ _.servico_id }}",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 72,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0016",
+      "_type": "request_group",
+      "parentId": "fld_0013",
+      "name": "Tipos de serviço",
+      "metaSortKey": -984000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0073",
+      "_type": "request",
+      "parentId": "fld_0016",
+      "name": "Listar",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/tipo-servico/",
+      "body": {},
+      "headers": [],
+      "parameters": [
+        {
+          "name": "nome",
+          "value": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 73,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0074",
+      "_type": "request",
+      "parentId": "fld_0016",
+      "name": "Criar",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/tipo-servico/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome\": \"\",\n  \"descricao\": \"\",\n  \"tempo_atendimento\": 1,\n  \"is_active\": true\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 74,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0075",
+      "_type": "request",
+      "parentId": "fld_0016",
+      "name": "Buscar por ID",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/tipo-servico/{{ _.tipo_servico_id }}",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 75,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0076",
+      "_type": "request",
+      "parentId": "fld_0016",
+      "name": "Atualizar (PUT)",
+      "description": "",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/api/v1/tipo-servico/{{ _.tipo_servico_id }}",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome\": \"\",\n  \"descricao\": \"\",\n  \"tempo_atendimento\": 1,\n  \"is_active\": true\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 76,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0077",
+      "_type": "request",
+      "parentId": "fld_0016",
+      "name": "Atualizar parcial (PATCH)",
+      "description": "",
+      "method": "PATCH",
+      "url": "{{ _.base_url }}/api/v1/tipo-servico/{{ _.tipo_servico_id }}",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome\": \"\",\n  \"descricao\": \"\",\n  \"tempo_atendimento\": 1,\n  \"is_active\": true\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 77,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0078",
+      "_type": "request",
+      "parentId": "fld_0016",
+      "name": "Excluir",
+      "description": "",
+      "method": "DELETE",
+      "url": "{{ _.base_url }}/api/v1/tipo-servico/{{ _.tipo_servico_id }}",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 78,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0017",
+      "_type": "request_group",
+      "parentId": "wrk_saudeperto",
+      "name": "06 - Cidadãos",
+      "metaSortKey": -983000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0079",
+      "_type": "request",
+      "parentId": "fld_0017",
+      "name": "Listar",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/cidadaos/",
+      "body": {},
+      "headers": [],
+      "parameters": [
+        {
+          "name": "cpf",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "search",
+          "value": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 79,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0080",
+      "_type": "request",
+      "parentId": "fld_0017",
+      "name": "Criar",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/cidadaos/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"is_active\": true,\n  \"nome\": \"\",\n  \"apelido\": \"\",\n  \"cpf\": \"\",\n  \"email\": \"usuario@exemplo.com\",\n  \"telefone\": \"\",\n  \"mae\": \"\",\n  \"data_nascimento\": \"2026-10-25\",\n  \"nis\": \"\",\n  \"rg\": \"\",\n  \"uf_rg\": \"AC\",\n  \"orgao_emissor\": \"\",\n  \"data_emissao_rg\": \"2026-10-25\",\n  \"sexo\": \"MASCULINO\",\n  \"logradouro\": \"\",\n  \"numero\": \"\",\n  \"cep\": \"\",\n  \"complemento\": \"\",\n  \"origem\": \"156\",\n  \"cns\": \"\",\n  \"alergias\": \"\",\n  \"condicoes_cronicas\": \"\",\n  \"bairro\": \"00000000-0000-0000-0000-000000000000\",\n  \"unidade_origem\": \"00000000-0000-0000-0000-000000000000\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 80,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0081",
+      "_type": "request",
+      "parentId": "fld_0017",
+      "name": "Iniciar verificação (código)",
+      "description": "Envia um código de verificação para o e-mail cadastrado do cidadão.",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/cidadaos/verificacao/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"cpf\": \"000.000.000-00\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 81,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0082",
+      "_type": "request",
+      "parentId": "fld_0017",
+      "name": "Confirmar verificação",
+      "description": "Confirma o código recebido por e-mail e devolve o cidadão verificado.",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/cidadaos/verificacao/confirmar/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"verificacao_id\": \"{{ _.verificacao_id }}\",\n  \"codigo\": \"123456\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 82,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0083",
+      "_type": "request",
+      "parentId": "fld_0017",
+      "name": "Buscar por ID",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/cidadao/{{ _.cidadao_id }}/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 83,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0084",
+      "_type": "request",
+      "parentId": "fld_0017",
+      "name": "Atualizar (PUT)",
+      "description": "",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/api/v1/cidadao/{{ _.cidadao_id }}/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"is_active\": true,\n  \"nome\": \"\",\n  \"apelido\": \"\",\n  \"cpf\": \"\",\n  \"email\": \"usuario@exemplo.com\",\n  \"telefone\": \"\",\n  \"mae\": \"\",\n  \"data_nascimento\": \"2026-10-25\",\n  \"nis\": \"\",\n  \"rg\": \"\",\n  \"uf_rg\": \"AC\",\n  \"orgao_emissor\": \"\",\n  \"data_emissao_rg\": \"2026-10-25\",\n  \"sexo\": \"MASCULINO\",\n  \"logradouro\": \"\",\n  \"numero\": \"\",\n  \"cep\": \"\",\n  \"complemento\": \"\",\n  \"origem\": \"156\",\n  \"cns\": \"\",\n  \"alergias\": \"\",\n  \"condicoes_cronicas\": \"\",\n  \"bairro\": \"00000000-0000-0000-0000-000000000000\",\n  \"unidade_origem\": \"00000000-0000-0000-0000-000000000000\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 84,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0085",
+      "_type": "request",
+      "parentId": "fld_0017",
+      "name": "Atualizar parcial (PATCH)",
+      "description": "",
+      "method": "PATCH",
+      "url": "{{ _.base_url }}/api/v1/cidadao/{{ _.cidadao_id }}/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"is_active\": true,\n  \"nome\": \"\",\n  \"apelido\": \"\",\n  \"cpf\": \"\",\n  \"email\": \"usuario@exemplo.com\",\n  \"telefone\": \"\",\n  \"mae\": \"\",\n  \"data_nascimento\": \"2026-10-25\",\n  \"nis\": \"\",\n  \"rg\": \"\",\n  \"uf_rg\": \"AC\",\n  \"orgao_emissor\": \"\",\n  \"data_emissao_rg\": \"2026-10-25\",\n  \"sexo\": \"MASCULINO\",\n  \"logradouro\": \"\",\n  \"numero\": \"\",\n  \"cep\": \"\",\n  \"complemento\": \"\",\n  \"origem\": \"156\",\n  \"cns\": \"\",\n  \"alergias\": \"\",\n  \"condicoes_cronicas\": \"\",\n  \"bairro\": \"00000000-0000-0000-0000-000000000000\",\n  \"unidade_origem\": \"00000000-0000-0000-0000-000000000000\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 85,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0086",
+      "_type": "request",
+      "parentId": "fld_0017",
+      "name": "Excluir",
+      "description": "",
+      "method": "DELETE",
+      "url": "{{ _.base_url }}/api/v1/cidadao/{{ _.cidadao_id }}/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 86,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0018",
+      "_type": "request_group",
+      "parentId": "wrk_saudeperto",
+      "name": "07 - Agendamentos",
+      "metaSortKey": -982000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0019",
+      "_type": "request_group",
+      "parentId": "fld_0018",
+      "name": "Agendamentos",
+      "metaSortKey": -981000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0087",
+      "_type": "request",
+      "parentId": "fld_0019",
+      "name": "Listar",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/agendamentos/",
+      "body": {},
+      "headers": [],
+      "parameters": [
+        {
+          "name": "atendente",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "cidadao",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "cpf",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "data",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "limit",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "nome",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "offset",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "origem",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "servico",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "situacao",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "tipo_servico",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "unidade",
+          "value": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 87,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0088",
+      "_type": "request",
+      "parentId": "fld_0019",
+      "name": "Criar",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/agendamentos/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"is_active\": true,\n  \"data_hora_inicio_atendimento\": \"08:00:00\",\n  \"data_hora_fim_atendimento\": \"08:00:00\",\n  \"observacoes_gerais\": \"\",\n  \"situacao\": \"AGENDADO\",\n  \"origem\": \"156\",\n  \"motivo_territorio\": \"\",\n  \"final_atendimento\": \"REALIZADO\",\n  \"cidadao\": \"00000000-0000-0000-0000-000000000000\",\n  \"atendente\": \"00000000-0000-0000-0000-000000000000\",\n  \"unidade\": \"00000000-0000-0000-0000-000000000000\",\n  \"servico\": \"00000000-0000-0000-0000-000000000000\",\n  \"vaga\": \"00000000-0000-0000-0000-000000000000\",\n  \"servicos_adicionais\": [\n    \"00000000-0000-0000-0000-000000000000\"\n  ]\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 88,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0089",
+      "_type": "request",
+      "parentId": "fld_0019",
+      "name": "Buscar por ID",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/agendamentos/{{ _.agendamento_id }}/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 89,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0090",
+      "_type": "request",
+      "parentId": "fld_0019",
+      "name": "Atualizar (PUT)",
+      "description": "",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/api/v1/agendamentos/{{ _.agendamento_id }}/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"is_active\": true,\n  \"data_hora_inicio_atendimento\": \"08:00:00\",\n  \"data_hora_fim_atendimento\": \"08:00:00\",\n  \"observacoes_gerais\": \"\",\n  \"situacao\": \"AGENDADO\",\n  \"origem\": \"156\",\n  \"motivo_territorio\": \"\",\n  \"final_atendimento\": \"REALIZADO\",\n  \"cidadao\": \"00000000-0000-0000-0000-000000000000\",\n  \"atendente\": \"00000000-0000-0000-0000-000000000000\",\n  \"unidade\": \"00000000-0000-0000-0000-000000000000\",\n  \"servico\": \"00000000-0000-0000-0000-000000000000\",\n  \"vaga\": \"00000000-0000-0000-0000-000000000000\",\n  \"servicos_adicionais\": [\n    \"00000000-0000-0000-0000-000000000000\"\n  ]\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 90,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0091",
+      "_type": "request",
+      "parentId": "fld_0019",
+      "name": "Atualizar parcial (PATCH)",
+      "description": "",
+      "method": "PATCH",
+      "url": "{{ _.base_url }}/api/v1/agendamentos/{{ _.agendamento_id }}/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"is_active\": true,\n  \"data_hora_inicio_atendimento\": \"08:00:00\",\n  \"data_hora_fim_atendimento\": \"08:00:00\",\n  \"observacoes_gerais\": \"\",\n  \"situacao\": \"AGENDADO\",\n  \"origem\": \"156\",\n  \"motivo_territorio\": \"\",\n  \"final_atendimento\": \"REALIZADO\",\n  \"cidadao\": \"00000000-0000-0000-0000-000000000000\",\n  \"atendente\": \"00000000-0000-0000-0000-000000000000\",\n  \"unidade\": \"00000000-0000-0000-0000-000000000000\",\n  \"servico\": \"00000000-0000-0000-0000-000000000000\",\n  \"vaga\": \"00000000-0000-0000-0000-000000000000\",\n  \"servicos_adicionais\": [\n    \"00000000-0000-0000-0000-000000000000\"\n  ]\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 91,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0020",
+      "_type": "request_group",
+      "parentId": "fld_0018",
+      "name": "Auxiliares (ajax)",
+      "metaSortKey": -980000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0092",
+      "_type": "request",
+      "parentId": "fld_0020",
+      "name": "Tipos de serviço da unidade",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/ajax/tipos/{{ _.unidade_id }}/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 92,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0093",
+      "_type": "request",
+      "parentId": "fld_0020",
+      "name": "Serviços por tipo",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/ajax/servicos/{{ _.unidade_id }}/{{ _.tipo_servico_id }}/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 93,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0094",
+      "_type": "request",
+      "parentId": "fld_0020",
+      "name": "Vagas por data",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/ajax/vagas/{{ _.unidade_id }}/{{ _.tipo_servico_id }}/{{ _.data }}/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 94,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0021",
+      "_type": "request_group",
+      "parentId": "fld_0018",
+      "name": "Ações",
+      "metaSortKey": -979000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0095",
+      "_type": "request",
+      "parentId": "fld_0021",
+      "name": "Marcar como ausente",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/{{ _.agendamento_id }}/ativar-ausente/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 95,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0096",
+      "_type": "request",
+      "parentId": "fld_0021",
+      "name": "Cancelar pela unidade",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/{{ _.agendamento_id }}/cancelar-cras/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 96,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0022",
+      "_type": "request_group",
+      "parentId": "fld_0018",
+      "name": "Painel de chamadas",
+      "metaSortKey": -978000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0097",
+      "_type": "request",
+      "parentId": "fld_0022",
+      "name": "Últimas chamadas",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/painel/ultimas-chamadas/",
+      "body": {},
+      "headers": [],
+      "parameters": [
+        {
+          "name": "unidade_id",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "limite",
+          "value": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 97,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0023",
+      "_type": "request_group",
+      "parentId": "fld_0018",
+      "name": "Vagas",
+      "metaSortKey": -977000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0098",
+      "_type": "request",
+      "parentId": "fld_0023",
+      "name": "Listar",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/vagas/",
+      "body": {},
+      "headers": [],
+      "parameters": [
+        {
+          "name": "data",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "dia",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "horario",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "tipo_servico",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "unidade",
+          "value": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 98,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0024",
+      "_type": "request_group",
+      "parentId": "wrk_saudeperto",
+      "name": "08 - Fila de Espera",
+      "metaSortKey": -976000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0099",
+      "_type": "request",
+      "parentId": "fld_0024",
+      "name": "Listar",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/fila-espera/",
+      "body": {},
+      "headers": [],
+      "parameters": [
+        {
+          "name": "data",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "limit",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "offset",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "unidade",
+          "value": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 99,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0100",
+      "_type": "request",
+      "parentId": "fld_0024",
+      "name": "Criar",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/fila-espera/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"is_active\": true,\n  \"prioridade\": \"NORMAL\",\n  \"status\": \"AGENDADO\",\n  \"urgencia\": \"ALTA\",\n  \"cidadao\": \"00000000-0000-0000-0000-000000000000\",\n  \"servico\": \"00000000-0000-0000-0000-000000000000\",\n  \"unidade\": \"00000000-0000-0000-0000-000000000000\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 100,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0101",
+      "_type": "request",
+      "parentId": "fld_0024",
+      "name": "Chamar próximo",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/fila-espera/chamar-proximo/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 101,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0102",
+      "_type": "request",
+      "parentId": "fld_0024",
+      "name": "Buscar por ID",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/fila-espera/{{ _.fila_id }}/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 102,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0103",
+      "_type": "request",
+      "parentId": "fld_0024",
+      "name": "Atualizar (PUT)",
+      "description": "",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/api/v1/fila-espera/{{ _.fila_id }}/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"is_active\": true,\n  \"prioridade\": \"NORMAL\",\n  \"status\": \"AGENDADO\",\n  \"urgencia\": \"ALTA\",\n  \"cidadao\": \"00000000-0000-0000-0000-000000000000\",\n  \"servico\": \"00000000-0000-0000-0000-000000000000\",\n  \"unidade\": \"00000000-0000-0000-0000-000000000000\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 103,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0104",
+      "_type": "request",
+      "parentId": "fld_0024",
+      "name": "Atualizar parcial (PATCH)",
+      "description": "",
+      "method": "PATCH",
+      "url": "{{ _.base_url }}/api/v1/fila-espera/{{ _.fila_id }}/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"is_active\": true,\n  \"prioridade\": \"NORMAL\",\n  \"status\": \"AGENDADO\",\n  \"urgencia\": \"ALTA\",\n  \"cidadao\": \"00000000-0000-0000-0000-000000000000\",\n  \"servico\": \"00000000-0000-0000-0000-000000000000\",\n  \"unidade\": \"00000000-0000-0000-0000-000000000000\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 104,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0105",
+      "_type": "request",
+      "parentId": "fld_0024",
+      "name": "Excluir",
+      "description": "",
+      "method": "DELETE",
+      "url": "{{ _.base_url }}/api/v1/fila-espera/{{ _.fila_id }}/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 105,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0025",
+      "_type": "request_group",
+      "parentId": "wrk_saudeperto",
+      "name": "09 - Prontuário",
+      "metaSortKey": -975000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0026",
+      "_type": "request_group",
+      "parentId": "fld_0025",
+      "name": "Prontuário do cidadão",
+      "metaSortKey": -974000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0106",
+      "_type": "request",
+      "parentId": "fld_0026",
+      "name": "Prontuário completo do cidadão",
+      "description": "Prontuário do paciente: dados clínicos, atendimentos e receitas, do mais recente ao mais antigo.",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/prontuario/cidadao/{{ _.cidadao_id }}/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 106,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0107",
+      "_type": "request",
+      "parentId": "fld_0026",
+      "name": "Atualizar dados clínicos",
+      "description": "",
+      "method": "PATCH",
+      "url": "{{ _.base_url }}/api/prontuario/cidadao/{{ _.cidadao_id }}/dados-clinicos/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"cns\": \"\",\n  \"alergias\": \"\",\n  \"condicoes_cronicas\": \"\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 107,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0027",
+      "_type": "request_group",
+      "parentId": "fld_0025",
+      "name": "Receitas",
+      "metaSortKey": -973000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0108",
+      "_type": "request",
+      "parentId": "fld_0027",
+      "name": "Listar",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/prontuario/receita/",
+      "body": {},
+      "headers": [],
+      "parameters": [
+        {
+          "name": "agendamento",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "cidadao",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "limit",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "medicamento",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "offset",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "pendente_dispensacao",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "search",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "vigente",
+          "value": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 108,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0109",
+      "_type": "request",
+      "parentId": "fld_0027",
+      "name": "Criar",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/prontuario/receita/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"agendamento\": \"00000000-0000-0000-0000-000000000000\",\n  \"retirada_imediata\": true,\n  \"validade_dias\": 1,\n  \"diagnostico\": \"\",\n  \"observacoes\": \"\",\n  \"medicamentos\": [\n    {\n      \"medicamento\": \"00000000-0000-0000-0000-000000000000\",\n      \"dosagem\": \"\",\n      \"frequencia\": \"\",\n      \"duracao\": \"\",\n      \"instrucoes\": \"\",\n      \"quantidade_prescrita\": 1\n    }\n  ]\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 109,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0110",
+      "_type": "request",
+      "parentId": "fld_0027",
+      "name": "Buscar por ID",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/prontuario/receita/{{ _.receita_id }}/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 110,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0111",
+      "_type": "request",
+      "parentId": "fld_0027",
+      "name": "Atualizar (PUT)",
+      "description": "",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/api/prontuario/receita/{{ _.receita_id }}/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"agendamento\": \"00000000-0000-0000-0000-000000000000\",\n  \"retirada_imediata\": true,\n  \"validade_dias\": 1,\n  \"diagnostico\": \"\",\n  \"observacoes\": \"\",\n  \"medicamentos\": [\n    {\n      \"medicamento\": \"00000000-0000-0000-0000-000000000000\",\n      \"dosagem\": \"\",\n      \"frequencia\": \"\",\n      \"duracao\": \"\",\n      \"instrucoes\": \"\",\n      \"quantidade_prescrita\": 1\n    }\n  ]\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 111,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0112",
+      "_type": "request",
+      "parentId": "fld_0027",
+      "name": "Atualizar parcial (PATCH)",
+      "description": "",
+      "method": "PATCH",
+      "url": "{{ _.base_url }}/api/prontuario/receita/{{ _.receita_id }}/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"agendamento\": \"00000000-0000-0000-0000-000000000000\",\n  \"retirada_imediata\": true,\n  \"validade_dias\": 1,\n  \"diagnostico\": \"\",\n  \"observacoes\": \"\",\n  \"medicamentos\": [\n    {\n      \"medicamento\": \"00000000-0000-0000-0000-000000000000\",\n      \"dosagem\": \"\",\n      \"frequencia\": \"\",\n      \"duracao\": \"\",\n      \"instrucoes\": \"\",\n      \"quantidade_prescrita\": 1\n    }\n  ]\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 112,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0113",
+      "_type": "request",
+      "parentId": "fld_0027",
+      "name": "Excluir",
+      "description": "",
+      "method": "DELETE",
+      "url": "{{ _.base_url }}/api/prontuario/receita/{{ _.receita_id }}/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 113,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0028",
+      "_type": "request_group",
+      "parentId": "fld_0025",
+      "name": "Registros de atendimento",
+      "metaSortKey": -972000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0114",
+      "_type": "request",
+      "parentId": "fld_0028",
+      "name": "Listar",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/prontuario/atendimento/",
+      "body": {},
+      "headers": [],
+      "parameters": [
+        {
+          "name": "agendamento",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "cidadao",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "data_fim",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "data_inicio",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "profissional",
+          "value": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 114,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0115",
+      "_type": "request",
+      "parentId": "fld_0028",
+      "name": "Criar",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/prontuario/atendimento/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"agendamento\": \"00000000-0000-0000-0000-000000000000\",\n  \"classificacao_risco\": \"VERMELHO\",\n  \"queixa_principal\": \"\",\n  \"subjetivo\": \"\",\n  \"objetivo\": \"\",\n  \"avaliacao\": \"\",\n  \"cid\": \"\",\n  \"plano\": \"\",\n  \"pressao_sistolica\": 1,\n  \"pressao_diastolica\": 1,\n  \"frequencia_cardiaca\": 1,\n  \"frequencia_respiratoria\": 1,\n  \"temperatura\": \"\",\n  \"saturacao_o2\": 1,\n  \"glicemia_capilar\": 1,\n  \"peso\": \"\",\n  \"altura\": 1\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 115,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0116",
+      "_type": "request",
+      "parentId": "fld_0028",
+      "name": "Buscar por ID",
+      "description": "Registros clínicos não são excluídos; só o autor pode editar.",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/prontuario/atendimento/{{ _.atendimento_id }}/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 116,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0117",
+      "_type": "request",
+      "parentId": "fld_0028",
+      "name": "Atualizar (PUT)",
+      "description": "Registros clínicos não são excluídos; só o autor pode editar.",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/api/prontuario/atendimento/{{ _.atendimento_id }}/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"agendamento\": \"00000000-0000-0000-0000-000000000000\",\n  \"classificacao_risco\": \"VERMELHO\",\n  \"queixa_principal\": \"\",\n  \"subjetivo\": \"\",\n  \"objetivo\": \"\",\n  \"avaliacao\": \"\",\n  \"cid\": \"\",\n  \"plano\": \"\",\n  \"pressao_sistolica\": 1,\n  \"pressao_diastolica\": 1,\n  \"frequencia_cardiaca\": 1,\n  \"frequencia_respiratoria\": 1,\n  \"temperatura\": \"\",\n  \"saturacao_o2\": 1,\n  \"glicemia_capilar\": 1,\n  \"peso\": \"\",\n  \"altura\": 1\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 117,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0118",
+      "_type": "request",
+      "parentId": "fld_0028",
+      "name": "Atualizar parcial (PATCH)",
+      "description": "Registros clínicos não são excluídos; só o autor pode editar.",
+      "method": "PATCH",
+      "url": "{{ _.base_url }}/api/prontuario/atendimento/{{ _.atendimento_id }}/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"agendamento\": \"00000000-0000-0000-0000-000000000000\",\n  \"classificacao_risco\": \"VERMELHO\",\n  \"queixa_principal\": \"\",\n  \"subjetivo\": \"\",\n  \"objetivo\": \"\",\n  \"avaliacao\": \"\",\n  \"cid\": \"\",\n  \"plano\": \"\",\n  \"pressao_sistolica\": 1,\n  \"pressao_diastolica\": 1,\n  \"frequencia_cardiaca\": 1,\n  \"frequencia_respiratoria\": 1,\n  \"temperatura\": \"\",\n  \"saturacao_o2\": 1,\n  \"glicemia_capilar\": 1,\n  \"peso\": \"\",\n  \"altura\": 1\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 118,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0029",
+      "_type": "request_group",
+      "parentId": "wrk_saudeperto",
+      "name": "10 - Medicamentos e Estoque",
+      "metaSortKey": -971000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0030",
+      "_type": "request_group",
+      "parentId": "fld_0029",
+      "name": "Dispensação e saldo",
+      "metaSortKey": -970000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0119",
+      "_type": "request",
+      "parentId": "fld_0030",
+      "name": "Alertas de estoque",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/estoque/alertas/",
+      "body": {},
+      "headers": [],
+      "parameters": [
+        {
+          "name": "dias",
+          "value": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 119,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0120",
+      "_type": "request",
+      "parentId": "fld_0030",
+      "name": "Dispensar medicamento",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/estoque/dispensar/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"medicamento\": \"{{ _.medicamento_id }}\",\n  \"unidade\": \"{{ _.unidade_id }}\",\n  \"quantidade\": 1,\n  \"receita_item\": null,\n  \"motivo\": \"\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 120,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0121",
+      "_type": "request",
+      "parentId": "fld_0030",
+      "name": "Saldo de estoque",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/estoque/saldo/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 121,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0031",
+      "_type": "request_group",
+      "parentId": "fld_0029",
+      "name": "Lotes",
+      "metaSortKey": -969000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0122",
+      "_type": "request",
+      "parentId": "fld_0031",
+      "name": "Listar",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/estoque/lote/",
+      "body": {},
+      "headers": [],
+      "parameters": [
+        {
+          "name": "busca",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "com_saldo",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "is_active",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "limit",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "medicamento",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "numero_lote",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "offset",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "unidade",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "validade_ate",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "vencido",
+          "value": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 122,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0123",
+      "_type": "request",
+      "parentId": "fld_0031",
+      "name": "Criar",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/estoque/lote/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"medicamento\": \"00000000-0000-0000-0000-000000000000\",\n  \"unidade\": \"00000000-0000-0000-0000-000000000000\",\n  \"numero_lote\": \"\",\n  \"validade\": \"2026-10-25\",\n  \"quantidade_inicial\": 1,\n  \"fornecedor\": \"\",\n  \"data_entrada\": \"2026-10-25\",\n  \"is_active\": true\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 123,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0124",
+      "_type": "request",
+      "parentId": "fld_0031",
+      "name": "Buscar por ID",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/estoque/lote/{{ _.lote_id }}",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 124,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0125",
+      "_type": "request",
+      "parentId": "fld_0031",
+      "name": "Atualizar (PUT)",
+      "description": "",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/api/v1/estoque/lote/{{ _.lote_id }}",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"numero_lote\": \"\",\n  \"validade\": \"2026-10-25\",\n  \"fornecedor\": \"\",\n  \"data_entrada\": \"2026-10-25\",\n  \"is_active\": true\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 125,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0126",
+      "_type": "request",
+      "parentId": "fld_0031",
+      "name": "Atualizar parcial (PATCH)",
+      "description": "",
+      "method": "PATCH",
+      "url": "{{ _.base_url }}/api/v1/estoque/lote/{{ _.lote_id }}",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"numero_lote\": \"\",\n  \"validade\": \"2026-10-25\",\n  \"fornecedor\": \"\",\n  \"data_entrada\": \"2026-10-25\",\n  \"is_active\": true\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 126,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0032",
+      "_type": "request_group",
+      "parentId": "fld_0029",
+      "name": "Medicamentos",
+      "metaSortKey": -968000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0127",
+      "_type": "request",
+      "parentId": "fld_0032",
+      "name": "Listar",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/medicamento/",
+      "body": {},
+      "headers": [],
+      "parameters": [
+        {
+          "name": "busca",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "classe_terapeutica",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "controlado",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "forma_farmaceutica",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "is_active",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "nome",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "principio_ativo",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "via_administracao",
+          "value": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 127,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0128",
+      "_type": "request",
+      "parentId": "fld_0032",
+      "name": "Criar",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/medicamento/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome\": \"\",\n  \"principio_ativo\": \"\",\n  \"forma_farmaceutica\": \"COMPRIMIDO\",\n  \"concentracao\": \"\",\n  \"unidade_medida\": \"MG\",\n  \"via_administracao\": \"ORAL\",\n  \"controlado\": true,\n  \"classe_terapeutica\": \"\",\n  \"fabricante\": \"\",\n  \"codigo_registro\": \"\",\n  \"observacoes\": \"\",\n  \"estoque_minimo\": 1,\n  \"is_active\": true\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 128,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0129",
+      "_type": "request",
+      "parentId": "fld_0032",
+      "name": "Buscar por ID",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/medicamento/{{ _.medicamento_id }}",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 129,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0130",
+      "_type": "request",
+      "parentId": "fld_0032",
+      "name": "Atualizar (PUT)",
+      "description": "",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/api/v1/medicamento/{{ _.medicamento_id }}",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome\": \"\",\n  \"principio_ativo\": \"\",\n  \"forma_farmaceutica\": \"COMPRIMIDO\",\n  \"concentracao\": \"\",\n  \"unidade_medida\": \"MG\",\n  \"via_administracao\": \"ORAL\",\n  \"controlado\": true,\n  \"classe_terapeutica\": \"\",\n  \"fabricante\": \"\",\n  \"codigo_registro\": \"\",\n  \"observacoes\": \"\",\n  \"estoque_minimo\": 1,\n  \"is_active\": true\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 130,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0131",
+      "_type": "request",
+      "parentId": "fld_0032",
+      "name": "Atualizar parcial (PATCH)",
+      "description": "",
+      "method": "PATCH",
+      "url": "{{ _.base_url }}/api/v1/medicamento/{{ _.medicamento_id }}",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome\": \"\",\n  \"principio_ativo\": \"\",\n  \"forma_farmaceutica\": \"COMPRIMIDO\",\n  \"concentracao\": \"\",\n  \"unidade_medida\": \"MG\",\n  \"via_administracao\": \"ORAL\",\n  \"controlado\": true,\n  \"classe_terapeutica\": \"\",\n  \"fabricante\": \"\",\n  \"codigo_registro\": \"\",\n  \"observacoes\": \"\",\n  \"estoque_minimo\": 1,\n  \"is_active\": true\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 131,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0132",
+      "_type": "request",
+      "parentId": "fld_0032",
+      "name": "Excluir",
+      "description": "",
+      "method": "DELETE",
+      "url": "{{ _.base_url }}/api/v1/medicamento/{{ _.medicamento_id }}",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 132,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0033",
+      "_type": "request_group",
+      "parentId": "fld_0029",
+      "name": "Movimentações",
+      "metaSortKey": -967000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0133",
+      "_type": "request",
+      "parentId": "fld_0033",
+      "name": "Listar",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/estoque/movimentacao/",
+      "body": {},
+      "headers": [],
+      "parameters": [
+        {
+          "name": "busca",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "data_fim",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "data_inicio",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "limit",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "lote",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "medicamento",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "offset",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "receita_item",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "tipo",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "unidade",
+          "value": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 133,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0134",
+      "_type": "request",
+      "parentId": "fld_0033",
+      "name": "Criar",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/estoque/movimentacao/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"lote\": \"00000000-0000-0000-0000-000000000000\",\n  \"tipo\": \"ENTRADA\",\n  \"quantidade\": 1,\n  \"motivo\": \"\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 134,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0034",
+      "_type": "request_group",
+      "parentId": "wrk_saudeperto",
+      "name": "11 - Dashboards e Mapa",
+      "metaSortKey": -966000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0035",
+      "_type": "request_group",
+      "parentId": "fld_0034",
+      "name": "Dashboards",
+      "metaSortKey": -965000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0135",
+      "_type": "request",
+      "parentId": "fld_0035",
+      "name": "Dashboard gestor",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/dashboard-gestor/",
+      "body": {},
+      "headers": [],
+      "parameters": [
+        {
+          "name": "data_inicio",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "data_fim",
+          "value": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 135,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0136",
+      "_type": "request",
+      "parentId": "fld_0035",
+      "name": "Dashboard monitor da unidade",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/dashboard-monitor-unidade/",
+      "body": {},
+      "headers": [],
+      "parameters": [
+        {
+          "name": "data_inicio",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "data_fim",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "unidade_id",
+          "value": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 136,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0137",
+      "_type": "request",
+      "parentId": "fld_0035",
+      "name": "Dashboard supervisor",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/dashboard-supervisor/",
+      "body": {},
+      "headers": [],
+      "parameters": [
+        {
+          "name": "data_inicio",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "data_fim",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "unidade_id",
+          "value": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 137,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0036",
+      "_type": "request_group",
+      "parentId": "fld_0034",
+      "name": "Mapa",
+      "metaSortKey": -964000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0138",
+      "_type": "request",
+      "parentId": "fld_0036",
+      "name": "Bairros (GeoJSON)",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/mapa/bairros.geojson",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 138,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0139",
+      "_type": "request",
+      "parentId": "fld_0036",
+      "name": "Mapa de unidades (métricas)",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/mapa/unidades/",
+      "body": {},
+      "headers": [],
+      "parameters": [
+        {
+          "name": "data_inicio",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "data_fim",
+          "value": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 139,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0140",
+      "_type": "request",
+      "parentId": "fld_0036",
+      "name": "Séries da unidade",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/mapa/unidades/series/",
+      "body": {},
+      "headers": [],
+      "parameters": [
+        {
+          "name": "unidade_id",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "data_inicio",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "data_fim",
+          "value": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 140,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0037",
+      "_type": "request_group",
+      "parentId": "wrk_saudeperto",
+      "name": "12 - Dúvidas Frequentes",
+      "metaSortKey": -963000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0141",
+      "_type": "request",
+      "parentId": "fld_0037",
+      "name": "Listar",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/duvida/",
+      "body": {},
+      "headers": [],
+      "parameters": [
+        {
+          "name": "pergunta",
+          "value": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 141,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0142",
+      "_type": "request",
+      "parentId": "fld_0037",
+      "name": "Criar",
+      "description": "",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/v1/duvida/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"is_active\": true,\n  \"pergunta\": \"\",\n  \"resposta\": \"\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 142,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0143",
+      "_type": "request",
+      "parentId": "fld_0037",
+      "name": "Buscar por ID",
+      "description": "",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/v1/duvida/{{ _.duvida_id }}/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 143,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0144",
+      "_type": "request",
+      "parentId": "fld_0037",
+      "name": "Atualizar (PUT)",
+      "description": "",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/api/v1/duvida/{{ _.duvida_id }}/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"is_active\": true,\n  \"pergunta\": \"\",\n  \"resposta\": \"\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 144,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0145",
+      "_type": "request",
+      "parentId": "fld_0037",
+      "name": "Atualizar parcial (PATCH)",
+      "description": "",
+      "method": "PATCH",
+      "url": "{{ _.base_url }}/api/v1/duvida/{{ _.duvida_id }}/",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"is_active\": true,\n  \"pergunta\": \"\",\n  \"resposta\": \"\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 145,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0146",
+      "_type": "request",
+      "parentId": "fld_0037",
+      "name": "Excluir",
+      "description": "",
+      "method": "DELETE",
+      "url": "{{ _.base_url }}/api/v1/duvida/{{ _.duvida_id }}/",
+      "body": {},
+      "headers": [],
+      "parameters": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.token }}",
+        "prefix": "Bearer"
+      },
+      "metaSortKey": 146,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "fld_0038",
+      "_type": "request_group",
+      "parentId": "wrk_saudeperto",
+      "name": "13 - Documentação (OpenAPI)",
+      "metaSortKey": -962000,
+      "created": 1792952276591,
+      "modified": 1792952276591
+    },
+    {
+      "_id": "req_0147",
+      "_type": "request",
+      "parentId": "fld_0038",
+      "name": "Schema OpenAPI",
+      "description": "OpenApi3 schema for this API. Format can be selected via content negotiation.\n\n- YAML: application/vnd.oai.openapi\n- JSON: application/vnd.oai.openapi+json",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/schema/",
+      "body": {},
+      "headers": [],
+      "parameters": [
+        {
+          "name": "format",
+          "value": "",
+          "disabled": true
+        },
+        {
+          "name": "lang",
+          "value": "",
+          "disabled": true
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": 147,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingFollowRedirects": "global",
+      "created": 1792952276591,
+      "modified": 1792952276591
+    }
+  ]
+}

@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Apresentação Saúde Perto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FDEEDD; --peach:#F3BE86; --mint:#A3D1BE;
+    --teal:#2C8576; --teal-d:#226B60; --orange:#E2672A;
+    --ink:#0A0A0A; --body:#1E1E1E; --muted:#7C7873;
+  }
+  @page{ size:1920px 1080px; margin:0 }
+  *{ box-sizing:border-box; margin:0; padding:0 }
+  html,body{ background:var(--cream) }
+  body{ font-family:Inter, "Segoe UI", Arial, sans-serif; color:var(--body) }
+  .slide{ width:1920px; height:1080px; position:relative; overflow:hidden; background:var(--cream); page-break-after:always; break-after:page }
+  .slide:last-child{ page-break-after:auto; break-after:auto }
+
+  /* degradês suaves, no padrão do Acolhe */
+  .blob{ position:absolute; border-radius:50%; filter:blur(10px); pointer-events:none }
+  .bp{ background:radial-gradient(closest-side, rgba(243,190,134,.95), rgba(243,190,134,.55) 45%, rgba(243,190,134,0)) }
+  .bm{ background:radial-gradient(closest-side, rgba(163,209,190,.95), rgba(163,209,190,.5) 45%, rgba(163,209,190,0)) }
+
+  .content{ position:absolute; inset:0 }
+  /* padrão tipográfico único */
+  .title{ position:absolute; left:120px; top:96px; font-size:64px; font-weight:800; letter-spacing:-1.2px; line-height:1.1; color:var(--ink) }
+  .title.c{ left:0; right:0; text-align:center }
+  .sub{ position:absolute; left:120px; top:192px; width:1500px; font-size:30px; line-height:1.45; color:var(--ink) }
+  .sub.c{ left:0; right:0; width:auto; text-align:center }
+  .item{ position:absolute }
+  .item h3{ font-size:32px; font-weight:700; color:var(--ink); letter-spacing:-.3px; line-height:1.25; margin-bottom:16px }
+  .item p{ font-size:24px; line-height:1.45; color:var(--body) }
+  .mark.tr{ right:72px; top:60px }
+  .mark.bc{ left:0; right:0; justify-content:center; bottom:40px }
+
+  /* marca */
+  .logo{ display:flex; flex-direction:column; align-items:center }
+  .word{ font-family:Nunito, Inter, sans-serif; font-weight:900; color:var(--teal-d); letter-spacing:-1px; line-height:1 }
+  .word b{ color:var(--orange); font-weight:900 }
+  .mark{ position:absolute; display:flex; align-items:center; gap:14px }
+  .mark svg{ width:58px; height:58px }
+  .mark .w{ font-family:Nunito, Inter, sans-serif; font-weight:900; font-size:34px; color:var(--teal-d); line-height:1 }
+  .mark .w b{ color:var(--orange) }
+  .mark small{ display:block; font-family:Inter; font-weight:600; font-size:12.5px; letter-spacing:1.6px; color:#5B5751; margin-top:5px; text-transform:uppercase }
+  .partners{ position:absolute; left:0; right:0; bottom:58px; display:flex; justify-content:center; align-items:center; gap:46px; font-size:20px; color:#4E4A45 }
+  .partners .sep{ width:2px; height:44px; background:#B9B2A9 }
+  .partners strong{ font-weight:800; letter-spacing:3px; color:#2B2926; font-size:26px }
+
+  /* dispositivos */
+  .laptop{ position:absolute; isolation:isolate }
+  .laptop .scr{ position:absolute; left:10.16%; top:3.4%; width:79.8%; height:85.6%; overflow:hidden; background:#fff }
+  .laptop .scr img{ width:100%; height:100%; object-fit:cover; object-position:top left; display:block }
+  .laptop > img.frame{ position:relative; width:100%; display:block; z-index:2 }
+  .phone{ position:absolute; isolation:isolate }
+  .phone .scr{ position:absolute; left:4.4%; top:1.9%; width:91.2%; height:96.2%; overflow:hidden; border-radius:13% / 6.2%; background:#fff }
+  .phone .scr{ background:#F8F5F0 }
+  .phone .scr img{ width:100%; height:91%; margin-top:18%; object-fit:cover; object-position:top; display:block }
+  .phone .chatscr img{ height:100%; margin-top:0 }
+  .phone > img.frame{ position:relative; width:100%; display:block; z-index:2 }
+
+  /* usuários */
+  .user{ position:absolute; width:240px; text-align:center }
+  .user .av{ width:172px; height:172px; margin:0 auto 22px; border-radius:56px; overflow:hidden; background:#F1EAD0 }
+  .user .av img{ width:100%; height:128%; object-fit:cover; object-position:center 4%; display:block }
+  .user .av img.sq{ height:100% }
+  .user .t{ font-size:28px; font-weight:700; color:var(--ink); margin-bottom:14px }
+  .user .d{ font-size:22px; line-height:1.42; color:var(--muted) }
+
+  /* fluxo */
+  .axis{ position:absolute; left:130px; top:464px; width:1660px; height:4px; background:#111 }
+  .axis:after{ content:""; position:absolute; right:-22px; top:-12px; border-left:26px solid #111; border-top:14px solid transparent; border-bottom:14px solid transparent }
+  .tick{ position:absolute; width:2px; height:56px; background:#C9C1B7 }
+  .step{ position:absolute; width:340px }
+  .step h3{ font-size:32px; font-weight:700; color:var(--ink); letter-spacing:-.3px; margin-bottom:16px; line-height:1.25 }
+  .step p{ font-size:24px; line-height:1.45; color:var(--body) }
+
+  /* próximos passos */
+  .arrow{ position:absolute; width:210px; height:30px }
+  .arrow:before{ content:""; position:absolute; left:0; right:40px; top:13px; border-top:6px dashed #111 }
+  .arrow:after{ content:""; position:absolute; right:0; top:-6px; border-left:40px solid #111; border-top:21px solid transparent; border-bottom:21px solid transparent }
+
+  /* custos */
+  .cost{ position:absolute; width:410px }
+  .cost h3{ font-size:32px; font-weight:700; color:var(--ink); letter-spacing:-.3px; white-space:nowrap; margin-bottom:12px }
+  .cost .v{ font-size:40px; font-weight:800; color:var(--teal-d); letter-spacing:-1px; margin-bottom:14px; white-space:nowrap }
+  .cost p{ font-size:24px; line-height:1.45; color:var(--body) }
+  .total{ position:absolute; left:550px; top:668px; width:820px; padding:34px 40px 36px; border-radius:36px; text-align:center;
+          background:rgba(255,255,255,.6); border:2px solid #EBD8C2; box-shadow:0 18px 50px rgba(120,70,20,.08) }
+  .total .l{ font-size:30px; font-weight:700; color:var(--ink) }
+  .total .v{ font-size:104px; font-weight:800; color:var(--orange); letter-spacing:-3px; line-height:1.1; margin:6px 0 4px }
+  .total .f{ font-size:28px; color:var(--muted) }
+  /* diagrama do agente de IA */
+  .fx-lines{ position:absolute; left:0; top:0; width:1920px; height:1080px; z-index:1 }
+  .fx-panel{ position:absolute; border:2.5px dashed; border-radius:24px; background:rgba(255,255,255,.22) }
+  .fx-head{ position:absolute; height:54px; border-radius:14px; color:#fff; font-size:26px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:14px; z-index:2 }
+  .fx-head svg{ width:30px; height:30px; color:#fff }
+  .fx-box{ position:absolute; z-index:2; background:#fff; border:1.5px solid #E6D9C9; border-radius:12px; display:flex; align-items:center; gap:12px; padding:0 14px;
+           font-size:17px; font-weight:600; color:#1E1E1E; line-height:1.2; box-shadow:0 4px 12px rgba(120,70,20,.06) }
+  .fx-box > svg{ flex:none; width:24px; height:24px; color:#2C8576 }
+  .fx-box.side{ font-size:15px; padding:0 10px; gap:9px; background:#FFFBF6 }
+  .fx-box.side > svg{ width:26px; height:26px }
+  .fx-box.big{ font-size:21px; gap:16px; padding:0 20px }
+  .fx-box.big > svg{ width:32px; height:32px }
+  .fx-box.svc{ border:2px solid #86C2B4; background:#F1FAF6 }
+  .fx-box .ic.chat{ flex:none; width:44px; height:44px; border-radius:50%; background:#2C8576; display:flex; align-items:center; justify-content:center }
+  .fx-box .ic.chat svg{ width:24px; height:24px; color:#fff }
+  .fx-tag{ position:absolute; z-index:3; font-size:14px; font-weight:800; letter-spacing:.5px; padding:3px 10px; border-radius:7px }
+  .fx-tag.s{ background:#DDF0E8; color:#226B60 }
+  .fx-tag.n{ background:#FCE3D2; color:#C4501B }
+  .fx-inner{ position:absolute; z-index:2; border:2px solid #B9DCD2; border-radius:18px; background:rgba(241,250,246,.75); padding:16px 16px 0 }
+  .fx-inner-t{ text-align:center; font-size:22px; font-weight:700; color:#226B60; margin-bottom:14px }
+  .fx-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px }
+  .fx-card{ height:90px; border-radius:12px; display:flex; align-items:center; gap:14px; padding:0 16px; font-size:17px; font-weight:600; color:#2A2724; line-height:1.25 }
+  .fx-card svg{ flex:none; width:32px; height:32px }
+  .fx-card.m{ background:#E2F2EB } .fx-card.m svg{ color:#2C8576 }
+  .fx-card.p{ background:#FCE9D7 } .fx-card.p svg{ color:#E2672A }
+  .fx-notes{ position:absolute; z-index:2; left:100px; top:934px; width:1720px; height:110px; border-radius:20px; background:rgba(255,255,255,.55); border:1.5px solid #EBD8C2;
+             display:grid; grid-template-columns:1fr 1fr 1fr }
+  .fx-note{ display:flex; align-items:center; gap:18px; padding:0 30px; border-left:1.5px solid #E3D3C0 }
+  .fx-note:first-child{ border-left:0 }
+  .fx-note > svg{ flex:none; width:44px; height:44px; color:#E2672A }
+  .fx-note b{ display:block; font-size:19px; color:#C4501B; margin-bottom:5px }
+  .fx-note div{ font-size:16px; line-height:1.35; color:#3A3734 }
+  /* tecnologias */
+  .tech{ position:absolute; top:318px; width:405px; height:520px; padding:38px 34px; border-radius:30px; background:rgba(255,255,255,.6); border:2px solid #EBD8C2; box-shadow:0 18px 50px rgba(120,70,20,.07) }
+  .tech .ic{ width:76px; height:76px; border-radius:22px; display:flex; align-items:center; justify-content:center; margin-bottom:26px }
+  .tech .ic svg{ width:40px; height:40px; color:#fff }
+  .tech h3{ font-size:32px; font-weight:700; color:var(--ink); letter-spacing:-.3px; margin-bottom:20px }
+  .tech .chips{ display:flex; flex-wrap:wrap; gap:10px; margin-bottom:26px }
+  .tech .chips span{ font-size:21px; font-weight:600; padding:7px 16px; border-radius:999px }
+  .tech p{ font-size:24px; line-height:1.45; color:var(--body) }
+  .tech.t .ic{ background:#2C8576 } .tech.t .chips span{ background:#DDF0E8; color:#226B60 }
+  .tech.o .ic{ background:#E2672A } .tech.o .chips span{ background:#FCE3D2; color:#B8501E }
+  .tagline{ position:absolute; left:0; right:0; top:900px; text-align:center; font-size:30px; font-weight:700; color:var(--ink) }
+  .tagline b{ color:var(--orange) }
+</style>
+</head>
+<body>
+
+<!-- reutilizável: ícone coração + pulso -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <symbol id="heart" viewBox="0 0 120 110">
+      <path d="M60 104 C 22 76, 6 56, 6 34 C 6 17, 19 6, 34 6 C 46 6, 55 13, 60 22 C 65 13, 74 6, 86 6 C 101 6, 114 17, 114 34 C 114 56, 98 76, 60 104 Z" fill="none" stroke="#2C8576" stroke-width="11" stroke-linejoin="round"/>
+      <path d="M14 52 H 40 L 49 34 L 62 72 L 72 46 L 79 56 H 106" fill="none" stroke="#E2672A" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+<symbol id="i-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+<symbol id="i-msg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></symbol>
+<symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+<symbol id="i-ban" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></symbol>
+<symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></symbol>
+<symbol id="i-db" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.7 9a1 1 0 0 1-.6 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.2-2.7a1.2 1.2 0 0 1 1.6 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+<symbol id="i-gear" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
+<symbol id="i-target" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+<symbol id="i-building" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4M8 6h.01M16 6h.01M12 6h.01M12 10h.01M12 14h.01M16 10h.01M16 14h.01M8 10h.01M8 14h.01"/></symbol>
+<symbol id="i-clip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2M12 11h4M12 16h4M8 11h.01M8 16h.01"/></symbol>
+<symbol id="i-cal-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/></symbol>
+<symbol id="i-cal-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M12 13v6M9 16h6"/></symbol>
+<symbol id="i-cal-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="m14 14-4 4M10 14l4 4"/></symbol>
+<symbol id="i-pill" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7ZM8.5 8.5l7 7"/></symbol>
+<symbol id="i-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><path d="M8 12h.01M12 12h.01M16 12h.01"/></symbol>
+<symbol id="i-monitor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4M7 8l-2 2 2 2M17 8l2 2-2 2"/></symbol>
+<symbol id="i-cloud" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.7-9h1.8a4.5 4.5 0 1 1 0 9Z"/></symbol>
+<symbol id="i-bot" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></symbol>
+<symbol id="i-server" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><path d="M6 6h.01M6 18h.01"/></symbol>
+  </defs>
+</svg>
+
+<!-- 1 · CAPA -->
+<section class="slide">
+  <div class="blob bp" style="left:-520px; top:-60px; width:1100px; height:1250px"></div>
+  <div class="blob bm" style="right:-560px; top:-40px; width:1150px; height:1250px"></div>
+  <div class="content">
+    <div class="logo" style="position:absolute; left:0; right:0; top:150px">
+      <svg width="300" height="275"><use href="#heart"/></svg>
+      <div class="word" style="font-size:132px; margin-top:22px">Saúde <b>Perto</b></div>
+    </div>
+    <p style="position:absolute; left:0; right:0; top:690px; text-align:center; font-size:34px; line-height:1.45; color:#6A6560">
+      Tecnologia para aproximar o cidadão do<br>atendimento nos postos de saúde</p>
+    <div class="partners"><strong>UNIFOR</strong><span class="sep"></span><span>TCC · Ciência da Computação · 2026</span></div>
+  </div>
+</section>
+
+<!-- 2 · O QUE É O POSTO DE SAÚDE -->
+<section class="slide">
+  <div class="blob bm" style="left:-560px; top:-640px; width:1200px; height:1100px"></div>
+  <div class="blob bp" style="right:-520px; bottom:-520px; width:1150px; height:1100px"></div>
+  <div class="content">
+    <h1 class="title">O que é o posto de saúde?</h1>
+    <p class="sub" style="width:1400px">O posto de saúde é a principal porta de entrada do SUS, acolhendo a população perto de casa e garantindo o cuidado contínuo na atenção básica.</p>
+    <div class="item" style="left:120px; top:410px; width:760px"><h3>Acolhimento e consultas</h3><p>Escuta, triagem e atendimento com médicos e enfermeiros.</p></div>
+    <div class="item" style="left:120px; top:570px; width:760px"><h3>Acompanhamento do paciente</h3><p>Prontuário, prescrições e cuidado de condições crônicas.</p></div>
+    <div class="item" style="left:120px; top:730px; width:760px"><h3>Acesso a medicamentos</h3><p>Dispensação gratuita dos medicamentos prescritos na própria unidade.</p></div>
+    <img src="img/familia.png" style="position:absolute; left:1160px; top:380px; width:690px; clip-path:inset(0 7% 6% 0)">
+    <div class="mark tr"><svg><use href="#heart"/></svg><div><div class="w">Saúde <b>Perto</b></div><small>TCC · UNIFOR</small></div></div>
+  </div>
+</section>
+
+<!-- 3 · DESAFIOS -->
+<section class="slide">
+  <div class="blob bp" style="left:-640px; bottom:-560px; width:1300px; height:1100px"></div>
+  <div class="content">
+    <h1 class="title c">Os desafios da atenção básica hoje</h1>
+    <p class="sub c">A jornada fragmentada atinge o cidadão, a equipe de<br>saúde e a gestão das unidades.</p>
+    <div class="item" style="left:922px; top:410px; width:800px"><h3>Para o cidadão</h3><p>Filas, espera sem previsibilidade e dúvida sobre onde encontrar o medicamento prescrito.</p></div>
+    <div class="item" style="left:922px; top:570px; width:800px"><h3>Para a equipe</h3><p>Prontuários e receitas em papel, informações dispersas e retrabalho constante.</p></div>
+    <div class="item" style="left:922px; top:730px; width:800px"><h3>Para a gestão</h3><p>Pouco controle do estoque, dificuldade de acompanhamento e baixa geração de dados.</p></div>
+    <img src="img/fila.png" style="position:absolute; left:0; top:584px; width:690px">
+    <div class="mark tr"><svg><use href="#heart"/></svg><div><div class="w">Saúde <b>Perto</b></div><small>TCC · UNIFOR</small></div></div>
+  </div>
+</section>
+
+<!-- 4 · NA PRÁTICA -->
+<section class="slide">
+  <div class="blob bm" style="left:-660px; top:40px; width:1300px; height:1200px"></div>
+  <div class="content">
+    <h1 class="title" style="top:380px">O Saúde Perto<br>na prática</h1>
+    <p class="sub" style="top:556px; width:680px">O Saúde Perto é uma solução digital criada para conectar toda a jornada do cidadão no posto de saúde: do agendamento ao medicamento, de forma ágil, organizada e acessível.</p>
+    <div class="laptop" style="left:894px; top:150px; width:1360px"><div class="scr"><img src="img/s_login.png"></div><img class="frame" src="img/notebook.png"></div>
+    <div class="mark tr"><svg><use href="#heart"/></svg><div><div class="w">Saúde <b>Perto</b></div><small>TCC · UNIFOR</small></div></div>
+  </div>
+</section>
+
+<!-- 5 · TECNOLOGIAS -->
+<section class="slide">
+  <div class="blob bp" style="left:-600px; top:-640px; width:1200px; height:1100px"></div>
+  <div class="blob bm" style="right:-560px; bottom:-620px; width:1200px; height:1100px"></div>
+  <div class="content">
+    <h1 class="title">Tecnologias do sistema</h1>
+    <p class="sub">Tecnologia escolhida para crescer com o sistema.</p>
+    <div class="tech t" style="left:120px"><div class="ic"><svg><use href="#i-server"/></svg></div><h3>Backend</h3>
+      <div class="chips"><span>Django</span><span>Django REST Framework</span><span>PostgreSQL</span></div>
+      <p>Regras de negócio, segurança, APIs e integridade dos dados.</p></div>
+    <div class="tech o" style="left:555px"><div class="ic"><svg><use href="#i-monitor"/></svg></div><h3>Frontend</h3>
+      <div class="chips"><span>React</span><span>TypeScript</span><span>Vite</span></div>
+      <p>Interface modular e responsiva.</p></div>
+    <div class="tech t" style="left:990px"><div class="ic"><svg><use href="#i-cloud"/></svg></div><h3>Infra</h3>
+      <div class="chips"><span>Docker</span><span>Docker Swarm</span><span>Traefik</span><span>Hetzner</span></div>
+      <p>Servidor-base do MVP: <span style="white-space:nowrap">US$ 39/mês</span>.</p></div>
+    <div class="tech o" style="left:1425px"><div class="ic"><svg><use href="#i-bot"/></svg></div><h3>Automação / IA</h3>
+      <div class="chips"><span>n8n</span><span>APIs HTTP</span><span>Modelo de linguagem de baixo custo</span></div>
+      <p>Ex.: GPT-5 mini como referência de custo.</p></div>
+    <p class="tagline">Cada tecnologia resolve uma <b>responsabilidade específica.</b></p>
+    <div class="mark tr"><svg><use href="#heart"/></svg><div><div class="w">Saúde <b>Perto</b></div><small>TCC · UNIFOR</small></div></div>
+  </div>
+</section>
+
+<!-- 5 · FLUXO DO AGENTE DE IA -->
+<section class="slide">
+  <div class="blob bm" style="left:-640px; top:-660px; width:1200px; height:1000px"></div>
+  <div class="blob bp" style="right:-560px; bottom:-620px; width:1150px; height:1000px"></div>
+  <div class="content">
+    <h1 class="title">Fluxo de atendimento no WhatsApp</h1>
+    <p class="sub">Agente de IA · Arquitetura conversacional do cidadão</p>
+
+    <!-- painéis -->
+    <div class="fx-panel" style="left:100px; top:270px; width:600px; height:645px; border-color:#EFA87F"></div>
+    <div class="fx-head" style="left:116px; top:286px; width:568px; background:#E2672A"><svg><use href="#i-shield"/></svg>Agente de Login</div>
+    <div class="fx-panel" style="left:1220px; top:270px; width:600px; height:645px; border-color:#86C2B4"></div>
+    <div class="fx-head" style="left:1236px; top:286px; width:568px; background:#2C8576"><svg><use href="#i-gear"/></svg>Agente de Serviços</div>
+
+    <!-- linhas e decisões -->
+    <svg class="fx-lines" viewBox="0 0 1920 1080">
+      <defs>
+        <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2A2724"/></marker>
+        <marker id="ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#E2672A"/></marker>
+        <marker id="at" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2C8576"/></marker>
+      </defs>
+      <g fill="none" stroke="#2A2724" stroke-width="2.5" marker-end="url(#ah)">
+        <!-- login -->
+        <path d="M480 392 V406"/><path d="M480 450 V460"/>
+        <path d="M480 576 V590"/><path d="M480 632 V642"/><path d="M480 684 V694"/><path d="M480 736 V748"/>
+        <path d="M395 520 H300"/><path d="M395 800 H300"/>
+        <path d="M205 765 V717 H302"/>
+        <path d="M480 848 V858"/>
+        <!-- centro -->
+        <path d="M960 346 V366"/><path d="M960 426 V446"/><path d="M960 506 V524"/>
+        <!-- serviços -->
+        <path d="M1520 342 V352"/><path d="M1520 412 V434"/><path d="M1520 806 V828"/>
+      </g>
+      <g fill="none" stroke-width="3">
+        <path d="M850 594 H712" stroke="#E2672A" marker-end="url(#ao)"/>
+        <path d="M1070 594 H1192 V762 H960 V786" stroke="#2C8576" marker-end="url(#at)"/>
+        <path d="M652 885 H738 V821 H780" stroke="#E2672A" marker-end="url(#ao)"/>
+      </g>
+      <!-- losangos -->
+      <polygon points="480,464 565,520 480,576 395,520" fill="#FFF4E8" stroke="#EFA87F" stroke-width="2.5"/>
+      <polygon points="480,752 565,800 480,848 395,800" fill="#FFF4E8" stroke="#EFA87F" stroke-width="2.5"/>
+      <polygon points="960,524 1070,594 960,664 850,594" fill="#E2672A"/>
+      <g font-family="Inter, sans-serif" font-weight="700" text-anchor="middle">
+        <text x="480" y="516" font-size="17" fill="#2A2724">Cidadão</text><text x="480" y="538" font-size="17" fill="#2A2724">encontrado?</text>
+        <text x="480" y="797" font-size="17" fill="#2A2724">Código</text><text x="480" y="819" font-size="17" fill="#2A2724">válido?</text>
+        <text x="960" y="589" font-size="22" fill="#fff">Sessão</text><text x="960" y="616" font-size="22" fill="#fff">válida?</text>
+      </g>
+    </svg>
+
+    <!-- etiquetas sim/não -->
+    <div class="fx-tag n" style="left:322px; top:482px">NÃO</div>
+    <div class="fx-tag s" style="left:498px; top:574px">SIM</div>
+    <div class="fx-tag n" style="left:322px; top:762px">NÃO</div>
+    <div class="fx-tag s" style="left:498px; top:844px">SIM</div>
+    <div class="fx-tag n" style="left:752px; top:556px">NÃO</div>
+    <div class="fx-tag s" style="left:1100px; top:556px">SIM</div>
+
+    <!-- agente de login -->
+    <div class="fx-box" style="left:308px; top:352px; width:344px; height:40px"><svg><use href="#i-file"/></svg>Solicitar CPF</div>
+    <div class="fx-box" style="left:308px; top:410px; width:344px; height:40px"><svg><use href="#i-search"/></svg>Buscar cidadão</div>
+    <div class="fx-box side" style="left:112px; top:476px; width:186px; height:88px"><svg style="color:#D9452B"><use href="#i-ban"/></svg>Encaminhar para cadastro / informar indisponibilidade</div>
+    <div class="fx-box" style="left:308px; top:594px; width:344px; height:38px"><svg><use href="#i-lock"/></svg>Iniciar autenticação</div>
+    <div class="fx-box" style="left:308px; top:646px; width:344px; height:38px"><svg><use href="#i-msg"/></svg>Solicitar código de verificação</div>
+    <div class="fx-box" style="left:308px; top:698px; width:344px; height:38px"><svg><use href="#i-check"/></svg>Validar código</div>
+    <div class="fx-box side" style="left:112px; top:765px; width:186px; height:70px"><svg style="color:#E2672A"><use href="#i-refresh"/></svg>Solicitar novo código / tentar novamente</div>
+    <div class="fx-box" style="left:308px; top:862px; width:344px; height:46px"><svg><use href="#i-clock"/></svg>Criar sessão temporária do cidadão (24h)</div>
+
+    <!-- centro -->
+    <div class="fx-box big" style="left:740px; top:280px; width:440px; height:66px"><span class="ic chat"><svg><use href="#i-chat"/></svg></span>Mensagem recebida no WhatsApp</div>
+    <div class="fx-box big" style="left:740px; top:368px; width:440px; height:58px"><svg><use href="#i-phone"/></svg>Capturar número de telefone do contato</div>
+    <div class="fx-box big" style="left:740px; top:448px; width:440px; height:58px"><svg><use href="#i-db"/></svg>Consultar sessão ativa do cidadão</div>
+    <div class="fx-box big svc" style="left:786px; top:788px; width:344px; height:66px"><svg><use href="#i-gear"/></svg>Acessar Agente de Serviços</div>
+
+    <!-- agente de serviços -->
+    <div class="fx-box big" style="left:1370px; top:354px; width:300px; height:58px"><svg><use href="#i-target"/></svg>Identificar intenção do cidadão</div>
+    <div class="fx-inner" style="left:1250px; top:436px; width:540px; height:370px">
+      <div class="fx-inner-t">Principais intenções / ações</div>
+      <div class="fx-grid">
+        <div class="fx-card m"><svg><use href="#i-building"/></svg>Consultar unidades</div>
+        <div class="fx-card p"><svg><use href="#i-clip"/></svg>Consultar serviços</div>
+        <div class="fx-card p"><svg><use href="#i-cal-grid"/></svg>Verificar vagas</div>
+        <div class="fx-card m"><svg><use href="#i-cal-plus"/></svg>Criar agendamento</div>
+        <div class="fx-card m"><svg><use href="#i-cal-x"/></svg>Listar / cancelar agendamentos</div>
+        <div class="fx-card p"><svg><use href="#i-pill"/></svg>Consultar receitas e disponibilidade de medicamentos</div>
+      </div>
+    </div>
+    <div class="fx-box big" style="left:1330px; top:830px; width:380px; height:66px"><span class="ic chat"><svg><use href="#i-chat"/></svg></span>Responder ao cidadão no WhatsApp</div>
+
+    <!-- princípios -->
+    <div class="fx-notes">
+      <div class="fx-note"><svg><use href="#i-shield"/></svg><div><b>A IA não usa token administrativo</b>O agente atua com o contexto do cidadão, sem privilégios administrativos.</div></div>
+      <div class="fx-note"><svg><use href="#i-users"/></svg><div><b>Cada sessão é individual por cidadão</b>Os dados e o histórico de conversa são isolados por cidadão (sessão temporária).</div></div>
+      <div class="fx-note"><svg><use href="#i-db"/></svg><div><b>As regras de negócio ficam no backend</b>A IA apenas identifica a intenção e aciona os serviços conforme as regras do sistema.</div></div>
+    </div>
+
+    <div class="mark tr"><svg><use href="#heart"/></svg><div><div class="w">Saúde <b>Perto</b></div><small>TCC · UNIFOR</small></div></div>
+  </div>
+</section>
+
+<!-- 5 · CONVERSAS COM A IA -->
+<section class="slide">
+  <div class="blob bp" style="right:-520px; top:-200px; width:1100px; height:1200px"></div>
+  <div class="blob bp" style="left:-640px; top:-640px; width:1100px; height:1000px; opacity:.6"></div>
+  <div class="content">
+    <div class="phone" style="left:252px; top:46px; width:410px"><div class="scr chatscr"><img src="img/c_receita.png"></div><img class="frame" src="img/celular.png"></div>
+    <div class="phone" style="left:755px; top:46px; width:410px"><div class="scr chatscr"><img src="img/c_agendar.png"></div><img class="frame" src="img/celular.png"></div>
+    <div class="phone" style="left:1258px; top:46px; width:410px"><div class="scr chatscr"><img src="img/c_consultar.png"></div><img class="frame" src="img/celular.png"></div>
+    <div class="mark bc"><svg><use href="#heart"/></svg><div><div class="w">Saúde <b>Perto</b></div><small>TCC · UNIFOR</small></div></div>
+  </div>
+</section>
+
+<!-- 6 · USUÁRIOS -->
+<section class="slide">
+  <div class="blob bp" style="left:-560px; top:-640px; width:1200px; height:1100px"></div>
+  <div class="blob bm" style="right:-560px; bottom:-560px; width:1200px; height:1100px"></div>
+  <div class="content">
+    <h1 class="title c">Quem são os usuários do sistema?</h1>
+    <div class="user" style="left:68px;   top:330px"><div class="av"><img src="img/av_gestor.png"></div><div class="t">Gestor</div><div class="d">Acompanha os indicadores de todas as unidades da rede.</div></div>
+    <div class="user" style="left:325px;  top:330px"><div class="av"><img src="img/av_coord.png"></div><div class="t">Administrador</div><div class="d">Cadastra unidades, serviços, bairros e medicamentos.</div></div>
+    <div class="user" style="left:582px;  top:330px"><div class="av"><img src="img/av_superv.png"></div><div class="t">Supervisor</div><div class="d">Coordena a unidade, a equipe, o estoque e a dispensação.</div></div>
+    <div class="user" style="left:839px;  top:330px"><div class="av"><img src="img/av_atend.png"></div><div class="t">Médico</div><div class="d">Realiza consultas, registra o prontuário e emite receitas.</div></div>
+    <div class="user" style="left:1096px; top:330px"><div class="av"><img src="img/av_156.png"></div><div class="t">Enfermeiro</div><div class="d">Faz acolhimento, procedimentos e acompanha a fila.</div></div>
+    <div class="user" style="left:1353px; top:330px"><div class="av"><img class="sq" src="img/av_farm.png"></div><div class="t">Farmacêutico</div><div class="d">Dispensa os medicamentos prescritos e acompanha o estoque.</div></div>
+    <div class="user" style="left:1610px; top:330px"><div class="av"><img src="img/av_recep.png"></div><div class="t">Recepcionista</div><div class="d">Recebe o paciente, confirma a chegada e organiza a fila.</div></div>
+    <div class="mark tr"><svg><use href="#heart"/></svg><div><div class="w">Saúde <b>Perto</b></div><small>TCC · UNIFOR</small></div></div>
+  </div>
+</section>
+
+<!-- 7 · TRÊS NOTEBOOKS: OPERAÇÃO -->
+<section class="slide">
+  <div class="blob bp" style="left:200px; bottom:-700px; width:1500px; height:1100px"></div>
+  <div class="content">
+    <div class="laptop" style="left:471px; top:96px; width:978px"><div class="scr"><img src="img/s_dashboard.png"></div><img class="frame" src="img/notebook.png"></div>
+    <div class="laptop" style="left:-115px; top:440px; width:1003px"><div class="scr"><img src="img/s_prontuario.png"></div><img class="frame" src="img/notebook.png"></div>
+    <div class="laptop" style="left:940px; top:422px; width:1087px"><div class="scr"><img src="img/s_atendimentos.png"></div><img class="frame" src="img/notebook.png"></div>
+    <div class="mark tr"><svg><use href="#heart"/></svg><div><div class="w">Saúde <b>Perto</b></div><small>TCC · UNIFOR</small></div></div>
+  </div>
+</section>
+
+<!-- 8 · MAPA -->
+<section class="slide">
+  <div class="blob bm" style="left:-600px; bottom:-500px; width:1200px; height:1000px"></div>
+  <div class="blob bp" style="right:-560px; top:20px; width:1100px; height:1200px"></div>
+  <div class="content">
+    <div class="laptop" style="left:262px; top:150px; width:1396px"><div class="scr"><img src="img/s_mapa.png"></div><img class="frame" src="img/notebook.png"></div>
+    <div class="mark tr"><svg><use href="#heart"/></svg><div><div class="w">Saúde <b>Perto</b></div><small>TCC · UNIFOR</small></div></div>
+  </div>
+</section>
+
+<!-- 9 · FLUXO -->
+<section class="slide">
+  <div class="blob bm" style="left:-640px; bottom:-620px; width:1200px; height:1100px"></div>
+  <div class="blob bp" style="right:-560px; top:-560px; width:1100px; height:1000px"></div>
+  <div class="content">
+    <h1 class="title">Fluxo do atendimento</h1>
+    <div class="axis" style="left:120px; top:494px; width:1670px"></div>
+    <div class="tick" style="left:120px;  top:496px"></div>
+    <div class="tick" style="left:452px;  top:440px"></div>
+    <div class="tick" style="left:786px;  top:496px"></div>
+    <div class="tick" style="left:1120px; top:440px"></div>
+    <div class="tick" style="left:1454px; top:496px"></div>
+    <div class="step" style="left:120px;  top:572px"><h3>Entrada do cidadão</h3><p>Agendamento pela recepção ou pela fila de encaixe.</p></div>
+    <div class="step" style="left:452px;  top:262px"><h3>Chegada e triagem</h3><p>A recepção confirma a chegada e o atendimento passa para “Aguardando”.</p></div>
+    <div class="step" style="left:786px;  top:572px"><h3>Organização da fila</h3><p>O paciente acompanha a chamada do seu nome no painel da unidade.</p></div>
+    <div class="step" style="left:1120px; top:262px"><h3>Consulta e receita</h3><p>O profissional atende, registra o prontuário e emite a receita.</p></div>
+    <div class="step" style="left:1454px; top:572px"><h3>Medicamento e histórico</h3><p>A farmácia dispensa o medicamento, dando baixa automática no estoque.</p></div>
+    <img src="img/mulher_celular.png" style="position:absolute; left:400px; top:660px; width:430px">
+    <div class="mark tr"><svg><use href="#heart"/></svg><div><div class="w">Saúde <b>Perto</b></div><small>TCC · UNIFOR</small></div></div>
+  </div>
+</section>
+
+<!-- 10 · DA RECEITA AO MEDICAMENTO -->
+<section class="slide">
+  <div class="blob bm" style="right:-500px; bottom:-700px; width:1500px; height:1100px"></div>
+  <div class="blob bp" style="left:-600px; top:-600px; width:1100px; height:1000px"></div>
+  <div class="content">
+    <h1 class="title">Da receita ao medicamento</h1>
+    <p class="sub">A receita emitida na consulta segue direto para a dispensação, que consulta o estoque da unidade.</p>
+    <div class="laptop" style="left:70px;  top:300px; width:800px"><div class="scr"><img src="img/s_receitas.png"></div><img class="frame" src="img/notebook.png"></div>
+    <div class="laptop" style="left:1050px; top:300px; width:800px"><div class="scr"><img src="img/s_saldo.png"></div><img class="frame" src="img/notebook.png"></div>
+    <div class="laptop" style="left:560px; top:560px; width:800px"><div class="scr"><img src="img/s_dispensacao.png"></div><img class="frame" src="img/notebook.png"></div>
+    <div class="mark tr"><svg><use href="#heart"/></svg><div><div class="w">Saúde <b>Perto</b></div><small>TCC · UNIFOR</small></div></div>
+  </div>
+</section>
+
+<!-- 11 · IMPACTOS -->
+<section class="slide">
+  <div class="blob bp" style="left:300px; top:-720px; width:1300px; height:1000px"></div>
+  <div class="blob bm" style="left:300px; bottom:-700px; width:1300px; height:1000px"></div>
+  <div class="content">
+    <h1 class="title">Impactos para a gestão</h1>
+    <div class="item" style="left:120px;  top:410px; width:390px"><h3>Mais controle</h3><p>Visão clara da fila, dos atendimentos e do estoque de cada unidade.</p></div>
+    <div class="item" style="left:555px;  top:410px; width:390px"><h3>Mais organização</h3><p>Prontuário, receitas e medicamentos centralizados em uma só base.</p></div>
+    <div class="item" style="left:990px;  top:410px; width:390px"><h3>Mais agilidade</h3><p>Atendimentos e dispensações mais rápidos, com menos retrabalho.</p></div>
+    <div class="item" style="left:1425px; top:410px; width:400px"><h3>Mais acompanhamento</h3><p>Dashboards e mapa para monitorar fluxo, histórico e desempenho.</p></div>
+    <img src="img/equipe_mesa.png" style="position:absolute; left:1358px; top:560px; width:510px">
+    <div class="mark tr"><svg><use href="#heart"/></svg><div><div class="w">Saúde <b>Perto</b></div><small>TCC · UNIFOR</small></div></div>
+  </div>
+</section>
+
+<!-- 12 · CUSTOS -->
+<section class="slide">
+  <div class="blob bm" style="left:-600px; top:-640px; width:1200px; height:1100px"></div>
+  <div class="blob bp" style="left:460px; bottom:-760px; width:1000px; height:1100px"></div>
+  <div class="content">
+    <h1 class="title">Quanto custa operar o Saúde Perto?</h1>
+    <div class="cost" style="left:120px;  top:290px"><h3>Servidor</h3><div class="v">US$ 39/mês</div><p>Hetzner para aplicação, API, banco e serviços do MVP.</p></div>
+    <div class="cost" style="left:555px;  top:290px"><h3>Inteligência Artificial</h3><div class="v">~R$ 100–300/mês</div><p>Estimativa para uso inicial com modelo de baixo custo, variando conforme volume de conversas e tokens.</p></div>
+    <div class="cost" style="left:990px;  top:290px"><h3>WhatsApp</h3><div class="v">~R$ 200–400/mês</div><p>Custo variável conforme volume e categoria das mensagens.</p></div>
+    <div class="cost" style="left:1425px; top:290px"><h3>Backups e monitoramento</h3><div class="v">~R$ 50–100/mês</div><p>Reserva para operação, segurança e continuidade.</p></div>
+    <div class="total"><div class="l">Custo técnico estimado do MVP</div><div class="v">~R$ 750/mês</div><div class="f">Faixa esperada: R$ 600–900/mês</div></div>
+    <div class="mark tr"><svg><use href="#heart"/></svg><div><div class="w">Saúde <b>Perto</b></div><small>TCC · UNIFOR</small></div></div>
+  </div>
+</section>
+
+<!-- 13 · PRÓXIMOS PASSOS -->
+<section class="slide">
+  <div class="blob bp" style="left:-600px; top:-600px; width:1200px; height:1000px"></div>
+  <div class="blob bp" style="right:-500px; bottom:-500px; width:1200px; height:1100px"></div>
+  <div class="content">
+    <h1 class="title">Quais são os próximos passos?</h1>
+    <div class="item" style="left:120px;  top:410px; width:420px"><h3>1. Validar em uma<br>unidade piloto</h3><p>Implantar o Saúde Perto em um posto, acompanhar o uso real e medir fluxo, adesão e operação da equipe.</p></div>
+    <div class="arrow" style="left:565px; top:492px; width:180px"></div>
+    <div class="item" style="left:770px;  top:410px; width:420px"><h3>2. Ativar a experiência<br>digital do cidadão</h3><p>Disponibilizar o atendimento por IA no WhatsApp para agendar, cancelar, consultar receitas e verificar medicamentos.</p></div>
+    <div class="arrow" style="left:1215px; top:492px; width:180px"></div>
+    <div class="item" style="left:1420px; top:410px; width:420px"><h3>3. Escalar para a<br>rede municipal</h3><p>Expandir a plataforma para múltiplas unidades, mantendo uma única base de dados, gestão centralizada e canais integrados.</p></div>
+    <div class="mark tr"><svg><use href="#heart"/></svg><div><div class="w">Saúde <b>Perto</b></div><small>TCC · UNIFOR</small></div></div>
+  </div>
+</section>
+
+<!-- 14 · ENCERRAMENTO -->
+<section class="slide">
+  <div class="blob bm" style="left:-560px; top:-640px; width:1300px; height:1200px"></div>
+  <div class="blob bp" style="right:-200px; bottom:-560px; width:1300px; height:1000px; opacity:.8"></div>
+  <div class="content">
+    <h1 class="title" style="top:380px">Cuidar também<br>é inovar</h1>
+    <p class="sub" style="top:556px; width:680px; color:#3A3734">Ao unir tecnologia e saúde pública, o Saúde Perto conecta o cidadão do agendamento ao medicamento e gera mais eficiência para os postos de saúde.</p>
+    <img src="img/mulher_segurando.png" style="position:absolute; left:861px; top:107px; width:1466px; z-index:2">
+    <div class="phone" style="left:1232px; top:312px; width:256px; z-index:3">
+      <div class="scr" style="background:#FDEEDD; display:flex; flex-direction:column; align-items:center; justify-content:center">
+        <svg width="150" height="137"><use href="#heart"/></svg>
+        <div class="word" style="font-size:44px; margin-top:18px; text-align:center">Saúde<br><b>Perto</b></div>
+      </div>
+      <img class="frame" src="img/celular2.png">
+    </div>
+    <div class="partners" style="z-index:4"><strong>UNIFOR</strong><span class="sep"></span><span>TCC · Ciência da Computação · 2026</span></div>
+  </div>
+</section>
+
+</body>
+</html>

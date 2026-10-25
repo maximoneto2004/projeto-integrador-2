@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Conversa Saúde Perto</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{ box-sizing:border-box; margin:0; padding:0 }
+  html,body{ width:390px; height:844px; overflow:hidden; background:#EFE6D8; font-family:Inter, "Segoe UI", sans-serif }
+  .status{ height:54px; padding:18px 30px 0 34px; display:flex; justify-content:space-between; font-size:15px; font-weight:600; color:#111; background:#2C8576; color:#fff }
+  .status .ic{ display:flex; gap:6px; align-items:center }
+  .status .bat{ width:24px; height:11px; border:1.5px solid #fff; border-radius:3px; position:relative }
+  .status .bat:after{ content:""; position:absolute; inset:1.5px 5px 1.5px 1.5px; background:#fff; border-radius:1px }
+  header{ height:64px; background:#2C8576; display:flex; align-items:center; gap:11px; padding:0 14px; color:#fff }
+  header .back{ font-size:26px; line-height:1; opacity:.95 }
+  header .av{ width:40px; height:40px; border-radius:50%; background:#FDEEDD; display:flex; align-items:center; justify-content:center }
+  header .nm{ font-weight:700; font-size:16.5px }
+  header .on{ font-size:12.5px; opacity:.85 }
+  .chat{ position:absolute; top:118px; bottom:62px; left:0; right:0; padding:12px 10px; display:flex; flex-direction:column; gap:7px;
+         background-color:#EFE6D8; background-image:radial-gradient(rgba(44,133,118,.07) 1.2px, transparent 1.4px); background-size:18px 18px; overflow:hidden; justify-content:flex-end }
+  .day{ align-self:center; background:#FFF8EE; color:#6b645c; font-size:11.5px; font-weight:600; padding:4px 10px; border-radius:7px; margin:2px 0 4px; box-shadow:0 1px 1px rgba(0,0,0,.06) }
+  .m{ min-width:78px; max-width:82%; padding:7px 10px 18px; border-radius:10px; font-size:14px; line-height:1.38; color:#1d1d1d; position:relative; box-shadow:0 1px 1px rgba(0,0,0,.08) }
+  .m .t{ position:absolute; right:9px; bottom:4px; font-size:10.5px; color:#8a8580 }
+  .in{ align-self:flex-start; background:#fff; border-top-left-radius:3px }
+  .out{ align-self:flex-end; background:#D3EEE3; border-top-right-radius:3px }
+  .out .t:after{ content:" ✓✓"; color:#2C8576; letter-spacing:-2px }
+  .m b{ font-weight:600 }
+  .card{ background:#F7F2EA; border-left:3px solid #2C8576; border-radius:6px; padding:7px 9px; margin-top:6px; font-size:13px; line-height:1.42 }
+  .card .h{ font-weight:700; color:#226B60; margin-bottom:3px }
+  .doc{ display:flex; gap:10px; align-items:center; background:#F7F2EA; border-radius:8px; padding:9px 10px; margin-bottom:2px }
+  .doc .pdf{ width:34px; height:40px; border-radius:4px; background:#E2672A; color:#fff; font-size:10px; font-weight:700; display:flex; align-items:flex-end; justify-content:center; padding-bottom:5px }
+  .doc .fn{ font-size:13.5px; font-weight:600 }
+  .doc .sz{ font-size:11.5px; color:#8a8580 }
+  .opts{ margin-top:6px; display:flex; flex-direction:column; gap:3px; font-size:13.5px }
+  .typing{ align-self:flex-start; background:#fff; border-radius:10px; border-top-left-radius:3px; padding:11px 14px; display:flex; gap:5px; box-shadow:0 1px 1px rgba(0,0,0,.08) }
+  .typing i{ width:7px; height:7px; border-radius:50%; background:#9AA59F; display:block }
+  .typing i:nth-child(2){ opacity:.7 } .typing i:nth-child(3){ opacity:.45 }
+  footer{ position:absolute; bottom:0; left:0; right:0; height:62px; background:#F3ECE2; display:flex; align-items:center; gap:8px; padding:0 9px 6px }
+  footer .inp{ flex:1; height:42px; border-radius:21px; background:#fff; display:flex; align-items:center; padding:0 16px; color:#9a948d; font-size:14.5px }
+  footer .mic{ width:42px; height:42px; border-radius:50%; background:#2C8576; display:flex; align-items:center; justify-content:center }
+  .conv{ display:none } .conv.on{ display:flex }
+</style>
+</head>
+<body>
+<div class="status"><span>9:41</span><span class="ic"><span>●●●</span><span>⌔</span><span class="bat"></span></span></div>
+<header>
+  <span class="back">‹</span>
+  <span class="av"><svg width="28" height="26" viewBox="0 0 120 110"><path d="M60 104 C 22 76, 6 56, 6 34 C 6 17, 19 6, 34 6 C 46 6, 55 13, 60 22 C 65 13, 74 6, 86 6 C 101 6, 114 17, 114 34 C 114 56, 98 76, 60 104 Z" fill="none" stroke="#2C8576" stroke-width="12" stroke-linejoin="round"/><path d="M14 52 H 40 L 49 34 L 62 72 L 72 46 L 79 56 H 106" fill="none" stroke="#E2672A" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+  <div><div class="nm">Saúde Perto</div><div class="on">assistente virtual · online</div></div>
+</header>
+
+<!-- 1 · segunda via da receita -->
+<div class="chat conv" id="receita">
+  <div class="day">HOJE</div>
+  <div class="m out">Oi, preciso da segunda via da minha receita<span class="t">09:12</span></div>
+  <div class="m in">Olá! Sou o assistente virtual do <b>Saúde Perto</b> 💚<br>Para sua segurança, enviei um código de verificação para o celular cadastrado com final <b>••21</b>. Pode me informar?<span class="t">09:12</span></div>
+  <div class="m out">482913<span class="t">09:13</span></div>
+  <div class="m in">Pronto, Cláudia! Encontrei 1 receita válida:
+    <div class="card"><div class="h">📄 Receita · 08/10/2026</div>Posto de Saúde Centro<br>• Losartana Potássica 50 mg — 1x ao dia<br>• Sulfato Ferroso 40 mg — 1x ao dia<br><span style="color:#8a8580">Válida até 07/11/2026</span></div><span class="t">09:13</span></div>
+  <div class="m in"><div class="doc"><div class="pdf">PDF</div><div><div class="fn">Receita_08-10-2026.pdf</div><div class="sz">1 página · 84 kB</div></div></div>Aqui está a segunda via 👆<span class="t">09:13</span></div>
+  <div class="m out">Tem losartana disponível no posto?<span class="t">09:14</span></div>
+  <div class="typing"><i></i><i></i><i></i></div>
+</div>
+
+<!-- 2 · agendamento -->
+<div class="chat conv" id="agendar">
+  <div class="day">HOJE</div>
+  <div class="m out">Quero marcar uma consulta<span class="t">10:02</span></div>
+  <div class="m in">Claro, Cláudia! Qual serviço você precisa?
+    <div class="opts"><span>1️⃣ Consulta clínica geral</span><span>2️⃣ Consulta de enfermagem</span><span>3️⃣ Pré-natal</span><span>4️⃣ Renovação de receita</span></div><span class="t">10:02</span></div>
+  <div class="m out">1 - Clínica geral<span class="t">10:03</span></div>
+  <div class="m in">O posto que atende o seu bairro é o <b>Posto de Saúde Centro</b>. Horários disponíveis na <b>sexta, 09/10</b>:
+    <div class="opts"><span>🕘 08:00 · 09:00 · 14:00</span></div><span class="t">10:03</span></div>
+  <div class="m out">9h, por favor<span class="t">10:03</span></div>
+  <div class="m in">Confirmando o agendamento:
+    <div class="card"><div class="h">🩺 Consulta clínica geral</div>Posto de Saúde Centro<br>Sexta, 09/10 às 09:00</div>Posso confirmar?<span class="t">10:04</span></div>
+  <div class="m out">Pode sim!<span class="t">10:04</span></div>
+  <div class="typing"><i></i><i></i><i></i></div>
+</div>
+
+<!-- 3 · consulta de agendamento -->
+<div class="chat conv" id="consultar">
+  <div class="day">HOJE</div>
+  <div class="m out">Tenho alguma consulta marcada?<span class="t">16:20</span></div>
+  <div class="m in">Você tem <b>1 agendamento ativo</b>:
+    <div class="card"><div class="h">🗓️ Consulta clínica geral</div>Sexta, 09/10 às 09:00<br>Posto de Saúde Centro<br>Rua Senador Pompeu, 1200<br>Status: <b style="color:#226B60">Agendado</b></div><span class="t">16:20</span></div>
+  <div class="m in">Chegue com 15 minutos de antecedência e leve um documento com foto e o cartão do SUS. 😉<span class="t">16:20</span></div>
+  <div class="m out">E se eu não puder ir?<span class="t">16:21</span></div>
+  <div class="m in">Sem problema! Posso <b>cancelar</b> ou <b>remarcar</b> para outro horário. O que você prefere?<span class="t">16:21</span></div>
+  <div class="m out">Quero remarcar para a próxima semana<span class="t">16:22</span></div>
+  <div class="typing"><i></i><i></i><i></i></div>
+</div>
+
+<footer>
+  <div class="inp">Mensagem</div>
+  <div class="mic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></div>
+</footer>
+<script>document.getElementById(location.hash.slice(1) || "receita").classList.add("on")</script>
+</body>
+</html>
