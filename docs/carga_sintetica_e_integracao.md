@@ -63,13 +63,20 @@ no relatório. Cidadãos reservados para a fila não recebem agendamentos ativos
 ## Cenário padrão aplicado
 
 - 8 unidades fictícias, incluindo uma sem coordenadas para testar o estado da lista;
-- 400 cidadãos, com CPFs de teste válidos e endereços/e-mails fictícios;
+- 32 bairros reais de Fortaleza (os mais próximos de cada unidade, tirados do GeoJSON do mapa); os dois mais
+  próximos formam o território de cada unidade;
+- 400 cidadãos, com CPFs de teste válidos e endereços/e-mails fictícios; idades de 0 a 95 anos, sexo,
+  CNS em cerca de 85% e hipertensão/diabetes em cerca de um terço;
 - 58 usuários, cobrindo os 8 grupos, com vínculo à unidade, escala e permissões;
 - 7 serviços em 4 tipos, com a oferta cadastrada em cada unidade;
-- 3.000 agendamentos distribuídos pelo período de 90 dias e pelo dia-base;
-- 865 receitas, 1.727 itens prescritos e 865 registros de atendimento;
-- 10 apresentações de medicamentos, 88 lotes e 1.247 movimentações de estoque;
-- 80 cidadãos em fila de espera;
+- 3.000 agendamentos distribuídos pelo período de 90 dias e pelo dia-base, três quartos deles na unidade de
+  origem do paciente, com hora de chegada e motivo de cancelamento (pedido do cidadão, unidade ou bloqueio);
+- duração das consultas relativa à meta de cada serviço, com desempenho diferente por unidade (de cerca de 20%
+  a 90% das consultas dentro da meta);
+- 874 receitas, 1.738 itens prescritos e 2.206 registros de atendimento (consultas médicas com receita e
+  atendimentos de enfermagem), com as cinco cores de classificação de risco, CID e sinais vitais;
+- 10 apresentações de medicamentos, 88 lotes e 1.239 movimentações de estoque;
+- 80 cidadãos em fila de espera, com prioridades normal, preferencial e 80+ e alguns casos urgentes;
 - casos de SLA sem horários, duração zero e virada de dia;
 - demandas diferentes por unidade/medicamento, lotes vencidos e saldos abaixo do mínimo.
 
@@ -77,7 +84,11 @@ Os totais de receitas dependem dos parâmetros e da semente. Os números acima
 correspondem à configuração padrão, semente 42 e data-base 29/10/2026. A simulação
 inclui horários do dia-base e não corresponde a atendimentos reais em tempo real.
 
-Os nomes têm a marca `[DEMO]`. IDs estáveis permitem repetir a carga com os mesmos
+Os nomes têm a marca `[DEMO]`, exceto os bairros, que usam os nomes reais para casar com o mapa e reaproveitam
+um bairro já cadastrado com o mesmo nome. As variações usam um segundo gerador aleatório, separado do que
+define as situações dos agendamentos. Uma carga feita antes dessas variações tem outros pacientes por
+agendamento: repetir o comando nesse banco é recusado com a mensagem de cenário diferente, sem alterar nada;
+carregue a versão nova num banco vazio. IDs estáveis permitem repetir a carga com os mesmos
 parâmetros sem duplicar os registros nem sobrescrever o histórico existente. O
 comando não apaga dados. Mudanças de tamanho ou da identidade dos agendamentos são
 rejeitadas quando conflitarem com a carga existente; use outro banco para cenários

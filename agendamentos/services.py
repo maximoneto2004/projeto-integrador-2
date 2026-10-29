@@ -3,7 +3,12 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
 from django.utils import timezone
-from app.static_data import TIPO_MARCACAO_AGENDAMENTO
+from app.static_data import (
+    MOTIVO_CANCELAMENTO_BLOQUEIO,
+    MOTIVO_CANCELAMENTO_CIDADAO,
+    MOTIVO_CANCELAMENTO_UNIDADE,
+    TIPO_MARCACAO_AGENDAMENTO,
+)
 from unidade_posto.models import ServicoUnidadePosto
 from utils.email import send_email_in_thread
 from .models import Agendamento, AgendaVaga
@@ -40,6 +45,14 @@ def formatar_endereco_unidade(unidade):
     return endereco
 
 # FALTA VALIDAR CANCELAMENTO
+def motivo_do_cancelamento(origem, liberar_vaga):
+    """Sem tela para informar o motivo, ele é deduzido de quem cancelou e de como."""
+    if origem == "CANCELADO_CIDADAO":
+        return MOTIVO_CANCELAMENTO_CIDADAO
+    # A unidade só cancela sem liberar a vaga quando bloqueia o horário.
+    return MOTIVO_CANCELAMENTO_UNIDADE if liberar_vaga else MOTIVO_CANCELAMENTO_BLOQUEIO
+
+
 def cancelar_agendamento(agendamento_id, origem="CANCELADO_CRAS", liberar_vaga=True):
     """
     Cancela um agendamento e pode notificar ou não o cidadão.
@@ -67,8 +80,9 @@ def cancelar_agendamento(agendamento_id, origem="CANCELADO_CRAS", liberar_vaga=T
 
         # atualizando status do agendamento
         agendamento.situacao = origem 
+        agendamento.motivo_cancelamento = motivo_do_cancelamento(origem, liberar_vaga)
         agendamento.updated_at = timezone.now()
-        agendamento.save(update_fields=["situacao", "updated_at"])
+        agendamento.save(update_fields=["situacao", "motivo_cancelamento", "updated_at"])
         
         # Só envia email se a origem for do CRAS
         if origem == "CANCELADO_CRAS":

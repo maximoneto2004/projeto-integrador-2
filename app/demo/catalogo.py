@@ -18,6 +18,18 @@ UNIDADES = [
     ("Sem localização", None, None),
 ]
 
+# Pesos aproximados de uma unidade básica: maioria pouco ou não urgente.
+RISCOS = [("AZUL", 25), ("VERDE", 45), ("AMARELO", 20), ("LARANJA", 8), ("VERMELHO", 2)]
+
+# CIDs comuns na atenção básica, com peso de frequência.
+CIDS = [
+    ("J06.9", 18), ("I10", 14), ("E11.9", 9), ("R51", 9), ("M54.5", 9), ("Z00.0", 12),
+    ("N39.0", 7), ("K29.7", 6), ("F41.1", 6), ("A09", 5), ("Z34.9", 5),
+]
+
+# (peso, idade mínima, idade máxima) da população atendida.
+FAIXAS_ETARIAS = [(8, 0, 11), (7, 12, 17), (20, 18, 29), (40, 30, 59), (20, 60, 79), (5, 80, 95)]
+
 MEDICAMENTOS = [
     ("Dipirona", "500", "COMPRIMIDO"),
     ("Paracetamol", "750", "COMPRIMIDO"),

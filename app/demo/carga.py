@@ -3,6 +3,7 @@
 import random
 from collections import Counter, defaultdict
 from datetime import datetime, time, timedelta
+from decimal import Decimal
 from uuid import NAMESPACE_URL, uuid5
 
 from django.contrib.auth.hashers import make_password
@@ -22,7 +23,10 @@ from servicos.catalogo_saude import CLASSES, SERVICOS, TIPOS
 from servicos.models import ClasseServico, Servico, TipoServico
 from unidade_posto.models import Guiche, ServicoUnidadePosto, UnidadePosto
 from usuarios.models import EscalaTrabalho, Usuario
-from .catalogo import DOMINIO, EXTRAS_POR_PERFIL, LEITURA_COMUM, MEDICAMENTOS, PERFIS, TAG, UNIDADES
+from .catalogo import (
+    CIDS, DOMINIO, EXTRAS_POR_PERFIL, FAIXAS_ETARIAS, LEITURA_COMUM, MEDICAMENTOS, PERFIS, RISCOS, TAG, UNIDADES,
+)
+from .territorio import bairros_do_mapa, mais_proximos
 
 
 def identificador(modelo, chave):
@@ -45,6 +49,9 @@ class CargaDemonstracao:
         self.base, self.dias, self.db = data_base, dias, database
         self.quantidades = dict(unidades=unidades, cidadaos=cidadaos, agendamentos=agendamentos, fila=fila)
         self.rng = random.Random(seed)
+        # Sorteios da variação usam outro gerador: a sequência original (e os totais da carga) não muda.
+        self.variacao = random.Random(seed * 7919 + 1)
+        self.territorio = {}
         self.antigo = self.instante(data_base - timedelta(days=dias + 30), time(7))
         self.criados, self.totais = Counter(), Counter()
         self.profissionais = {}
@@ -91,6 +98,14 @@ class CargaDemonstracao:
         self.totais[model._meta.model_name] += len(objetos)
         return novos
 
+    def bairro_real(self, nome):
+        """Bairro com nome igual ao do mapa; reaproveita o cadastro existente em vez de duplicar o nome."""
+        existente = Bairro.objects.using(self.db).filter(nome__iexact=nome).order_by("created_at", "id").first()
+        if existente:
+            self.totais["bairro"] += 1
+            return existente
+        return self.entidade(Bairro, f"real:{nome}", nome=nome)
+
     def registro(self, model, chave, *, criado=None, atualizado=None, **campos):
         return model(id=identificador(model._meta.label_lower, chave),
             created_at=criado or self.antigo, updated_at=atualizado or criado or self.antigo, **campos)
@@ -117,13 +132,20 @@ class CargaDemonstracao:
             self.servicos.append(self.entidade(Servico, nome, nome=f"{TAG} {nome}", classe=classes[classe],
                 tipo_servico=tipos[tipo], tipo_marcacao=marcacao, gera_receita=receita, envolve_dispensacao=dispensacao))
         for idx, (nome, lat, lon) in enumerate(UNIDADES[:self.quantidades["unidades"]]):
-            bairro = self.entidade(Bairro, nome, nome=f"{TAG} {nome}")
+            # Bairros reais perto da unidade, para as camadas por bairro do mapa; sem o GeoJSON, volta ao bairro fictício.
+            if bairros_do_mapa():
+                bairros = [self.bairro_real(b) for b in mais_proximos(lat, lon, 4, self.variacao)]
+            else:
+                bairros = [self.entidade(Bairro, nome, nome=f"{TAG} {nome}")]
+            bairro = bairros[0]
             unidade = self.entidade(UnidadePosto, idx, nome=f"{TAG} Unidade {nome}", bairro=bairro,
                 logradouro=f"Rua de Demonstração {idx + 1}", numero=str((idx + 1) * 100), cep="60000000",
                 telefone="8533333333", email=f"unidade{idx + 1}@{DOMINIO}",
                 latitude=str(lat) if lat is not None else None, longitude=str(lon) if lon is not None else None,
                 hora_manha_inicio=time(8), hora_manha_fim=time(12), hora_tarde_inicio=time(13), hora_tarde_fim=time(17))
-            unidade.bairros_abrangencia.add(bairro)
+            # Os dois bairros mais próximos são o território; os outros ficam fora dele.
+            unidade.bairros_abrangencia.add(*bairros[:2])
+            self.territorio[unidade.pk] = bairros
             self.unidades.append(unidade)
             for servico in self.servicos:
                 self.entidade(ServicoUnidadePosto, f"{idx}:{servico.pk}", unidade=unidade, servico=servico,
@@ -168,15 +190,51 @@ class CargaDemonstracao:
                     if ui == 0 and repeticao == 0:
                         self.logins[perfil] = email
 
+    def perfil_do_cidadao(self, idx, unidade):
+        var = self.variacao
+        territorio = self.territorio[unidade.pk]
+        # A maioria mora no território da unidade; uma parte, nos bairros vizinhos.
+        bairro = var.choice(territorio[:2] if var.random() < 0.8 or len(territorio) < 3 else territorio[2:])
+        _, menor, maior = var.choices(FAIXAS_ETARIAS, weights=[peso for peso, _, _ in FAIXAS_ETARIAS])[0]
+        idade = var.randint(menor, maior)
+        condicoes = var.choices(["", "Hipertensão", "Diabetes", "Hipertensão; Diabetes"], weights=[66, 18, 10, 6])[0]
+        return {
+            "bairro": bairro,
+            "data_nascimento": self.base - timedelta(days=idade * 365 + var.randint(0, 364)),
+            "sexo": var.choices(["FEMININO", "MASCULINO", "OUTRO"], weights=[54, 44, 2])[0],
+            "cns": f"70{idx:013d}" if var.random() < 0.85 else None,
+            "condicoes_cronicas": condicoes or None,
+        }
+
     def cidadaos(self):
         self.pacientes = []
         for idx in range(self.quantidades["cidadaos"]):
             unidade = self.unidades[idx % len(self.unidades)]
             self.pacientes.append(self.registro(Cidadao, idx, nome=f"{TAG} Pessoa {idx + 1:04d}",
                 cpf=cpf_sintetico(810000000 + idx), email=f"pessoa{idx + 1:04d}@{DOMINIO}", telefone="85988888888",
-                data_nascimento=self.base - timedelta(days=(18 + idx % 67) * 365), bairro=unidade.bairro,
-                unidade_origem=unidade, logradouro=f"Rua Fictícia {idx % 20 + 1}", numero=str(idx % 500 + 1), cep="60000000"))
+                unidade_origem=unidade, logradouro=f"Rua Fictícia {idx % 20 + 1}", numero=str(idx % 500 + 1), cep="60000000",
+                **self.perfil_do_cidadao(idx, unidade)))
         self.inserir(Cidadao, self.pacientes)
+
+    def registro_clinico(self, idx, criado, agendamento, paciente, unidade, profissional):
+        """Classificação de risco, CID e sinais vitais variados, coerentes com as condições crônicas do paciente."""
+        var = self.variacao
+        condicoes = paciente.condicoes_cronicas or ""
+        hipertenso, diabetico = "Hipertensão" in condicoes, "Diabetes" in condicoes
+        cid = var.choices([c for c, _ in CIDS], weights=[peso for _, peso in CIDS])[0]
+        if hipertenso and var.random() < 0.5:
+            cid = "I10"
+        elif diabetico and var.random() < 0.5:
+            cid = "E11.9"
+        sistolica = var.randint(135, 175) if hipertenso else var.randint(105, 138)
+        febre = var.random() < 0.06
+        return self.registro(RegistroAtendimento, idx, criado=criado, agendamento=agendamento,
+            cidadao=paciente, unidade=unidade, profissional=profissional,
+            queixa_principal=f"{TAG} Registro clínico sintético.",
+            classificacao_risco=var.choices([r for r, _ in RISCOS], weights=[peso for _, peso in RISCOS])[0], cid=cid,
+            pressao_sistolica=sistolica, pressao_diastolica=sistolica - var.randint(35, 50),
+            glicemia_capilar=var.randint(140, 260) if diabetico else var.randint(75, 130),
+            temperatura=Decimal(str(round(var.uniform(37.8, 39.2) if febre else var.uniform(36.0, 37.4), 1))))
 
     def atendimentos(self):
         rng = self.rng
@@ -187,6 +245,10 @@ class CargaDemonstracao:
         qtd_fila = self.quantidades["fila"]
         pacientes = self.pacientes[:-qtd_fila] if qtd_fila else self.pacientes
         concluidos = {"FINALIZADO", "AGUARDANDO_RETIRADA", "CHAMANDO_RETIRADA"}
+        var = self.variacao
+        por_unidade = defaultdict(list)
+        for paciente in pacientes:
+            por_unidade[paciente.unidade_origem_id].append(paciente)
         for idx in range(self.quantidades["agendamentos"]):
             ui = idx % len(self.unidades)
             unidade = self.unidades[ui]
@@ -194,10 +256,16 @@ class CargaDemonstracao:
             perfil = "farmaceutico" if servico.envolve_dispensacao else ("medico" if servico.gera_receita else "enfermeiro")
             profissional = rng.choice(self.profissionais[unidade.pk][perfil])
             paciente = rng.choice(pacientes)
+            # A maior parte das consultas é na unidade de origem do paciente; o resto conta como fora do território.
+            if por_unidade[unidade.pk] and var.random() < 0.75:
+                paciente = var.choice(por_unidade[unidade.pk])
             dia = self.base - timedelta(days=0 if idx < 80 else rng.randrange(self.dias))
             horario = time(8 + (idx // len(self.unidades)) % 9, 30 if idx % 2 else 0)
             inicio = self.instante(dia, horario) + timedelta(minutes=rng.randint(0, 25))
-            duracao = rng.randint(8, 20) + ui * 3 + (idx % 3) * 4
+            # Mesmo sorteio de antes, agora relativo à meta do serviço: cada unidade tem um desempenho diferente.
+            sorteio = rng.randint(8, 20)
+            fator_unidade = 0.75 + ui * 0.08
+            duracao = max(3, round(servico.tipo_servico.tempo_atendimento * fator_unidade * (0.6 + (sorteio - 8) / 15)))
             fim = inicio + timedelta(minutes=duracao)
             situacao = rng.choices(["FINALIZADO", "AUSENCIA_CIDADAO", "CANCELADO_CRAS"], weights=[80, 13, 7])[0]
             if idx < 40:
@@ -211,6 +279,13 @@ class CargaDemonstracao:
             if idx == 41:
                 fim = inicio
                 situacao = "FINALIZADO"
+            motivo = None
+            if situacao == "CANCELADO_CRAS":
+                # Parte dos cancelamentos foi pedida pelo cidadão; os da unidade se dividem entre bloqueio e outros motivos.
+                if var.random() < 0.4:
+                    situacao, motivo = "CANCELADO_CIDADAO", "CIDADAO"
+                else:
+                    motivo = var.choices(["UNIDADE", "BLOQUEIO"], weights=[65, 35])[0]
             par = (paciente.pk, servico.tipo_servico_id)
             if situacao in {"AGENDADO", "ATIVADO", "CHAMANDO", "ATENDIMENTO"}:
                 if par in ativos:
@@ -234,7 +309,13 @@ class CargaDemonstracao:
                 vagas[chave_vaga] = self.registro(AgendaVaga, chave_vaga, unidade=unidade, tipo_servico=servico.tipo_servico,
                     data=dia, horario=horario, vagas=30, vagas_ocupadas=0)
             vaga = vagas[chave_vaga]
-            cancelado = situacao in {"CANCELADO_CRAS", "AUSENCIA_CIDADAO"}
+            cancelado = situacao in {"CANCELADO_CRAS", "CANCELADO_CIDADAO", "AUSENCIA_CIDADAO"}
+            chegada = None
+            if finalizado or situacao in {"ATIVADO", "CHAMANDO", "ATENDIMENTO"}:
+                # Chegada entre 25 min antes e 20 min depois do horário marcado, sempre antes de a consulta começar.
+                chegada = self.instante(dia, horario) + timedelta(minutes=var.randint(-25, 20))
+                if inicio:
+                    chegada = min(chegada, inicio - timedelta(minutes=1))
             if not cancelado:
                 self.saldos_vagas[vaga.pk] += 1
             ag = self.registro(Agendamento, idx, criado=self.instante(dia - timedelta(days=3), time(9)),
@@ -244,9 +325,11 @@ class CargaDemonstracao:
                 origem=rng.choice(["RECEPCAO", "SITE", "FILA"]),
                 data_hora_inicio_atendimento=inicio.time() if inicio else None,
                 data_hora_fim_atendimento=fim.time() if fim else None,
-                inicio_atendimento_em=inicio, fim_atendimento_em=fim,
+                inicio_atendimento_em=inicio, fim_atendimento_em=fim, ativado_em=chegada, motivo_cancelamento=motivo,
                 final_atendimento="REALIZADO" if finalizado else None, observacoes_gerais=f"{TAG} Atendimento sintético.")
             agendamentos.append(ag)
+            if finalizado and perfil == "enfermeiro":
+                registros.append(self.registro_clinico(idx, fim or self.instante(dia, horario), ag, paciente, unidade, profissional))
             if not (finalizado and servico.gera_receita and rng.random() < 0.85):
                 continue
             emissao = fim or self.instante(dia, horario)
@@ -276,9 +359,7 @@ class CargaDemonstracao:
                 ativos.add(par)
                 ag.situacao = "AGUARDANDO_RETIRADA"
                 ag.retirar_medicamento = True
-            registros.append(self.registro(RegistroAtendimento, idx, criado=emissao, agendamento=ag,
-                cidadao=paciente, unidade=unidade, profissional=profissional,
-                queixa_principal=f"{TAG} Registro clínico sintético.", classificacao_risco="VERDE"))
+            registros.append(self.registro_clinico(idx, emissao, ag, paciente, unidade, profissional))
         for vaga in vagas.values():
             vaga.vagas_ocupadas = self.saldos_vagas[vaga.pk]
             vaga.vagas = max(1, vaga.vagas_ocupadas + vaga.pk.int % 4)
@@ -335,5 +416,6 @@ class CargaDemonstracao:
             unidade = self.unidades[idx % len(self.unidades)]
             entradas.append(self.registro(FilaEspera, idx, criado=self.instante(self.base, time(8, idx % 60)),
                 cidadao=paciente, unidade=unidade, servico=self.servicos[idx % len(self.servicos)],
-                prioridade="PREFERENCIAL" if idx % 4 == 0 else "NORMAL", urgencia="NORMAL", status="AGUARDANDO_FILA"))
+                prioridade=self.variacao.choices(["NORMAL", "PREFERENCIAL", "PREFERENCIAL+"], weights=[60, 30, 10])[0],
+                urgencia="ALTA" if self.variacao.random() < 0.1 else "NORMAL", status="AGUARDANDO_FILA"))
         self.inserir(FilaEspera, entradas)

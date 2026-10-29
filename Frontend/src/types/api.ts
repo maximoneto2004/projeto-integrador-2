@@ -344,6 +344,7 @@ export type DashboardSupervisorResult = {
   taxa_nao_comparecimento: number;
   tempo_medio: number;
   atendimentos_por_hora: Array<{ hour: number; total: number }>;
+  cancelamentos_por_motivo?: Array<{ motivo: "CIDADAO" | "BLOQUEIO" | "UNIDADE" | null; total: number }>;
   origem_atendimentos: Array<{ origem: string | null; total: number }>;
   atendimentos_categoria: Array<{ servico__id: string; servico__nome: string; total: number }>;
   agendamentos_por_classe: Array<{ servico__classe__id: string; servico__classe__nome: string; total: number }>;
@@ -453,4 +454,115 @@ export type MeuDiaResult = {
     glicemia_alta: number;
     febre: number;
   } | null;
+};
+
+// Painel "Farmácia da Unidade" (dashboard/farmacia.py).
+export type FarmaciaFilaItem = {
+  id: string;
+  cidadao_nome: string;
+  situacao: Situacao;
+  situacao_nome: string;
+  farmaceutico_nome: string | null;
+  fim_consulta: string | null;
+  espera_min: number | null;
+};
+
+export type FarmaciaCobertura = {
+  medicamento_id: string;
+  medicamento: string;
+  saldo_disponivel: number;
+  saldo_vencido: number;
+  estoque_minimo: number;
+  consumo_30d: number;
+  consumo_diario: number;
+  dias_cobertura: number | null;
+  em_alerta: boolean;
+};
+
+export type FarmaciaResult = {
+  data: string;
+  historico_inicio: string;
+  resumo: {
+    fila_retirada: number;
+    chamando: number;
+    maior_espera_min: number | null;
+    receitas_atendidas_hoje: number;
+    pct_itens_integrais: number | null;
+    medicamentos_abaixo_minimo: number;
+    lotes_vencendo: number;
+    lotes_vencidos: number;
+    perdas_30d: number;
+  };
+  tempo_ate_dispensacao: { atendidos: number; tempo_medio_min: number | null };
+  fila: FarmaciaFilaItem[];
+  cobertura: FarmaciaCobertura[];
+  cobertura_alerta_dias: number;
+  saidas_diarias: {
+    medicamentos: Array<{ id: string; nome: string }>;
+    dias: Array<{ data: string } & Record<string, number | string>>;
+  };
+  itens_receita: {
+    total: number;
+    dispensados: number;
+    parciais: number;
+    pendentes: number;
+    pct_integral: number | null;
+    semanas: Array<{ semana: string; dispensados: number; parciais: number; pendentes: number }>;
+  };
+  rupturas: Array<{
+    medicamento_id: string;
+    medicamento: string;
+    itens_pendentes: number;
+    quantidade_faltante: number;
+    saldo_disponivel: number;
+  }>;
+  validade: {
+    vencidos: { lotes: number; quantidade: number };
+    meses: Array<{ mes: string; lotes: number; quantidade: number }>;
+  };
+};
+
+// Painel "Fluxo do Dia" da recepção (dashboard/recepcao.py).
+export type RecepcaoResult = {
+  data: string;
+  resumo: {
+    esperados: number;
+    chegaram: number;
+    atrasados: number;
+    a_chegar: number;
+    ausentes: number;
+    cancelados: number;
+    vagas_livres: number;
+  };
+  atrasados: Array<{ id: string; horario: string; cidadao_nome: string; telefone: string | null; servico_nome: string; atraso_min: number }>;
+  vagas_livres: Array<{ tipo_servico: string; livres: number; horarios: string[] }>;
+  fila: {
+    total: number;
+    preferencial: number;
+    preferencial_80: number;
+    urgentes: number;
+    espera_mais_antiga_min: number | null;
+    por_servico: Array<{ servico_nome: string; total: number }>;
+  };
+  cadastros_incompletos: Array<{ cidadao_id: string; cidadao_nome: string; horario: string; faltando: string[] }>;
+};
+
+// Painel "Qualidade dos dados" do administrador (dashboard/qualidade.py).
+export type QualidadeVerificacao = {
+  chave: string;
+  titulo: string;
+  descricao: string;
+  total: number;
+  base: number;
+  pct: number | null;
+  itens: Array<{ id: string; nome: string; detalhe: string }>;
+  link: string;
+};
+
+export type QualidadeResult = {
+  data_inicio: string;
+  data_fim: string;
+  pendencias: number;
+  verificacoes: number;
+  grupos: Array<{ grupo: string; verificacoes: QualidadeVerificacao[] }>;
 };

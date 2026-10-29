@@ -238,6 +238,8 @@ class FilaEsperaChamarProximoAPIView(APIView):
             situacao="CHAMANDO",
             origem="FILA",
             atendente=atendente,
+            # Quem estava na fila já estava na unidade desde que entrou nela.
+            ativado_em=proximo.created_at,
         )
 
         proximo.delete()

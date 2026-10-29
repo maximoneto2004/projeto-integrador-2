@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { CalendarIcon, Check, ChevronsUpDown } from "lucide-react";
@@ -25,7 +26,9 @@ const formatApiDate = (value: Date) => format(value, "yyyy-MM-dd");
 type RangeTipo = "hoje" | "periodo";
 
 const AdminMonitorUnidade = () => {
-  const [unidadeSelecionada, setUnidadeSelecionada] = useState("");
+  // O Painel da Rede abre o monitor já na unidade escolhida.
+  const [searchParams] = useSearchParams();
+  const [unidadeSelecionada, setUnidadeSelecionada] = useState(() => searchParams.get("unidade") || "");
   const [unidadeOpen, setUnidadeOpen] = useState(false);
   const [range, setRange] = useState<RangeTipo>("hoje");
   const [dateRange, setDateRange] = useState<DateRange | undefined>({

@@ -5,6 +5,8 @@ import AdminDashboardSupervisor from "@/pages/Sistema/Dashboards/AdminDashboardS
 import AdminDashboardGestor from "@/pages/Sistema/Dashboards/AdminDashboardGestor";
 import AdminDashboardAtendente from "@/pages/Sistema/Dashboards/AdminDashboardAtendente";
 import AdminMonitorUnidade from "@/pages/Sistema/Dashboards/AdminMonitorUnidade";
+import AdminDashboardFarmacia from "@/pages/Sistema/Dashboards/AdminDashboardFarmacia";
+import AdminDashboardRecepcao from "@/pages/Sistema/Dashboards/AdminDashboardRecepcao";
 
 export const dashboardRoutes: RouteObject[] = [
   {
@@ -22,6 +24,14 @@ export const dashboardRoutes: RouteObject[] = [
   {
     path: "/sistema/monitor-unidade",
     element: guard(<AdminMonitorUnidade />, { allowedRoles: ACCESS.monitorUnidade }),
+  },
+  {
+    path: "/sistema/dashboard-farmacia",
+    element: guard(<AdminDashboardFarmacia />, { allowedRoles: ACCESS.dashboardFarmacia }),
+  },
+  {
+    path: "/sistema/dashboard-recepcao",
+    element: guard(<AdminDashboardRecepcao />, { allowedRoles: ACCESS.dashboardRecepcao }),
   },
 ];
 

@@ -1,6 +1,5 @@
 import json
 import re
-import unicodedata
 from datetime import timedelta
 from functools import lru_cache
 from pathlib import Path
@@ -23,6 +22,7 @@ from unidade_posto.models import UnidadePosto
 from usuarios.models import Usuario
 
 from .filters import DashboardGestorFilter, DashboardMonitorUnidadeFilter, DashboardSupervisorFilter
+from .mapa_bairros import normalizar_nome_geo
 from .permissoes import GestaoPermission
 from . import indicadores
 from .supervisor import SupervisorScopeMixin
@@ -363,14 +363,6 @@ class MapaUnidadeSeriesAPIView(APIView):
         return _resposta_privada(payload)
 
 
-def _normalize_geo_key(value: str) -> str:
-    value = unicodedata.normalize("NFD", value or "")
-    value = "".join(ch for ch in value if unicodedata.category(ch) != "Mn")
-    value = re.sub(r"[^a-z0-9 ]+", " ", value.lower())
-    value = re.sub(r"\s+", " ", value).strip()
-    return value
-
-
 def _get_bairros_geojson_path() -> Path | None:
     candidates = [
         Path(settings.BASE_DIR) / "static" / "geo" / "bairros_fortaleza.geojson",
@@ -392,13 +384,13 @@ def _load_bairros_geojson_enriched() -> dict:
         geojson = json.load(f)
 
     bairros = Bairro.objects.all().values("id", "nome")
-    nome_to_id = { _normalize_geo_key(b["nome"]): str(b["id"]) for b in bairros }
+    nome_to_id = { normalizar_nome_geo(b["nome"]): str(b["id"]) for b in bairros }
 
     for feature in geojson.get("features", []) or []:
         props = feature.get("properties") or {}
         nome = props.get("Nome") or props.get("nome") or props.get("NAME") or props.get("name")
         if nome:
-            bid = nome_to_id.get(_normalize_geo_key(str(nome)))
+            bid = nome_to_id.get(normalizar_nome_geo(str(nome)))
             if bid:
                 props["bairro_id"] = bid
         feature["properties"] = props

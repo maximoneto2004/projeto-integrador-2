@@ -4,7 +4,7 @@ from rest_framework import serializers
 
 from agendamentos.models import AgendaVaga
 from fila_espera.models import FilaEspera
-from . import indicadores
+from . import indicadores, rede
 from .sla import resumo_sla
 
 
@@ -107,6 +107,7 @@ class DashboardSupervisorSerializer(IndicadoresUnidadeSerializer):
 
     origem_atendimentos = serializers.SerializerMethodField()
     agendamentos_por_classe = serializers.SerializerMethodField()
+    cancelamentos_por_motivo = serializers.SerializerMethodField()
     sla = serializers.SerializerMethodField()
 
     def get_sla(self, obj):
@@ -116,6 +117,14 @@ class DashboardSupervisorSerializer(IndicadoresUnidadeSerializer):
 
     def get_tempo_medio(self, obj):
         return self.get_sla(obj)["media_min"] or 0
+
+    def get_cancelamentos_por_motivo(self, obj):
+        # Cancelamentos anteriores ao registro do motivo aparecem como "não informado".
+        linhas = (
+            self._get_queryset().filter(situacao__in=indicadores.SITUACOES_CANCELADAS)
+            .values("motivo_cancelamento").annotate(total=Count("id")).order_by("-total")
+        )
+        return [{"motivo": linha["motivo_cancelamento"], "total": linha["total"]} for linha in linhas]
 
     def get_origem_atendimentos(self, obj):
         return list(self._get_queryset().values("origem").annotate(total=Count("id")).order_by())
@@ -152,6 +161,11 @@ class DashboardGestorSerializer(serializers.Serializer):
     pessoas_prioridades = serializers.SerializerMethodField()
     tempo_medio = serializers.SerializerMethodField()
     informacoes_unidade = serializers.SerializerMethodField()
+    comparativo = serializers.SerializerMethodField()
+    serie_semanal = serializers.SerializerMethodField()
+    demanda_capacidade = serializers.SerializerMethodField()
+    faixa_etaria = serializers.SerializerMethodField()
+    rupturas = serializers.SerializerMethodField()
 
     def _get_queryset(self):
         qs = self.context["queryset"]
@@ -159,6 +173,29 @@ class DashboardGestorSerializer(serializers.Serializer):
         end = self.validated_data["data_fim"]
 
         return qs.filter(data__range=(start, end))
+
+    def _periodo(self):
+        return self.validated_data["data_inicio"], self.validated_data["data_fim"]
+
+    def _rupturas(self):
+        if not hasattr(self, "_cache_rupturas"):
+            self._cache_rupturas = rede.rupturas_por_unidade()
+        return self._cache_rupturas
+
+    def get_comparativo(self, obj):
+        return rede.comparativo(*self._periodo())
+
+    def get_serie_semanal(self, obj):
+        return rede.serie_semanal(self.validated_data["data_fim"])
+
+    def get_demanda_capacidade(self, obj):
+        return rede.demanda_capacidade(*self._periodo())
+
+    def get_faixa_etaria(self, obj):
+        return rede.faixa_etaria(*self._periodo())
+
+    def get_rupturas(self, obj):
+        return self._rupturas()["total"]
 
     def _get_stats(self):
         if not hasattr(self, "_stats"):
@@ -190,28 +227,7 @@ class DashboardGestorSerializer(serializers.Serializer):
         return indicadores.tma_min(self._get_queryset()) or 0
 
     def get_ocupacao_media(self, obj):
-        start = self.validated_data["data_inicio"]
-        end = self.validated_data["data_fim"]
-
-        dados = AgendaVaga.objects.filter(data__range=(start, end)).aggregate(
-            total_vagas=Sum("vagas"),
-            total_ocupadas=Sum("vagas_ocupadas"),
-        )
-
-        ocupacao_fila_sem_vaga = (
-            self._get_queryset()
-            .filter(origem="FILA", vaga__isnull=True)
-            .exclude(situacao__in=self.SITUACOES_EXCLUIR_OCUPACAO_FILA)
-            .count()
-        )
-
-        total_vagas = dados["total_vagas"] or 0
-        vagas_ocupadas = (dados["total_ocupadas"] or 0) + ocupacao_fila_sem_vaga
-
-        if not total_vagas:
-            return 0
-
-        return round((vagas_ocupadas / total_vagas) * 100, 2)
+        return rede.ocupacao_pct(*self._periodo(), self._get_queryset()) or 0
 
     def get_pessoas_prioridades(self, obj):
         start = self.validated_data["data_inicio"]
@@ -259,11 +275,14 @@ class DashboardGestorSerializer(serializers.Serializer):
         for unidade_id, nome in nomes.items():
             contagem = contagens[str(unidade_id)]
             vagas_unidade = vagas.get(unidade_id, {})
+            max_vagas = vagas_unidade.get("max_vagas") or 0
+            ocupadas = (vagas_unidade.get("vagas_ocupadas") or 0) + ocupacao_fila.get(unidade_id, 0)
             resumo_tempos = (tempos[unidade_id] if unidade_id in tempos else indicadores.Tempos()).resumo()
             resultado.append({
                 "unidade_id": str(unidade_id),
                 "nome_unidade": nome,
                 "total_agendamentos": contagem["total"],
+                "consultas": contagem["encerrados"],
                 "em_atendimento": contagem["em_atendimento"],
                 "ativados_ausentes": contagem["ativado_ausente"],
                 "nao_compareceu": contagem["ausentes"],
@@ -273,8 +292,10 @@ class DashboardGestorSerializer(serializers.Serializer):
                 "tempo_medio_espera_min": resumo_tempos["tempo_medio_espera_min"],
                 "pct_dentro_meta": resumo_tempos["pct_dentro_meta"],
                 "fila_aguardando": fila.get(unidade_id, 0),
-                "max_vagas": vagas_unidade.get("max_vagas") or 0,
-                "vagas_ocupadas": (vagas_unidade.get("vagas_ocupadas") or 0) + ocupacao_fila.get(unidade_id, 0),
+                "max_vagas": max_vagas,
+                "vagas_ocupadas": ocupadas,
+                "ocupacao": round(ocupadas / max_vagas * 100, 2) if max_vagas else None,
+                "rupturas": self._rupturas()["por_unidade"].get(str(unidade_id), 0),
             })
 
         return sorted(resultado, key=lambda item: (-item["total_agendamentos"], item["nome_unidade"]))

@@ -9,6 +9,7 @@ from app.static_data import (
     GRUPO_FARMACEUTICO,
     GRUPO_SUPERVISOR,
     GRUPOS_PROFISSIONAIS_SAUDE,
+    MOTIVO_CANCELAMENTO_CHOICES,
     ORIGEM_CHOICES,
     SITUACAO_AGENDAMENTO_CHOICES,
     STATUS_FINAL_ATENDIMENTO_CHOICES,
@@ -62,6 +63,11 @@ class Agendamento(BaseModel):
     # Datas completas permitem medir consultas que atravessam a meia-noite.
     inicio_atendimento_em = models.DateTimeField(verbose_name="Início do atendimento", null=True, blank=True, editable=False)
     fim_atendimento_em = models.DateTimeField(verbose_name="Fim do atendimento", null=True, blank=True, editable=False)
+    # Hora em que a recepção confirmou a chegada (ou em que o cidadão entrou na fila de espera).
+    ativado_em = models.DateTimeField(verbose_name="Chegada confirmada em", null=True, blank=True, editable=False)
+    motivo_cancelamento = models.CharField(
+        verbose_name="Motivo do cancelamento", choices=MOTIVO_CANCELAMENTO_CHOICES, max_length=20, null=True, blank=True,
+    )
     observacoes_gerais = models.TextField(verbose_name="Observações gerais", null=True, blank=True, max_length=600)
     situacao = models.CharField(
         max_length=20,

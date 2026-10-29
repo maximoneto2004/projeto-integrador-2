@@ -107,6 +107,9 @@ e fazer Supervisor, Gestor, Monitor e Mapa usarem só ele. O `sla.py` já é o m
 
 ### 3.6 Dados de demonstração que limitam os gráficos
 
+*(Resolvido na etapa 9: a carga agora varia todos estes campos e usa bairros reais; veja
+`docs/carga_sintetica_e_integracao.md`. `ChamadaPainel` continua sem carga.)*
+
 A carga sintética é boa para volume, mas alguns campos saem constantes e deixam
 gráficos "chapados":
 
@@ -132,7 +135,8 @@ fórmula, a fonte e quem usa.
 | **Taxa de cancelamento (%)** | Cancelados ÷ total, separando `CANCELADO_CIDADAO` e `CANCELADO_CRAS` (renomear para "pela unidade") | `Agendamento` | Gestor, Supervisor |
 | **TMA — tempo médio de consulta** | Média de `fim_atendimento_em − inicio_atendimento_em` dos encerrados (regras do `sla.py`) | `Agendamento` | Todos |
 | **% dentro da meta (SLA)** | Consultas com duração ≤ `TipoServico.tempo_atendimento` ÷ consultas medidas | `Agendamento` + `TipoServico` | Gestor, Supervisor, Médico |
-| **Tempo de espera** | `inicio_atendimento_em − (data + horario)`; negativos = 0 (chegou antes) | `Agendamento` | Gestor, Supervisor, Recepção |
+| **Tempo de espera** | `inicio_atendimento_em` menos o que vier depois: horário marcado ou `ativado_em` (chegada); negativos = 0. Sem chegada registrada, conta do horário marcado | `Agendamento` | Gestor, Supervisor, Recepção |
+| **Atraso de chegada** | `ativado_em − (data + horario)`, só quando positivo | `Agendamento` | Supervisor, Recepção |
 | **Ocupação da agenda (%)** | `vagas_ocupadas` ÷ `vagas` em `AgendaVaga` (+ encaixes da fila) | `AgendaVaga` | Gestor, Supervisor, Coordenador |
 | **Fila de espera** | `FilaEspera` com `status = AGUARDANDO_FILA`, por prioridade e urgência; idade média da espera (`agora − created_at`) | `FilaEspera` | Supervisor, Recepção, Gestor |
 | **Tempo até a farmácia** | Do `fim_atendimento_em` até o fim da dispensação (precisa de novo campo, ver 7) | `Agendamento` | Farmacêutico, Supervisor |
@@ -345,14 +349,14 @@ habitante nunca misturados na mesma camada.
 
 Algumas perguntas importantes não podem ser respondidas com o que o banco guarda hoje:
 
-| Dado faltando | Para que serve | Sugestão |
-| --- | --- | --- |
-| Hora de chegada (quando vira `ATIVADO`) | Espera real (chegada → início), separada do atraso do paciente | `ativado_em` no `Agendamento` |
-| Hora da chamada | Tempo chamado → início (paciente demorou a entrar?) | Já existe `ChamadaPainel.chamado_em`; usar nos indicadores |
-| Fim da dispensação | Tempo na farmácia | `dispensado_em` no `Agendamento` ou na `Receita` |
-| Reagendamento | Barra "Reagendados" do supervisor | `reagendado_de` (FK para o agendamento original) |
-| Motivo do cancelamento/ausência | Causa do absenteísmo (análise de causa do material) | Lista fixa de motivos |
-| População por bairro | Taxas por 1.000 habitantes no mapa | Tabela de população (IBGE) por `Bairro` |
+| Dado faltando | Situação |
+| --- | --- |
+| Hora de chegada | ✅ `Agendamento.ativado_em`, gravado ao confirmar a chegada e, para quem vem da fila, na entrada da fila. A espera passa a contar do horário marcado ou da chegada, o que vier depois; o atraso de chegada virou uma medida separada. |
+| Hora da chamada | Já existe `ChamadaPainel.chamado_em`; ainda não entra nos indicadores. |
+| Fim da dispensação | ✅ Sem campo novo: a primeira saída de estoque ligada à receita (etapa 5). |
+| Reagendamento | Não existe fluxo de reagendamento no sistema; o campo ficaria sem quem o preencha. Fica para quando o fluxo existir. |
+| Motivo do cancelamento | ✅ `Agendamento.motivo_cancelamento`, deduzido de quem cancelou (cidadão, unidade ou bloqueio de horário) e mostrado no painel da unidade. O motivo da ausência depende de uma tela para registrar e continua pendente. |
+| População por bairro | Pendente: depende de importar a população do IBGE por bairro. |
 
 ---
 
@@ -380,11 +384,11 @@ Algumas perguntas importantes não podem ser respondidas com o que o banco guard
 | 2 ✅ | Correções pontuais: comparecimento por unidade, espera × duração, denominador do absenteísmo, origem "156", "Reagendados", textos de CRAS, erro 200 do gestor | Tira números errados da tela. As metas usadas nas telas ficam em `Frontend/src/constants/indicadores.ts`. |
 | 3 ✅ | Permissões próprias para as APIs do Gestor e do Monitor | Escopo de dados. Feito com `dashboard/permissoes.py` (Gestor, Monitor, `/mapa/unidades/`, série e calor do mapa). As respostas em cache do mapa agora mandam `Vary: Authorization`. Falta decidir o escopo de `/mapa_unidades/` (lista e detalhe), que ainda segue só a permissão de leitura de unidades. |
 | 4 ✅ | "Meu Dia" para Médico e Enfermeiro, com API real | Remove o último dashboard mockado. API em `dashboard/profissional.py` (`/api/v1/dashboard-profissional/`), tela em `/sistema/dashboard-atendente` com link "Meu dia" no menu. |
-| 5 | "Farmácia da Unidade" para o Farmacêutico | Perfil novo sem nenhuma visão. |
-| 6 | Novo layout do Painel da Rede (Gestor) com tendência e dispersão | Visão estratégica. |
-| 7 | Camadas do mapa por bairro (coroplético com o GeoJSON existente) | Maior ganho analítico com dado que já existe. |
-| 8 | Recepção e Qualidade de dados (Admin) | Completa os perfis. |
-| 9 | Novos campos (seção 7) e variação da carga de demonstração | Habilita as análises de causa. |
+| 5 ✅ | "Farmácia da Unidade" para o Farmacêutico | Perfil novo sem nenhuma visão. API em `dashboard/farmacia.py` (`/api/v1/dashboard-farmacia/`), tela em `/sistema/dashboard-farmacia` para Farmacêutico e Supervisor. O tempo até a entrega usa a primeira saída de estoque da receita, sem campo novo. |
+| 6 ✅ | Novo layout do Painel da Rede (Gestor) com tendência e dispersão | Visão estratégica. Cálculos em `dashboard/rede.py`, na mesma rota `/api/v1/dashboard-gestor/`. A pizza de prioridades virou faixa etária do público atendido; a tabela de unidades leva ao Monitor da unidade. |
+| 7 ✅ | Camadas do mapa por bairro (coroplético com o GeoJSON existente) | Maior ganho analítico com dado que já existe. API em `dashboard/mapa_bairros.py` (`/api/v1/mapa/bairros/indicadores/`); camadas de consultas, faltas, fora do território e cobertura. O cruzamento é pelo nome do bairro; os bairros `[DEMO]` da carga sintética não aparecem no mapa até a etapa 9. |
+| 8 ✅ | Recepção e Qualidade de dados (Admin) | Completa os perfis. "Fluxo do dia" em `dashboard/recepcao.py` (`/sistema/dashboard-recepcao`) e "Qualidade dos dados" em `dashboard/qualidade.py` (`/sistema/administrador/qualidade-dados`), com 15 verificações e link para corrigir cada uma. |
+| 9 ✅ | Novos campos (seção 7) e variação da carga de demonstração | Habilita as análises de causa. Migração `agendamentos/0026`; carga em `app/demo/carga.py` e `app/demo/territorio.py`. |
 
 **Validação (passo 10 do material):** rodar `python manage.py carregar_demonstracao`,
 abrir cada painel com o login de demonstração do perfil correspondente e conferir que

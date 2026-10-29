@@ -58,6 +58,7 @@ def minutos_desde(instante, agora):
 def item_agenda(agendamento, agora, hoje):
     _, _, duracao, _, _ = medir_atendimento(agendamento)
     marcado = combinar_horario(agendamento.data, agendamento.horario)
+    referencia = max(marcado, agendamento.ativado_em) if agendamento.ativado_em else marcado
     aguardando = agendamento.situacao in indicadores.SITUACOES_AGUARDANDO
     return {
         "id": str(agendamento.id),
@@ -68,8 +69,8 @@ def item_agenda(agendamento, agora, hoje):
         "situacao_nome": agendamento.get_situacao_display(),
         "duracao_min": duracao,
         "meta_min": indicadores.meta_do_servico(agendamento.servico.tipo_servico.tempo_atendimento),
-        # Sem hora de chegada registrada, a espera conta a partir do horário marcado.
-        "espera_min": minutos_desde(marcado, agora) if aguardando and hoje else None,
+        # A espera conta do horário marcado ou da chegada, o que vier depois; sem chegada registrada, do horário marcado.
+        "espera_min": minutos_desde(referencia, agora) if aguardando and hoje else None,
     }
 
 

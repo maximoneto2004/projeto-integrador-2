@@ -18,6 +18,8 @@ import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import { useMapaMedicamentos } from "@/hooks/sistema/useMapaMedicamentos";
 import { MedicamentosHeatLayer } from "@/components/dashboard-gestor/mapa/MedicamentosHeatLayer";
 import { MedicamentosHeatControls } from "@/components/dashboard-gestor/mapa/MedicamentosHeatControls";
+import { BairrosCamada, BairrosLegenda, normalizarNomeGeo, type CamadaBairro } from "@/components/dashboard-gestor/mapa/BairrosCamada";
+import { useBairrosGeojson, useMapaBairros } from "@/hooks/sistema/useMapaBairros";
 import { nomeMedicamento } from "@/lib/mapaAssistencial";
 import { formatSla } from "@/lib/sla";
 import type { AnaliseUnidade, DemandaUnidade, MedicamentoMapa } from "@/types/mapaAssistencial";
@@ -579,6 +581,18 @@ function UnidadePopup({ unidade, metricas, demanda, medicamento }: {
   );
 }
 
+type Camada = "unidades" | "medicamentos" | CamadaBairro;
+
+const CAMADAS: Array<{ valor: Camada; rotulo: string }> = [
+  { valor: "unidades", rotulo: "Unidades" },
+  { valor: "medicamentos", rotulo: "Calor por medicamento" },
+  { valor: "demanda", rotulo: "Consultas por bairro" },
+  { valor: "faltas", rotulo: "Faltas por bairro" },
+  { valor: "fora", rotulo: "Fora do território" },
+  { valor: "cobertura", rotulo: "Cobertura" },
+];
+const CAMADAS_BAIRRO: readonly Camada[] = ["demanda", "faltas", "fora", "cobertura"];
+
 export default function AdminMapaUnidades() {
   const DEFAULT_POSITION: [number, number] = [-3.7319, -38.5267];
   const [unidades, setUnidades] = useState<UnidadeMapa[]>([]);
@@ -596,7 +610,16 @@ export default function AdminMapaUnidades() {
   const [busca, setBusca] = useState("");
   const [filtroDataInicio, setFiltroDataInicio] = useState(periodo30d.dataInicio);
   const [filtroDataFim, setFiltroDataFim] = useState(periodo30d.dataFim);
-  const [camada, setCamada] = useState<"unidades" | "medicamentos">("unidades");
+  const [camada, setCamada] = useState<Camada>("unidades");
+  const camadaBairro = CAMADAS_BAIRRO.includes(camada) ? (camada as CamadaBairro) : null;
+  const bairrosMapa = useMapaBairros({ data_inicio: filtroDataInicio, data_fim: filtroDataFim }, !!camadaBairro);
+  const bairrosGeojson = useBairrosGeojson(!!camadaBairro);
+  // Bairros com dados cujo nome não bate com nenhum polígono do mapa: o administrador precisa revisar o cadastro.
+  const bairrosNaoEncontrados = useMemo(() => {
+    if (!bairrosMapa.data || !bairrosGeojson.data) return 0;
+    const nomes = new Set(bairrosGeojson.data.features.map((f) => normalizarNomeGeo(String(f.properties?.Nome ?? f.properties?.nome ?? ""))));
+    return bairrosMapa.data.bairros.filter((b) => (b.agendamentos > 0 || b.unidades_referencia.length > 0) && !nomes.has(b.chave)).length;
+  }, [bairrosGeojson.data, bairrosMapa.data]);
   const [medicamentoId, setMedicamentoId] = useState("");
   const medicamentosMapa = useMapaMedicamentos({
     data_inicio: filtroDataInicio, data_fim: filtroDataFim, medicamento_id: medicamentoId || undefined,
@@ -876,9 +899,22 @@ export default function AdminMapaUnidades() {
             <aside className="max-h-[55vh] w-full shrink-0 overflow-y-auto border-r bg-muted/30 p-4 md:p-5 lg:max-h-[calc(100vh-110px)] lg:w-[340px]">
               <div className="space-y-4">
                 <div role="group" aria-label="Camada do mapa" className="grid grid-cols-2 gap-1 rounded-lg border bg-card p-1">
-                  <Button size="sm" className="min-w-0 whitespace-normal px-2 text-xs" variant={camada === "unidades" ? "default" : "ghost"} aria-pressed={camada === "unidades"} onClick={() => setCamada("unidades")}>Unidades</Button>
-                  <Button size="sm" className="min-w-0 whitespace-normal px-2 text-xs" variant={camada === "medicamentos" ? "default" : "ghost"} aria-pressed={camada === "medicamentos"} onClick={() => setCamada("medicamentos")}>Calor por medicamento</Button>
+                  {CAMADAS.map((opcao) => (
+                    <Button key={opcao.valor} size="sm" className="min-w-0 whitespace-normal px-2 text-xs" variant={camada === opcao.valor ? "default" : "ghost"} aria-pressed={camada === opcao.valor} onClick={() => setCamada(opcao.valor)}>
+                      {opcao.rotulo}
+                    </Button>
+                  ))}
                 </div>
+                {camadaBairro && (
+                  <div className="space-y-1 rounded-md border bg-card p-3 text-xs text-muted-foreground">
+                    <p>Os bairros são os de residência dos pacientes, no período escolhido abaixo. Passe o mouse sobre um bairro para ver os números.</p>
+                    {(bairrosMapa.isFetching || bairrosGeojson.isFetching) && <p>Carregando bairros...</p>}
+                    {(bairrosMapa.isError || bairrosGeojson.isError) && <p className="text-destructive">Não foi possível carregar os bairros.</p>}
+                    {!!bairrosMapa.data?.sem_bairro.agendamentos && (
+                      <p className="text-amber-800">{bairrosMapa.data.sem_bairro.agendamentos} agendamentos de pacientes sem bairro no cadastro ficam fora do mapa.</p>
+                    )}
+                  </div>
+                )}
                 {camada === "medicamentos" && <MedicamentosHeatControls data={medicamentosMapa.data} loading={medicamentosMapa.isFetching} error={medicamentosMapa.isError} onChange={setMedicamentoId} onRetry={() => void medicamentosMapa.refetch()} semLocalizacao={demandaSemLocalizacao} />}
                 <div className="space-y-1">
                   <Label htmlFor="busca-unidade">Buscar unidade</Label>
@@ -983,6 +1019,9 @@ export default function AdminMapaUnidades() {
                   {pontos.length > 0 && <FitBounds key={camada} pontos={pontos} />}
                   {selectedPosition && <FlyTo position={selectedPosition} />}
                   {camada === "medicamentos" && <MedicamentosHeatLayer pontos={pontosCalor} />}
+                  {camadaBairro && bairrosGeojson.data && bairrosMapa.data && (
+                    <BairrosCamada geojson={bairrosGeojson.data} bairros={bairrosMapa.data.bairros} camada={camadaBairro} />
+                  )}
                   {unidadesComCoords.map((unidade) => {
                     const metricas = metricasPorUnidade.get(unidade.id) ?? unidade.metricas ?? EMPTY_METRICAS;
                     return (
@@ -1017,6 +1056,10 @@ export default function AdminMapaUnidades() {
                   <div className="h-2 rounded-full" style={{ background: "linear-gradient(to right, #14b8a6, #facc15, #f97316, #dc2626)" }} />
                   <div className="mt-1 flex justify-between text-[11px]"><span>Menor demanda</span><span>Maior: {medicamentosMapa.data.maior_demanda} receitas</span></div>
                 </div>}
+
+                {camadaBairro && bairrosMapa.data && (
+                  <BairrosLegenda camada={camadaBairro} bairros={bairrosMapa.data.bairros} naoEncontrados={bairrosNaoEncontrados} />
+                )}
 
                 {loading && unidades.length === 0 && (
                   <div className="absolute inset-0 flex items-center justify-center bg-background/60 backdrop-blur-[1px]">

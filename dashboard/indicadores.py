@@ -94,14 +94,21 @@ class Tempos:
         self.soma_excedente = 0.0
         self.com_espera = 0
         self.soma_espera = 0.0
+        self.com_chegada = 0
+        self.soma_atraso_chegada = 0.0
 
     def adicionar(self, linha):
         self.encerrados += 1
         inicio = linha["inicio_atendimento_em"] or combinar_horario(linha["data"], linha["data_hora_inicio_atendimento"])
-        if inicio and linha["horario"]:
-            espera = (inicio - combinar_horario(linha["data"], linha["horario"])).total_seconds() / 60
-            # Quem é atendido antes do horário marcado não esperou.
-            self.soma_espera += max(espera, 0)
+        marcado = combinar_horario(linha["data"], linha["horario"]) if linha["horario"] else None
+        chegada = linha["ativado_em"]
+        if chegada and marcado:
+            self.soma_atraso_chegada += max((chegada - marcado).total_seconds() / 60, 0)
+            self.com_chegada += 1
+        if inicio and marcado:
+            # A espera começa no que vier depois: o horário marcado ou a chegada. Atraso do paciente não é espera.
+            referencia = max(marcado, chegada) if chegada else marcado
+            self.soma_espera += max((inicio - referencia).total_seconds() / 60, 0)
             self.com_espera += 1
         if linha["duracao_sla"] is None:
             return
@@ -134,6 +141,8 @@ class Tempos:
             "tempo_medio_atendimento_min": atendimento,
             "tempo_medio_esperado_min": esperado,
             "tempo_medio_espera_min": self._media(self.soma_espera, self.com_espera),
+            "atraso_medio_chegada_min": self._media(self.soma_atraso_chegada, self.com_chegada) if self.com_chegada else None,
+            "chegadas_registradas": self.com_chegada,
             "tempo_excedente_medio_min": self._media(self.soma_excedente, self.com_meta),
             "pct_acima_esperado": round(calculate_pct_acima_esperado(atendimento, esperado), 2),
             "pct_dentro_meta": round(self.dentro_meta / self.com_meta * 100, 2) if self.com_meta else None,
@@ -141,7 +150,7 @@ class Tempos:
 
 
 CAMPOS_TEMPO = (
-    "data", "horario", "inicio_atendimento_em", "data_hora_inicio_atendimento",
+    "data", "horario", "ativado_em", "inicio_atendimento_em", "data_hora_inicio_atendimento",
     "duracao_sla", "servico__tipo_servico__tempo_atendimento",
 )
 

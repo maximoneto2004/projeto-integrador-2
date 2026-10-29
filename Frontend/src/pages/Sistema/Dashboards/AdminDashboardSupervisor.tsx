@@ -20,7 +20,7 @@ import { CapacidadeCargaSection } from "@/components/dashboard-supervisor/sectio
 import { ResumoStatusSection } from "@/components/dashboard-supervisor/sections/ResumoStatusSection";
 import { OrigemAtendimentosSection } from "@/components/dashboard-supervisor/sections/OrigemAtendimentosSection";
 import { SupervisorSlaSection } from "@/components/dashboard-supervisor/sla/SupervisorSlaSection";
-import { origemLabel } from "@/constants/indicadores";
+import { motivoCancelamentoLabel, origemLabel } from "@/constants/indicadores";
 
 type RangeTipo = "hoje" | "semana" | "periodo";
 
@@ -111,8 +111,12 @@ const AdminDashboardSupervisor = () => {
     total: item.total || 0,
   }));
 
+  // Cada motivo de cancelamento vira uma barra; sem o detalhe, cai no total de cancelados.
+  const cancelamentos = dashboard?.cancelamentos_por_motivo?.length
+    ? dashboard.cancelamentos_por_motivo.map((item) => ({ label: motivoCancelamentoLabel(item.motivo), total: item.total }))
+    : [{ label: "Cancelados", total: cancelados }];
   const statusResumoData = [
-    { label: "Cancelados", total: cancelados },
+    ...cancelamentos,
     { label: "Ausente", total: naoCompareceu },
     { label: "Atendidos", total: finalizados },
   ];

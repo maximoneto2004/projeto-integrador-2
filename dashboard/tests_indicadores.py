@@ -1,11 +1,12 @@
 from datetime import datetime, time, timedelta
+from unittest.mock import patch
 
 from django.contrib.auth.models import Permission
 from django.test import TestCase
 from django.utils import timezone
 from rest_framework.test import APIClient
 
-from agendamentos.models import Agendamento
+from agendamentos.models import AgendaVaga, Agendamento
 from cidadaos.models import Cidadao
 from medicamentos.tests_estoque import criar_unidade
 from servicos.models import ClasseServico, Servico, TipoServico
@@ -221,3 +222,70 @@ class AcessoIndicadoresDaRedeTests(TestCase):
                 self.assertIn("Authorization", response["Vary"])
                 # A segunda chamada vem do cache do servidor e precisa manter o cabeçalho.
                 self.assertIn("Authorization", client.get(url, params)["Vary"])
+
+
+class ChegadaEMotivoTests(TestCase):
+    """Hora de chegada e motivo de cancelamento (etapa 9)."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.unidade = criar_unidade("Posto Chegada")
+        cls.supervisor = sla_tests.SupervisorSlaTests.usuario("Supervisor", "52998224725")
+        cls.supervisor.unidades_lotacao.add(cls.unidade)
+        cls.cidadao = Cidadao.objects.create(nome="Paciente Chegada", cpf="15350946056")
+        cls.servico = Servico.objects.create(
+            nome="Consulta clínica", classe=ClasseServico.objects.create(nome="Atenção Básica"),
+            tipo_servico=TipoServico.objects.create(nome="Consulta médica", tempo_atendimento=20),
+        )
+
+    def agendamento(self, situacao="AGENDADO", **campos):
+        return Agendamento.objects.bulk_create([Agendamento(
+            cidadao=self.cidadao, unidade=self.unidade, servico=self.servico, data=DIA, horario=time(9),
+            situacao=situacao, **campos,
+        )])[0]
+
+    def instante(self, hora, minuto=0):
+        return timezone.make_aware(datetime.combine(DIA, time(hora, minuto)))
+
+    def test_espera_comeca_na_chegada_quando_o_paciente_atrasa(self):
+        self.agendamento("FINALIZADO", ativado_em=self.instante(9, 20), inicio_atendimento_em=self.instante(9, 30),
+                         fim_atendimento_em=self.instante(9, 45))
+        # Chegou antes da hora: a espera conta do horário marcado.
+        self.agendamento("FINALIZADO", ativado_em=self.instante(8, 40), inicio_atendimento_em=self.instante(9, 10),
+                         fim_atendimento_em=self.instante(9, 25))
+        resumo = indicadores.tempos_por(Agendamento.objects.all(), "unidade_id")[self.unidade.id].resumo()
+        self.assertEqual(resumo["tempo_medio_espera_min"], 10)
+        self.assertEqual(resumo["atraso_medio_chegada_min"], 10)
+        self.assertEqual(resumo["chegadas_registradas"], 2)
+
+    def test_confirmar_chegada_registra_o_horario_uma_vez(self):
+        from agendamentos.serializers import AgendamentoSerializer
+
+        vaga = AgendaVaga.objects.create(unidade=self.unidade, tipo_servico=self.servico.tipo_servico, data=DIA,
+                                         horario=time(9), vagas=2, vagas_ocupadas=1)
+        agendamento = self.agendamento(vaga=vaga)
+        for agora in (self.instante(9, 5), self.instante(9, 50)):
+            with patch("agendamentos.serializers.timezone.now", return_value=agora):
+                serializer = AgendamentoSerializer(agendamento, data={"situacao": "ATIVADO"}, partial=True)
+                self.assertTrue(serializer.is_valid(), serializer.errors)
+                serializer.save()
+        agendamento.refresh_from_db()
+        self.assertEqual(agendamento.ativado_em, self.instante(9, 5))
+
+    def test_motivo_do_cancelamento_vem_de_quem_cancelou(self):
+        from agendamentos.services import cancelar_agendamento
+
+        casos = [("CANCELADO_CIDADAO", True, "CIDADAO"), ("CANCELADO_CRAS", True, "UNIDADE"), ("CANCELADO_CRAS", False, "BLOQUEIO")]
+        for origem, liberar_vaga, motivo in casos:
+            with self.subTest(origem=origem, liberar_vaga=liberar_vaga):
+                agendamento = self.agendamento()
+                cancelar_agendamento(agendamento.pk, origem=origem, liberar_vaga=liberar_vaga)
+                agendamento.refresh_from_db()
+                self.assertEqual(agendamento.motivo_cancelamento, motivo)
+        client = APIClient()
+        client.force_authenticate(self.supervisor)
+        dados = client.get(URL_SUPERVISOR, {"unidade_id": str(self.unidade.id), "data_inicio": str(DIA), "data_fim": str(DIA)}).json()
+        self.assertEqual(
+            sorted((c["motivo"], c["total"]) for c in dados["results"]["cancelamentos_por_motivo"]),
+            [("BLOQUEIO", 1), ("CIDADAO", 1), ("UNIDADE", 1)],
+        )

@@ -69,6 +69,12 @@ const menuGroups: MenuGroup[] = [
     label: "Dashboard",
     items: [
       {
+        title: "Fluxo do dia",
+        url: "/sistema/dashboard-recepcao",
+        icon: BarChart3,
+        roles: ["recepcionista"],
+      },
+      {
         title: "Meu dia",
         url: "/sistema/dashboard-atendente",
         icon: BarChart3,
@@ -81,7 +87,7 @@ const menuGroups: MenuGroup[] = [
         roles: ["supervisor", "coordenador"],
       },
       {
-        title: "Dashboard Gestor",
+        title: "Painel da rede",
         url: "/sistema/dashboard-gestor",
         icon: BarChart3,
         roles: ["gestor"],
@@ -160,6 +166,12 @@ const menuGroups: MenuGroup[] = [
   {
     label: "Medicamentos",
     items: [
+      {
+        title: "Painel da farmácia",
+        url: "/sistema/dashboard-farmacia",
+        icon: BarChart3,
+        roles: ["farmaceutico", "supervisor"],
+      },
       {
         title: "Dispensação",
         url: "/sistema/dispensacao",
@@ -281,6 +293,12 @@ const menuGroups: MenuGroup[] = [
   {
     label: "Gerenciamento do sistema",
     items: [
+      {
+        title: "Qualidade dos dados",
+        url: "/sistema/administrador/qualidade-dados",
+        icon: BarChart3,
+        roles: ["admin"],
+      },
       {
         title: "Unidades",
         url: "/sistema/administrador/unidades",

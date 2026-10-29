@@ -48,3 +48,28 @@ export type MapaMedicamentosParams = {
   data_fim: string;
   medicamento_id?: string;
 };
+
+// Indicadores por bairro de residência (dashboard/mapa_bairros.py).
+export type BairroIndicadores = {
+  bairro_id: string;
+  nome: string;
+  chave: string;
+  agendamentos: number;
+  consultas: number;
+  pacientes: number;
+  ausentes: number;
+  absenteismo: number | null;
+  base_absenteismo: number;
+  consultas_fora_territorio: number;
+  pct_fora_territorio: number | null;
+  pacientes_cronicos: number;
+  unidades_referencia: Array<{ id: string; nome: string }>;
+  atendidos_em: Array<{ unidade: string; consultas: number }>;
+};
+
+export type MapaBairrosResult = {
+  data_inicio: string;
+  data_fim: string;
+  bairros: BairroIndicadores[];
+  sem_bairro: { agendamentos: number; consultas: number };
+};

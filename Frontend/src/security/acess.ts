@@ -61,5 +61,8 @@ export const ACCESS = {
   dashboard: [ROLES.SUPERVISOR, ROLES.COORDENADOR],
   dashboardGestor: [ROLES.GESTOR],
   dashboardAtendente: [...PROFISSIONAIS_SAUDE],
+  dashboardFarmacia: [ROLES.FARMACEUTICO, ROLES.SUPERVISOR, ROLES.ADMIN],
+  dashboardRecepcao: [ROLES.RECEPCIONISTA, ROLES.SUPERVISOR, ROLES.ADMIN],
+  qualidadeDados: [ROLES.ADMIN],
   monitorUnidade: [ROLES.GESTOR, ROLES.ADMIN],
 };

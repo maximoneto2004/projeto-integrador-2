@@ -13,6 +13,7 @@ import AdminCadastroProfissional from "@/pages/Sistema/Coordenador/AdminCadastro
 import AdminBuscarProfissionais from "@/pages/Sistema/Coordenador/AdminBuscarProfissionais";
 import AdminGuichesCoordenador from "@/pages/Sistema/Coordenador/AdminGuichesCoordenador";
 import AdminPerguntaFrequentesPage from "@/pages/Sistema/Administrador/AdminPerguntasFrequentesPage";
+import AdminQualidadeDadosPage from "@/pages/Sistema/Administrador/AdminQualidadeDadosPage";
 import AdminUnidadesPage from "@/pages/Sistema/Administrador/AdminUnidadesPage";
 import AdminServicosTabelasPage from "@/pages/Sistema/Administrador/AdminServicosTabelasPage";
 import AdminBairrosPage from "@/pages/Sistema/Administrador/AdminBairrosPage";
@@ -97,5 +98,9 @@ export const adminRoutes: RouteObject[] = [
   { 
     path: "/sistema/administrador/duvidas", 
     element: guard(<AdminPerguntaFrequentesPage />, { allowedRoles: ACCESS.adminPerguntas }) 
+  },
+  {
+    path: "/sistema/administrador/qualidade-dados",
+    element: guard(<AdminQualidadeDadosPage />, { allowedRoles: ACCESS.qualidadeDados }),
   },
 ];
