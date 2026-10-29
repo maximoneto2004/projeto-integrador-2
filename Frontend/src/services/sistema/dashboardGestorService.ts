@@ -6,12 +6,17 @@ export type DashboardGestorParams = {
 };
 
 export type DashboardGestorUnidade = {
+  unidade_id: string;
   nome_unidade: string;
   total_agendamentos: number;
   em_atendimento: number;
   ativados_ausentes: number;
+  nao_compareceu: number;
+  taxa_nao_comparecimento: number;
   total_profissionais: number;
   duracao_media_atendimento_min: number;
+  tempo_medio_espera_min: number;
+  pct_dentro_meta: number | null;
   fila_aguardando: number;
   max_vagas: number;
   vagas_ocupadas: number;

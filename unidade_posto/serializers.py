@@ -22,7 +22,7 @@ EMPTY_METRICAS = {
     "atendimentos_comum_30d": 0,
     "atendimentos_especializado_30d": 0,
     "servicos_metricas": [],
-    "origem_atendimentos": {"156": 0, "RECEPCAO": 0, "SITE": 0, "FILA": 0},
+    "origem_atendimentos": {"RECEPCAO": 0, "SITE": 0, "FILA": 0},
 }
 
 class UnidadePostoSerializer(serializers.ModelSerializer):

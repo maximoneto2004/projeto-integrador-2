@@ -241,7 +241,7 @@ class CargaDemonstracao:
                 atualizado=fim or self.instante(dia, horario), cidadao=paciente, unidade=unidade, servico=servico,
                 atendente=profissional if finalizado or situacao in {"CHAMANDO", "ATENDIMENTO"} else None,
                 vaga=None if cancelado else vaga, data=dia, horario=horario, situacao=situacao,
-                origem=rng.choice(["RECEPCAO", "SITE", "FILA", "156"]),
+                origem=rng.choice(["RECEPCAO", "SITE", "FILA"]),
                 data_hora_inicio_atendimento=inicio.time() if inicio else None,
                 data_hora_fim_atendimento=fim.time() if fim else None,
                 inicio_atendimento_em=inicio, fim_atendimento_em=fim,

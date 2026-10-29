@@ -5,18 +5,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { META_DENTRO_PRAZO_MIN_PCT } from "@/constants/indicadores";
 
 type UnidadeFilaDuracao = {
+  id: string;
   nome: string;
   fila: number;
-  esperaMedia: number;
+  duracaoMedia: number;
+  pctDentroMeta: number | null;
 };
 
 type FilaDuracaoSectionProps = {
   unidades: UnidadeFilaDuracao[];
 };
 
-type Ordenacao = "fila_desc" | "espera_desc" | "nome_asc";
+type Ordenacao = "fila_desc" | "duracao_desc" | "nome_asc";
 
 function ordenarUnidades(unidades: UnidadeFilaDuracao[], ordenacao: Ordenacao) {
   const base = [...unidades];
@@ -24,13 +27,13 @@ function ordenarUnidades(unidades: UnidadeFilaDuracao[], ordenacao: Ordenacao) {
   if (ordenacao === "fila_desc") {
     return base.sort((a, b) => {
       if (b.fila !== a.fila) return b.fila - a.fila;
-      return b.esperaMedia - a.esperaMedia;
+      return b.duracaoMedia - a.duracaoMedia;
     });
   }
 
-  if (ordenacao === "espera_desc") {
+  if (ordenacao === "duracao_desc") {
     return base.sort((a, b) => {
-      if (b.esperaMedia !== a.esperaMedia) return b.esperaMedia - a.esperaMedia;
+      if (b.duracaoMedia !== a.duracaoMedia) return b.duracaoMedia - a.duracaoMedia;
       return b.fila - a.fila;
     });
   }
@@ -39,14 +42,19 @@ function ordenarUnidades(unidades: UnidadeFilaDuracao[], ordenacao: Ordenacao) {
 }
 
 function UnidadeFilaDuracaoItem({ unidade }: { unidade: UnidadeFilaDuracao }) {
+  const foraDaMeta = unidade.pctDentroMeta !== null && unidade.pctDentroMeta < META_DENTRO_PRAZO_MIN_PCT;
+
   return (
     <div className="flex items-center gap-3 rounded-lg border bg-card p-3">
       <div className="flex-1 min-w-0">
         <div className="font-medium truncate">{unidade.nome}</div>
-        <div className="text-sm text-muted-foreground">Fila: {unidade.fila} pessoas</div>
+        <div className="text-sm text-muted-foreground">
+          Fila: {unidade.fila} pessoas ·{" "}
+          {unidade.pctDentroMeta === null ? "sem medição da meta" : `${Math.round(unidade.pctDentroMeta)}% das consultas na meta`}
+        </div>
       </div>
 
-      <Badge variant={unidade.esperaMedia > 25 ? "destructive" : "secondary"}>{Math.round(unidade.esperaMedia)} min</Badge>
+      <Badge variant={foraDaMeta ? "destructive" : "secondary"}>{Math.round(unidade.duracaoMedia)} min</Badge>
     </div>
   );
 }
@@ -70,7 +78,7 @@ export function FilaDuracaoSection({ unidades }: FilaDuracaoSectionProps) {
       <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0">
         <div>
           <CardTitle>Fila e duração</CardTitle>
-          <CardDescription>Duração média por unidade (top 5 por fila)</CardDescription>
+          <CardDescription>Duração média da consulta; em vermelho, abaixo de {META_DENTRO_PRAZO_MIN_PCT}% na meta (top 5 por fila)</CardDescription>
         </div>
 
         <Dialog>
@@ -95,7 +103,7 @@ export function FilaDuracaoSection({ unidades }: FilaDuracaoSectionProps) {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="fila_desc">Fila (maior para menor)</SelectItem>
-                  <SelectItem value="espera_desc">Duração (maior para menor)</SelectItem>
+                  <SelectItem value="duracao_desc">Duração (maior para menor)</SelectItem>
                   <SelectItem value="nome_asc">Nome (A-Z)</SelectItem>
                 </SelectContent>
               </Select>
@@ -103,7 +111,7 @@ export function FilaDuracaoSection({ unidades }: FilaDuracaoSectionProps) {
 
             <div className="rounded-md border p-3 max-h-[58vh] overflow-auto space-y-3">
               {listaExpandida.length ? (
-                listaExpandida.map((unidade) => <UnidadeFilaDuracaoItem key={unidade.nome} unidade={unidade} />)
+                listaExpandida.map((unidade) => <UnidadeFilaDuracaoItem key={unidade.id} unidade={unidade} />)
               ) : (
                 <div className="py-8 text-center text-sm text-muted-foreground">Nenhuma unidade encontrada.</div>
               )}
@@ -115,7 +123,7 @@ export function FilaDuracaoSection({ unidades }: FilaDuracaoSectionProps) {
       <CardContent>
         <div className="space-y-3">
           {resumo.map((unidade) => (
-            <UnidadeFilaDuracaoItem key={unidade.nome} unidade={unidade} />
+            <UnidadeFilaDuracaoItem key={unidade.id} unidade={unidade} />
           ))}
         </div>
       </CardContent>

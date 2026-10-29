@@ -16,8 +16,8 @@ export function AtendimentosPorHoraSection({ data, tooltip }: AtendimentosPorHor
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Atendimentos por hora</CardTitle>
-        <CardDescription>Volume por faixa horária</CardDescription>
+        <CardTitle>Agendamentos por hora</CardTitle>
+        <CardDescription>Pelo horário marcado</CardDescription>
       </CardHeader>
       <CardContent className="h-72">
         <ResponsiveContainer width="100%" height="100%">
@@ -27,7 +27,7 @@ export function AtendimentosPorHoraSection({ data, tooltip }: AtendimentosPorHor
             <YAxis allowDecimals={false} />
             <RechartsTooltip content={tooltip} />
             <Legend />
-            <Line type="monotone" dataKey="total" name="Atendimentos" stroke="hsl(var(--primary))" strokeWidth={2} />
+            <Line type="monotone" dataKey="total" name="Agendamentos" stroke="hsl(var(--primary))" strokeWidth={2} />
           </LineChart>
         </ResponsiveContainer>
       </CardContent>

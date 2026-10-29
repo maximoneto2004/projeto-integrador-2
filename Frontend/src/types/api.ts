@@ -310,6 +310,23 @@ export type FilaEsperaResponse = {
   urgencia: UrgenciaAtendimento;
 };
 
+// Consultas encerradas por serviço (dashboard/indicadores.py: metricas_por_servico).
+export type ServicoMetricaApi = {
+  servico_id: string;
+  servico_nome: string;
+  tipo_servico_nome: string;
+  esperado_min: number | null;
+  total: number;
+  medidos: number;
+  sem_medicao: number;
+  tempo_medio_espera_min: number;
+  tempo_medio_atendimento_min: number;
+  tempo_medio_esperado_min: number;
+  tempo_excedente_medio_min: number;
+  pct_acima_esperado: number;
+  pct_dentro_meta: number | null;
+};
+
 export type DashboardSupervisorResult = {
   sla?: import("./sla").SlaResumo;
   data_inicio: string;
@@ -323,23 +340,14 @@ export type DashboardSupervisorResult = {
   cancelados: number;
   aguardando_fila: number;
   finalizados: number;
+  em_retirada: number;
   taxa_nao_comparecimento: number;
   tempo_medio: number;
   atendimentos_por_hora: Array<{ hour: number; total: number }>;
   origem_atendimentos: Array<{ origem: string | null; total: number }>;
   atendimentos_categoria: Array<{ servico__id: string; servico__nome: string; total: number }>;
   agendamentos_por_classe: Array<{ servico__classe__id: string; servico__classe__nome: string; total: number }>;
-  servicos_metricas: Array<{
-    servico_id: string;
-    servico_nome: string;
-    tipo_servico_nome: string;
-    esperado_min: number;
-    total: number;
-    tempo_medio_espera_min: number;
-    tempo_medio_atendimento_min: number;
-    tempo_excedente_medio_min: number;
-    pct_acima_esperado: number;
-  }>;
+  servicos_metricas: ServicoMetricaApi[];
 };
 
 export type DashboardGestorResult = {
@@ -357,17 +365,7 @@ export type DashboardGestorResult = {
   atendimentos_por_hora: Array<{ hour: number; total: number }>;
   origem_atendimentos: Array<{ origem: string | null; total: number }>;
   atendimentos_categoria: Array<{ servico__id: string; servico__nome: string; total: number }>;
-  servicos_metricas: Array<{
-    servico_id: string;
-    servico_nome: string;
-    tipo_servico_nome: string;
-    esperado_min: number;
-    total: number;
-    tempo_medio_espera_min: number;
-    tempo_medio_atendimento_min: number;
-    tempo_excedente_medio_min: number;
-    pct_acima_esperado: number;
-  }>;
+  servicos_metricas: ServicoMetricaApi[];
 };
 
 export type DashboardMonitorUnidadeResult = {
@@ -378,6 +376,7 @@ export type DashboardMonitorUnidadeResult = {
   em_atendimento: number;
   aguardando_atendimento_ativado: number;
   finalizados: number;
+  em_retirada: number;
   nao_compareceu: number;
   cancelados: number;
   aguardando_fila: number;
@@ -387,15 +386,71 @@ export type DashboardMonitorUnidadeResult = {
   atendimentos_por_hora: Array<{ hour: number; total: number }>;
   origem_atendimentos: Array<{ origem: string | null; total: number }>;
   atendimentos_categoria: Array<{ servico__id: string; servico__nome: string; total: number }>;
-  servicos_metricas: Array<{
-    servico_id: string;
-    servico_nome: string;
-    tipo_servico_nome: string;
-    esperado_min: number;
-    total: number;
-    tempo_medio_espera_min: number;
-    tempo_medio_atendimento_min: number;
-    tempo_excedente_medio_min: number;
-    pct_acima_esperado: number;
+  servicos_metricas: ServicoMetricaApi[];
+};
+
+// Painel "Meu Dia" do médico e do enfermeiro (dashboard/profissional.py).
+export type MeuDiaTempos = {
+  encerrados: number;
+  medidos: number;
+  sem_medicao: number;
+  tempo_medio_atendimento_min: number;
+  tempo_medio_esperado_min: number;
+  tempo_medio_espera_min: number;
+  tempo_excedente_medio_min: number;
+  pct_acima_esperado: number;
+  pct_dentro_meta: number | null;
+};
+
+export type MeuDiaAgendaItem = {
+  id: string;
+  horario: string;
+  cidadao_nome: string;
+  servico_nome: string;
+  situacao: Situacao;
+  situacao_nome: string;
+  duracao_min: number | null;
+  meta_min: number | null;
+  espera_min: number | null;
+};
+
+export type ClassificacaoRisco = "VERMELHO" | "LARANJA" | "AMARELO" | "VERDE" | "AZUL";
+
+export type MeuDiaResult = {
+  data: string;
+  historico_inicio: string;
+  perfil: "medico" | "enfermeiro";
+  resumo: {
+    agendados: number;
+    a_chegar: number;
+    aguardando: number;
+    em_atendimento: number;
+    atendidos: number;
+    ausentes: number;
+    cancelados: number;
+    maior_espera_min: number | null;
+  };
+  meus_tempos: MeuDiaTempos;
+  tempos_unidade: MeuDiaTempos;
+  agenda: MeuDiaAgendaItem[];
+  serie: Array<{
+    data: string;
+    consultas: number;
+    tempo_medio_atendimento_min: number | null;
+    tempo_medio_esperado_min: number | null;
+    pct_dentro_meta: number | null;
   }>;
+  classificacao_risco: Array<{ classificacao: ClassificacaoRisco; total: number }>;
+  prescricao: {
+    receitas_total: number;
+    receitas_retirada_imediata: number;
+    medicamentos: Array<{ nome: string; receitas: number }>;
+  } | null;
+  cids: Array<{ cid: string; total: number }> | null;
+  triagem: {
+    registros_com_sinais: number;
+    pressao_elevada: number;
+    glicemia_alta: number;
+    febre: number;
+  } | null;
 };

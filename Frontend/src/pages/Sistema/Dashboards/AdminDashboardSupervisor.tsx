@@ -3,7 +3,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { RoleBasedSidebar } from "@/components/RoleBasedSidebar";
 import { Button } from "@/components/ui/button";
 import { endOfWeek, format, startOfWeek } from "date-fns";
-import { Activity, AlertTriangle } from "lucide-react";
+import { Activity, AlertTriangle, Users } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
@@ -20,6 +20,7 @@ import { CapacidadeCargaSection } from "@/components/dashboard-supervisor/sectio
 import { ResumoStatusSection } from "@/components/dashboard-supervisor/sections/ResumoStatusSection";
 import { OrigemAtendimentosSection } from "@/components/dashboard-supervisor/sections/OrigemAtendimentosSection";
 import { SupervisorSlaSection } from "@/components/dashboard-supervisor/sla/SupervisorSlaSection";
+import { origemLabel } from "@/constants/indicadores";
 
 type RangeTipo = "hoje" | "semana" | "periodo";
 
@@ -29,7 +30,7 @@ const statusColors: Record<string, string> = {
   Ativados: "#f59e0b",
   Ausentes: "#dc2626",
   Cancelados: "#ef4444",
-  Fila: "#f97316",
+  "Na farmácia": "#14b8a6",
   Finalizados: "#10b981",
 };
 
@@ -73,17 +74,19 @@ const AdminDashboardSupervisor = () => {
   const aguardandoFila = dashboard?.aguardando_fila || 0;
   const agendados = dashboard?.agendados || 0;
   const finalizados = dashboard?.finalizados || 0;
+  const emRetirada = dashboard?.em_retirada || 0;
 
   const rangeLabel = range === "hoje" ? "hoje" : range === "semana" ? "semana" : "período";
 
+  // Só situações de agendamento, para que a soma feche com o total; a fila de espera tem card próprio.
   const statusSelecionado = {
     Marcados: agendados,
-    Atendimentos: emAtendimento,
     Ativados: aguardandoAtivado,
+    Atendimentos: emAtendimento,
+    "Na farmácia": emRetirada,
+    Finalizados: finalizados,
     Ausentes: naoCompareceu,
     Cancelados: cancelados,
-    Fila: aguardandoFila,
-    Finalizados: finalizados,
   };
 
   const noShowRate = Number(dashboard?.taxa_nao_comparecimento || 0);
@@ -97,7 +100,7 @@ const AdminDashboardSupervisor = () => {
     { hora: "--", total: 0 }
   );
 
-  const produtividadePorColaborador = (dashboard?.sla?.por_servico || []).map((item) => ({
+  const consultasPorServico = (dashboard?.sla?.por_servico || []).map((item) => ({
     atendente: item.nome,
     total: item.total || 0,
     tempoMedioColaborador: item.media_min,
@@ -109,14 +112,13 @@ const AdminDashboardSupervisor = () => {
   }));
 
   const statusResumoData = [
-    { label: "Reagendados", total: 0 },
     { label: "Cancelados", total: cancelados },
     { label: "Ausente", total: naoCompareceu },
     { label: "Atendidos", total: finalizados },
   ];
 
   const origemData = (dashboard?.origem_atendimentos || []).map((item) => ({
-    origem: item.origem || "Não informado",
+    origem: origemLabel(item.origem),
     total: item.total || 0,
   }));
 
@@ -208,9 +210,9 @@ const AdminDashboardSupervisor = () => {
               unidadeNome={user?.unidade_ativa?.nome || "Unidade ativa"}
             />}
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
               <DashboardCard
-                title={`Atendimentos (${rangeLabel})`}
+                title={`Agendamentos (${rangeLabel})`}
                 value={`${totalAgendamentos}`}
                 icon={Activity}
                 accent="bg-primary/10 text-primary"
@@ -221,6 +223,13 @@ const AdminDashboardSupervisor = () => {
                 value={`${aguardandoAtivado}`}
                 icon={Activity}
                 accent="bg-indigo-100 text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-100"
+              />
+
+              <DashboardCard
+                title="Fila de espera"
+                value={`${aguardandoFila}`}
+                icon={Users}
+                accent="bg-orange-100 text-orange-600 dark:bg-orange-950/40 dark:text-orange-100"
               />
 
               <DashboardCard
@@ -240,7 +249,7 @@ const AdminDashboardSupervisor = () => {
                   fill: statusColors[status] || "#94a3b8",
                 }))}
               />
-              <AtendimentosPorServicoSection data={produtividadePorColaborador} />
+              <AtendimentosPorServicoSection data={consultasPorServico} />
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">

@@ -14,20 +14,8 @@ from app.permissions import DjangoModelPermissionsWithView
 from medicamentos.models import Medicamento
 from prontuario.models import ReceitaMedicamento
 from unidade_posto.models import ServicoUnidadePosto, UnidadePosto
+from .permissoes import GestaoPermission
 from .sla import SITUACOES_ENCERRADAS, com_duracao, minutos
-
-
-def pode_ver_analise_gestor(user):
-    return bool(user and user.is_authenticated and (
-        user.is_superuser or user.groups.filter(
-            Q(name__iexact="gestor") | Q(name__iexact="administrador") | Q(name__iexact="admin")
-        ).exists()
-    ))
-
-
-class GestorMapaPermission(permissions.BasePermission):
-    def has_permission(self, request, view):
-        return pode_ver_analise_gestor(request.user)
 
 
 class PeriodoMapaSerializer(serializers.Serializer):
@@ -138,7 +126,7 @@ class MedicamentosMapaParams(PeriodoMapaSerializer):
 
 
 class MedicamentosMapaAPIView(APIView):
-    permission_classes = [permissions.IsAuthenticated, GestorMapaPermission, DjangoModelPermissionsWithView]
+    permission_classes = [permissions.IsAuthenticated, GestaoPermission, DjangoModelPermissionsWithView]
     queryset = UnidadePosto.objects.all()
 
     def get(self, request):

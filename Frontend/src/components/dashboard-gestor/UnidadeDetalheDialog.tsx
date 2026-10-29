@@ -39,6 +39,7 @@ import type {
 } from "../../pages/Sistema/Dashboards/AdminMapaUnidades";
 import { MedicamentosUnidadePanel, ServicosUnidadePanel } from "./mapa/UnidadeAssistencialPanel";
 import { formatSla } from "@/lib/sla";
+import { META_DENTRO_PRAZO_MIN_PCT } from "@/constants/indicadores";
 
 type UnidadeDetalheDialogProps = {
   open: boolean;
@@ -79,12 +80,6 @@ const getSlaLabel = (tempoMedioAtendimentoMin: number, tempoMetaPadraoMin: numbe
   if (tempoMedioAtendimentoMin <= tempoMetaPadraoMin + 10) return "Levemente acima";
   if (tempoMedioAtendimentoMin <= tempoMetaPadraoMin + 20) return "Acima";
   return "Muito acima";
-};
-
-export const getEficiencia = (_pctAcimaEsperado: number, tempoMedioAtendimentoMin: number, tempoMetaPadraoMin: number) => {
-  if (!Number.isFinite(tempoMedioAtendimentoMin) || tempoMedioAtendimentoMin <= 0) return null;
-  if (!Number.isFinite(tempoMetaPadraoMin) || tempoMetaPadraoMin <= 0) return null;
-  return Math.max(0, Math.min(100, (tempoMetaPadraoMin / tempoMedioAtendimentoMin) * 100));
 };
 
 const formatEndereco = (unidade: UnidadeMapa) => {
@@ -152,14 +147,6 @@ const getSlaStatus = (tempo: number | null, meta: number) => {
 const formatMinutesCard = (value: number | null | undefined) =>
   Number.isFinite(value) && (value ?? 0) > 0 ? `${Number(value).toFixed(1)} min` : "--";
 
-const getAderenciaMetaSubtitle = (tempoMedioAtendimentoMin: number, tempoMetaPadraoMin: number) => {
-  if (!Number.isFinite(tempoMedioAtendimentoMin) || tempoMedioAtendimentoMin <= 0) return "Sem base para comparar";
-  if (!Number.isFinite(tempoMetaPadraoMin) || tempoMetaPadraoMin <= 0) return "Meta indisponivel";
-  if (tempoMedioAtendimentoMin <= tempoMetaPadraoMin) return "Dentro da meta";
-
-  return `${(tempoMedioAtendimentoMin - tempoMetaPadraoMin).toFixed(1)} min acima do tempo médio esperado.`;
-};
-
 type TempoMedioView = "geral" | "comum" | "especial";
 
 export function UnidadeDetalheDialog({
@@ -181,10 +168,9 @@ export function UnidadeDetalheDialog({
   tempoMetaPadraoMin,
 }: UnidadeDetalheDialogProps) {
   const statusSla = getSlaStatus(metricas?.tempoMedioAtendimentoMin ?? null, tempoMetaPadraoMin);
-  const eficiencia = getEficiencia(metricas?.pctAcimaEsperado ?? 0, metricas?.tempoMedioAtendimentoMin ?? 0, tempoMetaPadraoMin);
+  const pctDentroMeta = metricas?.pctDentroMeta ?? null;
   const metaAtendimentoLabel =
     Number.isFinite(tempoMetaPadraoMin) && tempoMetaPadraoMin > 0 ? `Meta media: ${tempoMetaPadraoMin.toFixed(1)} min` : "Meta indisponivel";
-  const aderenciaMetaSubtitle = getAderenciaMetaSubtitle(metricas?.tempoMedioAtendimentoMin ?? 0, tempoMetaPadraoMin);
   const tempoComumLabel = formatMinutesCard(metricas?.tempoMedioAtendimentoComumMin);
   const tempoEspecialLabel = formatMinutesCard(metricas?.tempoMedioAtendimentoEspecializadoMin);
   const esperadoComumLabel = formatMinutesCard(metricas?.tempoMedioEsperadoComumMin);
@@ -334,10 +320,10 @@ export function UnidadeDetalheDialog({
               <TabsContent value="metricas" className="mt-0 space-y-6 outline-none">
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
                   <StatCard
-                    label="Atendimentos"
+                    label="Agendamentos"
                     value={metricas.atendimentosMensaisTotal}
                     icon={Activity}
-                    subValue="Total bruto de atendimentos no período selecionado."
+                    subValue="Todas as situações no período selecionado."
                   />
                   <Card className="h-full border border-slate-200/80 bg-white shadow-sm">
                     <CardContent className="flex h-full items-start gap-3 p-3.5">
@@ -388,10 +374,10 @@ export function UnidadeDetalheDialog({
                     subValue={"Espera média para atendimentos."}
                   />
                   <StatCard
-                    label="Aderência à Meta"
-                    value={eficiencia === null ? "--" : `${eficiencia.toFixed(1)}%`}
+                    label="Consultas na Meta"
+                    value={pctDentroMeta === null ? "--" : `${pctDentroMeta.toFixed(1)}%`}
                     icon={TrendingUp}
-                    subValue={aderenciaMetaSubtitle}
+                    subValue="Consultas encerradas dentro da meta do serviço."
                   />
                 </div>
 
@@ -477,7 +463,7 @@ export function UnidadeDetalheDialog({
 
                 {unidade?.analise ? <ServicosUnidadePanel analise={unidade.analise} /> : <Card className="shadow-sm border-slate-200">
                   <CardHeader>
-                    <CardTitle className="text-base font-bold">Desempenho por Tipo de Serviço (apenas atendimentos finalizados)</CardTitle>
+                    <CardTitle className="text-base font-bold">Desempenho por Serviço (consultas encerradas)</CardTitle>
                   </CardHeader>
                   <CardContent className="p-0">
                     <Table>
@@ -488,7 +474,7 @@ export function UnidadeDetalheDialog({
                           <TableHead className="text-right font-bold">Tempo Esperado</TableHead>
                           <TableHead className="text-right font-bold">Atend. Médio</TableHead>
                           <TableHead className="text-right font-bold">Espera Média</TableHead>
-                          <TableHead className="text-right pr-6 font-bold">Desvio da Meta</TableHead>
+                          <TableHead className="text-right pr-6 font-bold">% na Meta</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -511,8 +497,11 @@ export function UnidadeDetalheDialog({
                                 <TableCell className="text-right">{s.tempoMedioAtendimentoMin.toFixed(1)}m</TableCell>
                                 <TableCell className="text-right text-muted-foreground">{s.tempoMedioEsperaMin.toFixed(1)}m</TableCell>
                                 <TableCell className="text-right pr-6">
-                                  <Badge variant={s.pctAcimaEsperado > 15 ? "destructive" : "secondary"} className="text-[10px] h-5">
-                                    {s.pctAcimaEsperado.toFixed(1)}%
+                                  <Badge
+                                    variant={s.pctDentroMeta !== null && s.pctDentroMeta < META_DENTRO_PRAZO_MIN_PCT ? "destructive" : "secondary"}
+                                    className="text-[10px] h-5"
+                                  >
+                                    {s.pctDentroMeta === null ? "--" : `${s.pctDentroMeta.toFixed(1)}%`}
                                   </Badge>
                                 </TableCell>
                               </TableRow>

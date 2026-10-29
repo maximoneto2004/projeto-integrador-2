@@ -6,10 +6,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 type ServicoMetricaItem = {
   servico_id: string;
   servico_nome: string;
-  esperado_min: number;
+  esperado_min: number | null;
   total: number;
+  tempo_medio_espera_min: number;
   tempo_medio_atendimento_min: number;
-  pct_acima_esperado: number;
+  pct_dentro_meta: number | null;
 };
 
 type IndicadoresPorServicoSectionProps = {
@@ -37,7 +38,7 @@ export function IndicadoresPorServicoSection({ data, loading }: IndicadoresPorSe
     <Card>
       <CardHeader>
         <CardTitle>Indicadores por serviço</CardTitle>
-        <CardDescription>Métricas de duração e desempenho (apenas atendimentos finalizados)</CardDescription>
+        <CardDescription>Consultas encerradas, incluindo as encaminhadas à farmácia</CardDescription>
       </CardHeader>
       <CardContent className="overflow-x-auto">
         <table className="w-full text-sm">
@@ -45,9 +46,10 @@ export function IndicadoresPorServicoSection({ data, loading }: IndicadoresPorSe
             <tr className="text-left text-muted-foreground">
               <th className="px-2 py-2">Serviço</th>
               <th className="px-2 py-2">Total</th>
-              <th className="px-2 py-2">Esperado</th>
+              <th className="px-2 py-2">Meta</th>
               <th className="px-2 py-2">Tempo médio</th>
-              <th className="px-2 py-2">% acima esperado</th>
+              <th className="px-2 py-2">Espera média</th>
+              <th className="px-2 py-2">% na meta</th>
             </tr>
           </thead>
           <tbody>
@@ -55,14 +57,15 @@ export function IndicadoresPorServicoSection({ data, loading }: IndicadoresPorSe
               <tr key={item.servico_id} className="border-t">
                 <td className="px-2 py-2">{item.servico_nome}</td>
                 <td className="px-2 py-2">{item.total}</td>
-                <td className="px-2 py-2">{item.esperado_min} min</td>
+                <td className="px-2 py-2">{item.esperado_min ? `${item.esperado_min} min` : "—"}</td>
                 <td className="px-2 py-2">{Math.round(item.tempo_medio_atendimento_min || 0)} min</td>
-                <td className="px-2 py-2">{Number(item.pct_acima_esperado || 0).toFixed(1)}%</td>
+                <td className="px-2 py-2">{Math.round(item.tempo_medio_espera_min || 0)} min</td>
+                <td className="px-2 py-2">{item.pct_dentro_meta === null ? "—" : `${item.pct_dentro_meta.toFixed(1)}%`}</td>
               </tr>
             ))}
             {data.length === 0 && !loading && (
               <tr>
-                <td colSpan={5} className="px-2 py-6 text-center text-muted-foreground">
+                <td colSpan={6} className="px-2 py-6 text-center text-muted-foreground">
                   Nenhuma métrica de serviço no período.
                 </td>
               </tr>

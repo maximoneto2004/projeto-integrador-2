@@ -1,6 +1,7 @@
 from django.urls import path
 from .supervisor import SupervisorAtendimentosAPIView
 from .mapa_assistencial import MedicamentosMapaAPIView
+from .profissional import MeuDiaAPIView
 from .views import (
     DashboardMonitorUnidadeAPIView,
     DashboardSupervisorAPIView,
@@ -12,6 +13,7 @@ from .views import (
 
 urlpatterns = [
     path("mapa/medicamentos/", MedicamentosMapaAPIView.as_view(), name="mapa_medicamentos"),
+    path("dashboard-profissional/", MeuDiaAPIView.as_view(), name="dashboard_profissional"),
     path("dashboard-supervisor/atendimentos/", SupervisorAtendimentosAPIView.as_view(), name="dashboard_supervisor_atendimentos"),
     path(
         "dashboard-supervisor/",

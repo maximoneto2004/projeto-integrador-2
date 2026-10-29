@@ -69,6 +69,12 @@ const menuGroups: MenuGroup[] = [
     label: "Dashboard",
     items: [
       {
+        title: "Meu dia",
+        url: "/sistema/dashboard-atendente",
+        icon: BarChart3,
+        roles: ["medico", "enfermeiro"],
+      },
+      {
         title: "Dashboard da unidade",
         url: "/sistema/dashboard",
         icon: BarChart3,

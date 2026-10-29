@@ -19,7 +19,7 @@ export function CapacidadeCargaSection({ data, horarioPico }: CapacidadeCargaSec
       <CardHeader className="flex justify-between">
         <div>
           <CardTitle>Capacidade e carga</CardTitle>
-          <CardDescription>Atendimentos por hora no período</CardDescription>
+          <CardDescription>Agendamentos por horário marcado no período</CardDescription>
         </div>
         <Badge variant="secondary" className="gap-2">
           <Zap className="h-4 w-4" />

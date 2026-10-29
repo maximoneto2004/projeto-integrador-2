@@ -80,12 +80,14 @@ const AdminMonitorUnidade = () => {
   const tempoMedio = Number(dashboard?.tempo_medio || 0);
   const finalizados = Number(dashboard?.finalizados || 0);
   const agendados = Number(dashboard?.agendados || 0);
+  const emRetirada = Number(dashboard?.em_retirada || 0);
 
   const filaPorStatus = [
     { status: "Agendado", total: agendados },
     // { status: "Aguardando fila", total: aguardandoFila },
     { status: "Ativados", total: aguardandoAtivado },
     { status: "Atendimento", total: emAtendimento },
+    { status: "Na farmácia", total: emRetirada },
     { status: "Ausente", total: naoCompareceu },
     { status: "Cancelado", total: cancelados },
     { status: "Finalizado", total: finalizados },

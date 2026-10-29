@@ -14,8 +14,8 @@ export function OrigemAtendimentosSection({ data }: OrigemAtendimentosSectionPro
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Origem dos atendimentos</CardTitle>
-        <CardDescription>Demanda espontânea, portal, SPU ou CRAS</CardDescription>
+        <CardTitle>Origem dos agendamentos</CardTitle>
+        <CardDescription>Recepção, site ou fila de espera</CardDescription>
       </CardHeader>
       <CardContent className="h-80">
         <OrigemAtendimentosChart data={data} />

@@ -28,8 +28,8 @@ export function AtendimentosPorServicoSection({ data }: AtendimentosPorServicoSe
     <Card>
       <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0">
         <div>
-          <CardTitle>Atendimentos por serviço</CardTitle>
-          <CardDescription>Volume e tempo médio por serviço (top 12)</CardDescription>
+          <CardTitle>Consultas por serviço</CardTitle>
+          <CardDescription>Consultas encerradas e tempo médio por serviço (top 12)</CardDescription>
         </div>
 
         <Dialog>
@@ -40,9 +40,9 @@ export function AtendimentosPorServicoSection({ data }: AtendimentosPorServicoSe
           </DialogTrigger>
           <DialogContent className="max-w-[96vw] w-[1400px] max-h-[90vh]">
             <DialogHeader>
-              <DialogTitle>Atendimentos por serviço (todos)</DialogTitle>
+              <DialogTitle>Consultas por serviço (todos)</DialogTitle>
               <DialogDescription>
-                Visualização expandida com {data.length} unidades no período selecionado.
+                Visualização expandida com {data.length} serviços no período selecionado.
               </DialogDescription>
             </DialogHeader>
             <div className="w-full overflow-auto border rounded-md p-2">

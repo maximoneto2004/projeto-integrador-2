@@ -14,8 +14,8 @@ export function ResumoStatusSection({ data }: ResumoStatusSectionProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Reagendados, cancelados e comparecimento</CardTitle>
-        <CardDescription>Resumo de status-chave</CardDescription>
+        <CardTitle>Cancelados, ausências e atendidos</CardTitle>
+        <CardDescription>Como terminaram os agendamentos do período</CardDescription>
       </CardHeader>
       <CardContent className="h-80">
         <ResumoStatusChart data={data} />

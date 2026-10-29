@@ -12,7 +12,6 @@ import { getApiErrorMessage } from "@/lib/notifications";
 import { toast } from "@/lib/sonner";
 import { api } from "@/services/api";
 import { UnidadeDetalheDialog } from "../../../components/dashboard-gestor/UnidadeDetalheDialog";
-import { getEficiencia } from "../../../components/dashboard-gestor/UnidadeDetalheDialog";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
@@ -23,7 +22,7 @@ import { nomeMedicamento } from "@/lib/mapaAssistencial";
 import { formatSla } from "@/lib/sla";
 import type { AnaliseUnidade, DemandaUnidade, MedicamentoMapa } from "@/types/mapaAssistencial";
 
-type OrigemAtendimento = "156" | "RECEPCAO" | "SITE" | "FILA";
+type OrigemAtendimento = "RECEPCAO" | "SITE" | "FILA";
 type OrigemAtendimentoCount = Record<OrigemAtendimento, number>;
 
 export type ServicoMetrica = {
@@ -36,6 +35,7 @@ export type ServicoMetrica = {
   tempoMedioAtendimentoMin: number | null;
   tempoExcedenteMedioMin: number;
   pctAcimaEsperado: number;
+  pctDentroMeta: number | null;
 };
 
 export type UnidadeMetricas = {
@@ -51,7 +51,6 @@ export type UnidadeMetricas = {
   tempoMedioEsperadoComumMin: number;
   tempoMedioEsperadoEspecializadoMin: number;
 
-  origem156: number;
   origemRecepcao: number;
   origemSite: number;
   origemFila: number;
@@ -61,6 +60,8 @@ export type UnidadeMetricas = {
   tempoMedioEsperaMin: number;
   tempoExcedenteMedioMin: number;
   pctAcimaEsperado: number;
+  pctDentroMeta: number | null;
+  taxaAbsenteismo: number;
   servicosMetricas: ServicoMetrica[];
 };
 
@@ -141,6 +142,8 @@ type MapaUnidadeApi = {
     tempo_medio_espera_min?: number | null;
     tempo_excedente_medio_min?: number | null;
     pct_acima_esperado?: number | null;
+    pct_dentro_meta?: number | null;
+    taxa_absenteismo?: number | null;
     servicos_metricas?: Array<{
       servico_id?: string;
       servico_nome?: string;
@@ -246,7 +249,6 @@ const EMPTY_METRICAS: UnidadeMetricas = {
   tempoMedioAtendimentoEspecializadoMin: 0,
   tempoMedioEsperadoComumMin: 0,
   tempoMedioEsperadoEspecializadoMin: 0,
-  origem156: 0,
   origemRecepcao: 0,
   origemSite: 0,
   origemFila: 0,
@@ -255,6 +257,8 @@ const EMPTY_METRICAS: UnidadeMetricas = {
   tempoMedioEsperaMin: 0,
   tempoExcedenteMedioMin: 0,
   pctAcimaEsperado: 0,
+  pctDentroMeta: null,
+  taxaAbsenteismo: 0,
   servicosMetricas: [],
 };
 
@@ -324,10 +328,9 @@ const createHouseIcon = () =>
   });
 
 const parseOrigemAtendimentos = (raw: unknown): OrigemAtendimentoCount => {
-  const base: OrigemAtendimentoCount = { "156": 0, RECEPCAO: 0, SITE: 0, FILA: 0 };
+  const base: OrigemAtendimentoCount = { RECEPCAO: 0, SITE: 0, FILA: 0 };
   if (!raw || typeof raw !== "object") return base;
   const obj = raw as Record<string, unknown>;
-  base["156"] = toNumber(obj["156"], 0);
   base.RECEPCAO = toNumber(obj.RECEPCAO, 0);
   base.SITE = toNumber(obj.SITE, 0);
   base.FILA = toNumber(obj.FILA, 0);
@@ -392,6 +395,7 @@ const parseServicosMetricas = (raw: unknown): ServicoMetrica[] => {
         tempoMedioAtendimentoMin: toNumber(row.tempo_medio_atendimento_min, 0),
         tempoExcedenteMedioMin: toNumber(row.tempo_excedente_medio_min, 0),
         pctAcimaEsperado: toNumber(row.pct_acima_esperado, 0),
+        pctDentroMeta: row.pct_dentro_meta === null || row.pct_dentro_meta === undefined ? null : toNumber(row.pct_dentro_meta, 0),
       } as ServicoMetrica;
     })
     .filter((s): s is ServicoMetrica => Boolean(s))
@@ -415,7 +419,6 @@ const parseUnidadeMetricas = (raw: MapaUnidadeApi["metricas"] | null | undefined
     tempoMedioAtendimentoEspecializadoMin: toNumber(raw.tempo_medio_atendimento_especializado_min, 0),
     tempoMedioEsperadoComumMin: toNumber(raw.tempo_medio_esperado_comum_min, 0),
     tempoMedioEsperadoEspecializadoMin: toNumber(raw.tempo_medio_esperado_especializado_min, 0),
-    origem156: origem["156"],
     origemRecepcao: origem.RECEPCAO,
     origemSite: origem.SITE,
     origemFila: origem.FILA,
@@ -424,6 +427,8 @@ const parseUnidadeMetricas = (raw: MapaUnidadeApi["metricas"] | null | undefined
     tempoMedioEsperaMin: toNumber(raw.tempo_medio_espera_min, 0),
     tempoExcedenteMedioMin: toNumber(raw.tempo_excedente_medio_min, 0),
     pctAcimaEsperado: toNumber(raw.pct_acima_esperado, 0),
+    pctDentroMeta: raw.pct_dentro_meta === null || raw.pct_dentro_meta === undefined ? null : toNumber(raw.pct_dentro_meta, 0),
+    taxaAbsenteismo: toNumber(raw.taxa_absenteismo, 0),
     servicosMetricas: parseServicosMetricas(raw.servicos_metricas),
   };
 };
@@ -511,11 +516,6 @@ function FlyTo({ position }: { position: [number, number] }) {
 function UnidadePopup({ unidade, metricas, demanda, medicamento }: {
   unidade: UnidadeMapa; metricas: UnidadeMetricas; demanda?: DemandaUnidade; medicamento?: MedicamentoMapa | null;
 }) {
-  const eficiencia = getEficiencia(
-    metricas.pctAcimaEsperado,
-    metricas.tempoMedioAtendimentoComumMin,
-    metricas.tempoMedioEsperadoComumMin,
-  );
 
   return (
     <div className="min-w-[280px] space-y-2 text-sm">
@@ -527,7 +527,7 @@ function UnidadePopup({ unidade, metricas, demanda, medicamento }: {
 
       <div className="grid grid-cols-2 gap-x-4 gap-y-1">
         <div>
-          <div className="text-xs text-muted-foreground">Atendimentos</div>
+          <div className="text-xs text-muted-foreground">Agendamentos</div>
           <div className="font-medium">{metricas.atendimentosMensaisTotal}</div>
         </div>
         <div>
@@ -539,19 +539,23 @@ function UnidadePopup({ unidade, metricas, demanda, medicamento }: {
           <div className="text-xs text-muted-foreground">Profissionais</div>
           <div className="font-medium">{metricas.profissionaisTotal}</div>
         </div>
+        <div>
+          <div className="text-xs text-muted-foreground">Não comparecimento</div>
+          <div className="font-medium">{metricas.taxaAbsenteismo.toFixed(1)}%</div>
+        </div>
 
         <div className="col-span-2">
-          <div className="text-xs text-muted-foreground">Tipos de atendimento (origem)</div>
+          <div className="text-xs text-muted-foreground">Origem dos agendamentos</div>
           <div className="font-medium">
-            Recepção: {metricas.origemRecepcao} · Fila: {metricas.origemFila} · Site: {metricas.origemSite} · 156: {metricas.origem156}
+            Recepção: {metricas.origemRecepcao} · Fila: {metricas.origemFila} · Site: {metricas.origemSite}
           </div>
         </div>
 
         <div className="col-span-2">
-          <div className="text-xs text-muted-foreground">Serviços (30d)</div>
+          <div className="text-xs text-muted-foreground">Consultas no período</div>
           <div className="font-medium">
-            {metricas.servicosPrestados30d} atendimentos · {metricas.servicosDistintos30d} tipos · aderência à meta:{" "}
-            {eficiencia === null ? "-" : eficiencia.toFixed(1)}
+            {metricas.servicosPrestados30d} encerradas · {metricas.servicosDistintos30d} serviços · na meta:{" "}
+            {metricas.pctDentroMeta === null ? "-" : `${metricas.pctDentroMeta.toFixed(1)}%`}
           </div>
           <div className="text-xs text-muted-foreground">
             Excedente médio: {metricas.tempoExcedenteMedioMin} min · meta média:{" "}

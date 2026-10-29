@@ -13,18 +13,18 @@ export function MonitorUnidadeCardsGrid({ totalAgendamentos, ativados, compareci
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">Atendimentos hoje</CardTitle>
+          <CardTitle className="text-sm font-medium text-muted-foreground">Agendamentos no período</CardTitle>
           <Users className="h-5 w-5 text-primary" />
         </CardHeader>
         <CardContent>
           <div className="text-3xl font-bold">{totalAgendamentos}</div>
-          <p className="text-sm text-muted-foreground">Registrados no dia</p>
+          <p className="text-sm text-muted-foreground">Todas as situações</p>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">Fila de Encaixe </CardTitle>
+          <CardTitle className="text-sm font-medium text-muted-foreground">Fila de espera</CardTitle>
           <ListChecks className="h-5 w-5 text-amber-500" />
         </CardHeader>
         <CardContent>

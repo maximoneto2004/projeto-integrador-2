@@ -55,7 +55,7 @@ export function AtendentesChart({ data }: AtendentesChartProps) {
         <Bar
           yAxisId="left"
           dataKey="total"
-          name="Atendimentos"
+          name="Consultas"
           fill="#0ea5e9"
           radius={[4, 4, 0, 0]}
         />

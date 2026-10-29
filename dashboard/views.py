@@ -1,8 +1,7 @@
 import json
 import re
 import unicodedata
-from collections import defaultdict
-from datetime import date, timedelta
+from datetime import timedelta
 from functools import lru_cache
 from pathlib import Path
 
@@ -10,6 +9,7 @@ from django.conf import settings
 from django.core.cache import cache
 from django.db.models import Count, Prefetch
 from django.utils import timezone
+from django.utils.cache import patch_vary_headers
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import permissions, serializers
 from rest_framework.response import Response
@@ -23,7 +23,8 @@ from unidade_posto.models import UnidadePosto
 from usuarios.models import Usuario
 
 from .filters import DashboardGestorFilter, DashboardMonitorUnidadeFilter, DashboardSupervisorFilter
-from .metrics import calculate_pct_acima_esperado, calculate_tempo_excedente_medio_min
+from .permissoes import GestaoPermission
+from . import indicadores
 from .supervisor import SupervisorScopeMixin
 from .serializers import (
     DashboardGestorSerializer,
@@ -48,7 +49,7 @@ class DashboardSupervisorAPIView(SupervisorScopeMixin, generics.GenericAPIView):
 
 
 class DashboardMonitorUnidadeAPIView(generics.GenericAPIView):
-    permission_classes = [permissions.IsAuthenticated, DjangoModelPermissionsWithView]
+    permission_classes = [permissions.IsAuthenticated, GestaoPermission, DjangoModelPermissionsWithView]
     queryset = Agendamento.objects.all()
     filterset_class = DashboardMonitorUnidadeFilter
     filter_backends = [DjangoFilterBackend]
@@ -78,44 +79,44 @@ class DashboardMonitorUnidadeAPIView(generics.GenericAPIView):
 
 
 class DashboardGestorAPIView(APIView):
-    permission_classes = [permissions.IsAuthenticated, DjangoModelPermissionsWithView]
+    permission_classes = [permissions.IsAuthenticated, GestaoPermission, DjangoModelPermissionsWithView]
     queryset = Agendamento.objects.all()
     filterset_class = DashboardGestorFilter
     filter_backends = [DjangoFilterBackend]
 
     def get(self, request):
-        try:
-            filterset = self.filterset_class(
-                data=request.query_params, queryset=Agendamento.objects.all()
-            )
-            qs = filterset.qs
+        # Erros de validação viram 400 e falhas inesperadas viram 500, sem expor detalhes internos.
+        filterset = self.filterset_class(
+            data=request.query_params, queryset=Agendamento.objects.all()
+        )
+        qs = filterset.qs
 
-            data_inicio = request.query_params.get("data_inicio")
-            data_fim = request.query_params.get("data_fim")
+        data_inicio = request.query_params.get("data_inicio")
+        data_fim = request.query_params.get("data_fim")
 
-            if not data_inicio and not data_fim:
-                today = timezone.now().date()
-                data_inicio = data_fim = today
+        if not data_inicio and not data_fim:
+            today = timezone.now().date()
+            data_inicio = data_fim = today
 
-            serializer = DashboardGestorSerializer(
-                data={
-                    "data_inicio": data_inicio,
-                    "data_fim": data_fim,
-                },
-                context={"queryset": qs},
-            )
+        serializer = DashboardGestorSerializer(
+            data={
+                "data_inicio": data_inicio,
+                "data_fim": data_fim,
+            },
+            context={"queryset": qs},
+        )
 
-            serializer.is_valid(raise_exception=True)
+        serializer.is_valid(raise_exception=True)
 
-            return Response({"success": True, "results": serializer.data})
-        except Exception as e:
-            return Response(
-                {
-                    "success": False,
-                    "error": "Erro interno ao gerar o dashboard.",
-                    "detail": str(e),
-                },
-            )
+        return Response({"success": True, "results": serializer.data})
+
+
+def _resposta_privada(payload):
+    """O navegador só reaproveita a resposta para o mesmo usuário (mesmo token)."""
+    resp = Response(payload)
+    resp["Cache-Control"] = "private, max-age=60"
+    patch_vary_headers(resp, ("Authorization",))
+    return resp
 
 
 class MapaUnidadesQuerySerializer(serializers.Serializer):
@@ -168,7 +169,7 @@ def _parse_lat_lon(latitude_raw: str | float | int | None, longitude_raw: str | 
 
 
 class MapaUnidadesAPIView(APIView):
-    permission_classes = [permissions.IsAuthenticated, DjangoModelPermissionsWithView]
+    permission_classes = [permissions.IsAuthenticated, GestaoPermission, DjangoModelPermissionsWithView]
     queryset = UnidadePosto.objects.all()
 
     def get(self, request):
@@ -190,10 +191,10 @@ class MapaUnidadesAPIView(APIView):
         if data_inicio > data_fim:
             raise serializers.ValidationError({"data_inicio": "data_inicio não pode ser maior que data_fim."})
 
-        cache_key = f"mapa_unidades:v1:{data_inicio.isoformat()}:{data_fim.isoformat()}"
+        cache_key = f"mapa_unidades:v2:{data_inicio.isoformat()}:{data_fim.isoformat()}"
         cached = cache.get(cache_key)
         if cached:
-            return Response(cached)
+            return _resposta_privada(cached)
 
         unidades = list(
             UnidadePosto.objects.filter(is_active=True)
@@ -223,33 +224,8 @@ class MapaUnidadesAPIView(APIView):
             .order_by("nome")
         )
         unidade_ids = [u.id for u in unidades]
+        metricas_por_unidade = indicadores.metricas_mapa_por_unidade(unidade_ids, data_inicio, data_fim)
 
-     
-        agendamentos_total = (
-            Agendamento.objects.filter(unidade_id__in=unidade_ids, data__range=(data_inicio, data_fim))
-            .values("unidade_id")
-            .annotate(total=Count("id"))
-        )
-        total_por_unidade = {str(r["unidade_id"]): int(r["total"] or 0) for r in agendamentos_total}
-
-      
-        origens_rows = (
-            Agendamento.objects.filter(unidade_id__in=unidade_ids, data__range=(data_inicio, data_fim))
-            .values("unidade_id", "origem")
-            .annotate(total=Count("id"))
-        )
-
-        origens_por_unidade: dict[str, dict[str, int]] = defaultdict(lambda: {"156": 0, "RECEPCAO": 0, "SITE": 0, "FILA": 0})
-        for r in origens_rows:
-            uid = str(r["unidade_id"])
-            origem = r.get("origem")
-            if not origem:
-                continue
-            origem = str(origem)
-            if origem in origens_por_unidade[uid]:
-                origens_por_unidade[uid][origem] = int(r.get("total") or 0)
-
-       
         profissionais_rows = (
             Usuario.objects.filter(is_active=True, unidades_lotacao__in=unidade_ids)
             .values("unidades_lotacao")
@@ -257,97 +233,12 @@ class MapaUnidadesAPIView(APIView):
         )
         profissionais_por_unidade = {str(r["unidades_lotacao"]): int(r["total"] or 0) for r in profissionais_rows}
 
-        def minutes(t):
-            if not t:
-                return None
-            return t.hour * 60 + t.minute + (t.second / 60)
-
-        def diff_minutes(end, start):
-            if not end or not start:
-                return None
-            return minutes(end) - minutes(start)
-
-        finalizados_qs = (
-            Agendamento.objects.filter(
-                unidade_id__in=unidade_ids,
-                data__range=(data_inicio, data_fim),
-                situacao="FINALIZADO",
-            )
-            .values(
-                "unidade_id",
-                "servico_id",
-                "servico__tipo_servico__nome",
-                "servico__tipo_servico__tempo_atendimento",
-                "horario",
-                "data_hora_inicio_atendimento",
-                "data_hora_fim_atendimento",
-            )
-        )
-
-        finalizados_total_por_unidade: dict[str, int] = defaultdict(int)
-        servicos_distintos_por_unidade: dict[str, set[str]] = defaultdict(set)
-        finalizados_especializado_por_unidade: dict[str, int] = defaultdict(int)
-        finalizados_comum_por_unidade: dict[str, int] = defaultdict(int)
-
-        soma_duracao_por_unidade: dict[str, float] = defaultdict(float)
-        cont_duracao_por_unidade: dict[str, int] = defaultdict(int)
-        soma_espera_por_unidade: dict[str, float] = defaultdict(float)
-        cont_espera_por_unidade: dict[str, int] = defaultdict(int)
-        soma_esperado_por_unidade: dict[str, float] = defaultdict(float)
-
-        for r in finalizados_qs.iterator(chunk_size=10000):
-            uid = str(r.get("unidade_id") or "")
-            if not uid:
-                continue
-
-            finalizados_total_por_unidade[uid] += 1
-
-            servico_id = r.get("servico_id")
-            if servico_id:
-                servicos_distintos_por_unidade[uid].add(str(servico_id))
-
-            tipo_nome = str(r.get("servico__tipo_servico__nome") or "").lower()
-            if "especial" in tipo_nome:
-                finalizados_especializado_por_unidade[uid] += 1
-            else:
-                finalizados_comum_por_unidade[uid] += 1
-
-            esperado = r.get("servico__tipo_servico__tempo_atendimento") or 20
-            try:
-                esperado = int(esperado)
-            except (TypeError, ValueError):
-                esperado = 20
-
-            inicio = r.get("data_hora_inicio_atendimento")
-            fim = r.get("data_hora_fim_atendimento")
-            agendado = r.get("horario")
-
-            dur = diff_minutes(fim, inicio)
-            if dur is not None and dur >= 0:
-                cont_duracao_por_unidade[uid] += 1
-                soma_duracao_por_unidade[uid] += dur
-                soma_esperado_por_unidade[uid] += esperado
-
-            espera = diff_minutes(inicio, agendado)
-            if espera is not None:
-                if espera < 0:
-                    espera = 0
-                cont_espera_por_unidade[uid] += 1
-                soma_espera_por_unidade[uid] += espera
 
         resultados = []
 
         for u in unidades:
             uid = str(u.id)
             latitude, longitude = _parse_lat_lon(u.latitude, u.longitude)
-            dur_count = cont_duracao_por_unidade.get(uid, 0) or 0
-            espera_count = cont_espera_por_unidade.get(uid, 0) or 0
-
-            tempo_medio_atendimento = (soma_duracao_por_unidade.get(uid, 0) / dur_count) if dur_count else 0
-            tempo_medio_esperado = (soma_esperado_por_unidade.get(uid, 0) / dur_count) if dur_count else 0
-            tempo_medio_espera = (soma_espera_por_unidade.get(uid, 0) / espera_count) if espera_count else 0
-            excedente_medio = calculate_tempo_excedente_medio_min(tempo_medio_atendimento, tempo_medio_esperado)
-            pct_acima = calculate_pct_acima_esperado(tempo_medio_atendimento, tempo_medio_esperado)
 
             bairros_abrangencia = [
                 {"id": str(b.id), "nome": b.nome}
@@ -370,18 +261,8 @@ class MapaUnidadesAPIView(APIView):
                     "longitude": longitude,
                     "bairros_abrangencia": bairros_abrangencia,
                     "metricas": {
-                        "atendimentos_total": total_por_unidade.get(uid, 0),
+                        **metricas_por_unidade[uid],
                         "profissionais_total": profissionais_por_unidade.get(uid, 0),
-                        "tempo_medio_atendimento_min": round(tempo_medio_atendimento, 1),
-                        "tempo_medio_esperado_min": round(tempo_medio_esperado, 1),
-                        "tempo_medio_espera_min": round(tempo_medio_espera, 1),
-                        "servicos_prestados_30d": int(finalizados_total_por_unidade.get(uid, 0) or 0),
-                        "servicos_distintos_30d": len(servicos_distintos_por_unidade.get(uid, set())),
-                        "tempo_excedente_medio_min": round(excedente_medio, 1),
-                        "pct_acima_esperado": round(pct_acima, 1),
-                        "atendimentos_comum_30d": int(finalizados_comum_por_unidade.get(uid, 0) or 0),
-                        "atendimentos_especializado_30d": int(finalizados_especializado_por_unidade.get(uid, 0) or 0),
-                        "origem_atendimentos": origens_por_unidade.get(uid, {"156": 0, "RECEPCAO": 0, "SITE": 0, "FILA": 0}),
                     },
                 }
             )
@@ -396,9 +277,7 @@ class MapaUnidadesAPIView(APIView):
         }
         cache.set(cache_key, payload, timeout=60)
 
-        resp = Response(payload)
-        resp["Cache-Control"] = "private, max-age=60"
-        return resp
+        return _resposta_privada(payload)
 
 
 class MapaUnidadeSeriesQuerySerializer(serializers.Serializer):
@@ -408,7 +287,7 @@ class MapaUnidadeSeriesQuerySerializer(serializers.Serializer):
 
 
 class MapaUnidadeSeriesAPIView(APIView):
-    permission_classes = [permissions.IsAuthenticated, DjangoModelPermissionsWithView]
+    permission_classes = [permissions.IsAuthenticated, GestaoPermission, DjangoModelPermissionsWithView]
     queryset = UnidadePosto.objects.all()
 
     def get(self, request):
@@ -437,20 +316,10 @@ class MapaUnidadeSeriesAPIView(APIView):
         if (data_fim - data_inicio).days > max_days:
             raise serializers.ValidationError({"detail": f"Período muito grande. Máximo: {max_days} dias."})
 
-        cache_key = f"mapa_unidades_serie:v1:{unidade_id}:{data_inicio.isoformat()}:{data_fim.isoformat()}"
+        cache_key = f"mapa_unidades_serie:v2:{unidade_id}:{data_inicio.isoformat()}:{data_fim.isoformat()}"
         cached = cache.get(cache_key)
         if cached:
-            return Response(cached)
-
-        def minutes(t):
-            if not t:
-                return None
-            return t.hour * 60 + t.minute + (t.second / 60)
-
-        def diff_minutes(end, start):
-            if not end or not start:
-                return None
-            return minutes(end) - minutes(start)
+            return _resposta_privada(cached)
 
         # Base de datas (preenche dias sem dados)
         days = []
@@ -459,102 +328,25 @@ class MapaUnidadeSeriesAPIView(APIView):
             days.append(cursor)
             cursor += timedelta(days=1)
 
-        serie = {
-            d: {
-                "data": d.isoformat(),
-                "atendimentos_total": 0,
-                "finalizados_total": 0,
-                "tempo_medio_espera_min": 0,
-                "tempo_medio_atendimento_min": 0,
-                "tempo_medio_esperado_min": 0,
-                "tempo_excedente_medio_min": 0,
-                "pct_acima_esperado": 0,
-            }
-            for d in days
-        }
+        periodo = Agendamento.objects.filter(unidade_id=unidade_id, data__range=(data_inicio, data_fim))
+        totais = dict(periodo.values("data").annotate(total=Count("id")).order_by().values_list("data", "total"))
+        tempos = indicadores.tempos_por(periodo, "data")
 
-        # Contagem total por dia (todas as situações)
-        total_rows = (
-            Agendamento.objects.filter(unidade_id=unidade_id, data__range=(data_inicio, data_fim))
-            .values("data")
-            .annotate(total=Count("id"))
-        )
-        for r in total_rows:
-            d = r.get("data")
-            if d in serie:
-                serie[d]["atendimentos_total"] = int(r.get("total") or 0)
-
-        # Métricas de tempo por dia (somente FINALIZADO)
-        finalizados_qs = (
-            Agendamento.objects.filter(
-                unidade_id=unidade_id,
-                data__range=(data_inicio, data_fim),
-                situacao="FINALIZADO",
-            )
-            .values(
-                "data",
-                "servico__tipo_servico__tempo_atendimento",
-                "horario",
-                "data_hora_inicio_atendimento",
-                "data_hora_fim_atendimento",
-            )
-        )
-
-        soma_duracao: dict[date, float] = defaultdict(float)
-        cont_duracao: dict[date, int] = defaultdict(int)
-        soma_espera: dict[date, float] = defaultdict(float)
-        cont_espera: dict[date, int] = defaultdict(int)
-        soma_esperado: dict[date, float] = defaultdict(float)
-        finalizados_total: dict[date, int] = defaultdict(int)
-
-        for r in finalizados_qs.iterator(chunk_size=10000):
-            d = r.get("data")
-            if not d:
-                continue
-            finalizados_total[d] += 1
-
-            esperado = r.get("servico__tipo_servico__tempo_atendimento") or 20
-            try:
-                esperado = int(esperado)
-            except (TypeError, ValueError):
-                esperado = 20
-
-            inicio = r.get("data_hora_inicio_atendimento")
-            fim = r.get("data_hora_fim_atendimento")
-            agendado = r.get("horario")
-
-            dur = diff_minutes(fim, inicio)
-            if dur is not None and dur >= 0:
-                cont_duracao[d] += 1
-                soma_duracao[d] += dur
-                soma_esperado[d] += esperado
-
-            espera = diff_minutes(inicio, agendado)
-            if espera is not None:
-                if espera < 0:
-                    espera = 0
-                cont_espera[d] += 1
-                soma_espera[d] += espera
-
+        serie = []
         for d in days:
-            if d not in serie:
-                continue
-
-            dur_count = cont_duracao.get(d, 0) or 0
-            espera_count = cont_espera.get(d, 0) or 0
-
-            tempo_medio_atendimento = (soma_duracao.get(d, 0) / dur_count) if dur_count else 0
-            tempo_medio_esperado = (soma_esperado.get(d, 0) / dur_count) if dur_count else 0
-            tempo_medio_espera = (soma_espera.get(d, 0) / espera_count) if espera_count else 0
-            excedente_medio = calculate_tempo_excedente_medio_min(tempo_medio_atendimento, tempo_medio_esperado)
-            pct_acima = calculate_pct_acima_esperado(tempo_medio_atendimento, tempo_medio_esperado)
-
-            serie[d]["finalizados_total"] = int(finalizados_total.get(d, 0) or 0)
-            serie[d]["tempo_medio_atendimento_min"] = round(tempo_medio_atendimento, 1)
-            serie[d]["tempo_medio_esperado_min"] = round(tempo_medio_esperado, 1)
-            serie[d]["tempo_medio_espera_min"] = round(tempo_medio_espera, 1)
-            serie[d]["tempo_excedente_medio_min"] = round(excedente_medio, 1)
-            serie[d]["pct_acima_esperado"] = round(pct_acima, 1)
+            resumo = tempos[d].resumo() if d in tempos else indicadores.Tempos().resumo()
+            serie.append({
+                "data": d.isoformat(),
+                "atendimentos_total": totais.get(d, 0),
+                # Consultas encerradas, incluindo as que seguiram para a farmácia.
+                "finalizados_total": resumo["encerrados"],
+                "tempo_medio_espera_min": resumo["tempo_medio_espera_min"],
+                "tempo_medio_atendimento_min": resumo["tempo_medio_atendimento_min"],
+                "tempo_medio_esperado_min": resumo["tempo_medio_esperado_min"],
+                "tempo_excedente_medio_min": resumo["tempo_excedente_medio_min"],
+                "pct_acima_esperado": resumo["pct_acima_esperado"],
+                "pct_dentro_meta": resumo["pct_dentro_meta"],
+            })
 
         payload = {
             "success": True,
@@ -563,14 +355,12 @@ class MapaUnidadeSeriesAPIView(APIView):
                 "created_at": unidade.created_at.isoformat() if unidade.created_at else None,
                 "data_inicio": data_inicio,
                 "data_fim": data_fim,
-                "serie": [serie[d] for d in days],
+                "serie": serie,
             },
         }
         cache.set(cache_key, payload, timeout=60)
 
-        resp = Response(payload)
-        resp["Cache-Control"] = "private, max-age=60"
-        return resp
+        return _resposta_privada(payload)
 
 
 def _normalize_geo_key(value: str) -> str:

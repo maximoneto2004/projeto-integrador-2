@@ -16,8 +16,8 @@ export function FilaPorStatusSection({ data, tooltip }: FilaPorStatusSectionProp
   return (
     <Card className="lg:col-span-2">
       <CardHeader>
-        <CardTitle>Fila por status</CardTitle>
-        <CardDescription>Distribuição dos principais status</CardDescription>
+        <CardTitle>Agendamentos por situação</CardTitle>
+        <CardDescription>Situação atual dos agendamentos do período</CardDescription>
       </CardHeader>
       <CardContent className="h-72">
         <ResponsiveContainer width="100%" height="100%">

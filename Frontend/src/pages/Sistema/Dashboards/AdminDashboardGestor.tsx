@@ -22,6 +22,12 @@ import { AtendimentosPorUnidadeSection } from "@/components/dashboard-gestor/sec
 import { PerfisPublicoSection } from "@/components/dashboard-gestor/sections/PerfisPublicoSection";
 import { CapacidadeAgendaSection } from "@/components/dashboard-gestor/sections/CapacidadeAgendaSection";
 import { FilaDuracaoSection } from "@/components/dashboard-gestor/sections/FilaDuracaoSection";
+import {
+  META_ABSENTEISMO_MAX_PCT,
+  META_DENTRO_PRAZO_MIN_PCT,
+  META_FILA_MAX,
+  META_OCUPACAO_MAX_PCT,
+} from "@/constants/indicadores";
 
 type RangeTipo = "hoje" | "periodo";
 
@@ -115,21 +121,27 @@ const AdminDashboardGestor = () => {
         const vagasOcupadas = Number(unidade.vagas_ocupadas || 0);
         const ocupacao = capacidade > 0 ? clampPercent((vagasOcupadas / capacidade) * 100) : 0;
 
+        const absenteismo = Number(unidade.taxa_nao_comparecimento || 0);
+
         return {
+          id: unidade.unidade_id,
           nome: unidade.nome_unidade || "Sem unidade",
           atendimentosHoje: Number(unidade.total_agendamentos || 0),
           fila: Number(unidade.fila_aguardando || 0),
           capacidade,
           vagasOcupadas,
           ocupacao,
-          comparecimento: comparecimentoBase,
-          esperaMedia: Number(unidade.duracao_media_atendimento_min || 0),
+          absenteismo,
+          comparecimento: clampPercent(100 - absenteismo),
+          duracaoMedia: Number(unidade.duracao_media_atendimento_min || 0),
+          esperaMedia: Number(unidade.tempo_medio_espera_min || 0),
+          pctDentroMeta: unidade.pct_dentro_meta ?? null,
           prioridade: prioridadePorUnidade.get(unidade.nome_unidade || "") || 0,
           equipe: Number(unidade.total_profissionais || 0),
         };
       })
       .sort((a, b) => b.atendimentosHoje - a.atendimentosHoje);
-  }, [comparecimentoBase, dashboard, prioridadePorUnidade]);
+  }, [dashboard, prioridadePorUnidade]);
 
   const resumo = useMemo(() => {
     const totalAtendimentos = Number(dashboard?.total_agendamentos || 0);
@@ -144,9 +156,13 @@ const AdminDashboardGestor = () => {
             )
           : 0;
     const comparecimentoMedio = comparecimentoBase;
-    const esperaMedia = Math.round(Number(dashboard?.tempo_medio || 0));
+    const duracaoMedia = Math.round(Number(dashboard?.tempo_medio || 0));
     const unidadesCriticas = unidadesBase.filter(
-      (unidade) => unidade.fila > 20 || unidade.ocupacao > 85 || unidade.esperaMedia > 25
+      (unidade) =>
+        unidade.fila > META_FILA_MAX ||
+        unidade.ocupacao > META_OCUPACAO_MAX_PCT ||
+        unidade.absenteismo > META_ABSENTEISMO_MAX_PCT ||
+        (unidade.pctDentroMeta !== null && unidade.pctDentroMeta < META_DENTRO_PRAZO_MIN_PCT)
     ).length;
 
     return {
@@ -154,7 +170,7 @@ const AdminDashboardGestor = () => {
       filaTotal,
       ocupacaoMedia,
       comparecimentoMedio,
-      esperaMedia,
+      duracaoMedia,
       unidadesCriticas,
     };
   }, [comparecimentoBase, dashboard, unidadesBase]);
@@ -203,9 +219,7 @@ const AdminDashboardGestor = () => {
               <div>
                 <h1 className="text-2xl font-bold tracking-tight">Dashboard do Gestor</h1>
                 <p className="text-sm text-muted-foreground">
-                  Visão consolidada das unidades do CRAS por {" "}
-                  {range === "hoje" ? "hoje" : "período selecionado"} ({hojeLabel}
-                  {periodoResumo})
+                  Visão consolidada das unidades de saúde: {range === "hoje" ? `hoje (${hojeLabel})` : `período selecionado${periodoResumo}`}
                 </p>
               </div>
             </div>
@@ -270,9 +284,9 @@ const AdminDashboardGestor = () => {
           <div className="space-y-6 p-6">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               <GestorCard
-                title="Atendimentos no período"
+                title="Agendamentos no período"
                 value={resumo.totalAtendimentos}
-                subtitle="Somando todas as unidades (filtro aplicado)"
+                subtitle="Todas as situações, somando as unidades"
                 icon={Users}
               />
 
@@ -295,15 +309,15 @@ const AdminDashboardGestor = () => {
               <GestorCard
                 title="Comparecimento"
                 value={`${resumo.comparecimentoMedio}%`}
-                subtitle="Estimado por ausência registrada"
+                subtitle="Quem chegou, entre os que deveriam vir"
                 icon={MapPin}
                 accent="text-emerald-500"
               />
 
               <GestorCard
-                title="Tempo médio"
-                value={`${resumo.esperaMedia} min`}
-                subtitle="Duração média dos atendimentos"
+                title="Tempo médio de consulta"
+                value={`${resumo.duracaoMedia} min`}
+                subtitle="Do início ao fim da consulta"
                 icon={Clock3}
                 accent="text-purple-500"
               />
@@ -311,7 +325,7 @@ const AdminDashboardGestor = () => {
               <GestorCard
                 title="Unidades em atenção"
                 value={resumo.unidadesCriticas}
-                subtitle="Fila alta ou ocupação elevada"
+                subtitle={`Fila > ${META_FILA_MAX}, ocupação > ${META_OCUPACAO_MAX_PCT}%, faltas > ${META_ABSENTEISMO_MAX_PCT}% ou < ${META_DENTRO_PRAZO_MIN_PCT}% na meta`}
                 icon={AlertTriangle}
                 accent="text-red-500"
               />
