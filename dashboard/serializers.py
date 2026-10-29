@@ -19,13 +19,14 @@ from rest_framework import serializers
 from django.db.models import Count, F, Avg, ExpressionWrapper, DurationField
 from fila_espera.models import FilaEspera
 from .metrics import calculate_pct_acima_esperado
+from .sla import resumo_sla
 from agendamentos.models import Agendamento
 
 
 class DashboardSupervisorSerializer(serializers.Serializer):
     data_inicio = serializers.DateField()
     data_fim = serializers.DateField()
-    unidade_id = serializers.CharField()
+    unidade_id = serializers.UUIDField()
 
     total_agendamentos = serializers.SerializerMethodField()
     agendados = serializers.SerializerMethodField()
@@ -42,6 +43,12 @@ class DashboardSupervisorSerializer(serializers.Serializer):
     atendimentos_categoria = serializers.SerializerMethodField()
     agendamentos_por_classe = serializers.SerializerMethodField()
     servicos_metricas = serializers.SerializerMethodField()
+    sla = serializers.SerializerMethodField()
+
+    def get_sla(self, obj):
+        if not hasattr(self, "_sla"):
+            self._sla = resumo_sla(self._get_queryset())
+        return self._sla
 
     class Meta:
         fields = [
@@ -63,6 +70,7 @@ class DashboardSupervisorSerializer(serializers.Serializer):
             "atendimentos_categoria",
             "agendamentos_por_classe",
             "servicos_metricas",
+            "sla",
         ]
 
     def _get_queryset(self):
@@ -113,26 +121,7 @@ class DashboardSupervisorSerializer(serializers.Serializer):
         return round((nao / total) * 100, 2) if total > 0 else 0
 
     def get_tempo_medio(self, obj):
-        qs = self._get_queryset()
-
-        duracao = (
-            qs.filter(
-                data_hora_inicio_atendimento__isnull=False,
-                data_hora_fim_atendimento__isnull=False,
-            )
-            .annotate(
-                duration=ExpressionWrapper(
-                    F("data_hora_fim_atendimento") - F("data_hora_inicio_atendimento"),
-                    output_field=DurationField(),
-                )
-            )
-            .aggregate(media=Avg("duration"))["media"]
-        )
-
-        if not duracao:
-            return 0
-
-        return duracao.total_seconds() / 60
+        return self.get_sla(obj)["media_min"] or 0
 
     def get_atendimentos_por_hora(self, obj):
         qs = self._get_queryset()

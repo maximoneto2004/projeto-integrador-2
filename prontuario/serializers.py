@@ -161,11 +161,14 @@ class ReceitaSerializer(serializers.ModelSerializer):
                 {"retirada_imediata": "A retirada imediata só pode ser indicada durante o atendimento."}
             )
         # update() em vez de save(): a troca entre situações ativas não mexe na ocupação da vaga.
+        agora = timezone.now()
         Agendamento.objects.filter(pk=agendamento.pk).update(
             retirar_medicamento=True,
             situacao=SITUACAO_AGUARDANDO_RETIRADA,
-            data_hora_fim_atendimento=agendamento.data_hora_fim_atendimento or timezone.localtime().time(),
-            updated_at=timezone.now(),
+            data_hora_fim_atendimento=agendamento.data_hora_fim_atendimento or timezone.localtime(agora).time(),
+            fim_atendimento_em=(agendamento.fim_atendimento_em or agora)
+            if agendamento.data_hora_fim_atendimento is None else agendamento.fim_atendimento_em,
+            updated_at=agora,
         )
 
     @transaction.atomic

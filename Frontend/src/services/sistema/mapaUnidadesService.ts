@@ -36,6 +36,7 @@ export type MapaUnidadeMetricasApi = {
 } | null;
 
 export type MapaUnidadeApi = {
+  analise?: import("@/types/mapaAssistencial").AnaliseUnidade | null;
   id: string;
   nome: string;
   logradouro: string;

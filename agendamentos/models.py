@@ -59,6 +59,9 @@ class Agendamento(BaseModel):
     horario = models.TimeField(verbose_name="Hora do Agendamento", editable=False)
     data_hora_inicio_atendimento = models.TimeField(verbose_name="Hora do início do atendimento", null=True, blank=True)
     data_hora_fim_atendimento = models.TimeField(verbose_name="Hora do final do atendimento", null=True, blank=True)
+    # Datas completas permitem medir consultas que atravessam a meia-noite.
+    inicio_atendimento_em = models.DateTimeField(verbose_name="Início do atendimento", null=True, blank=True, editable=False)
+    fim_atendimento_em = models.DateTimeField(verbose_name="Fim do atendimento", null=True, blank=True, editable=False)
     observacoes_gerais = models.TextField(verbose_name="Observações gerais", null=True, blank=True, max_length=600)
     situacao = models.CharField(
         max_length=20,

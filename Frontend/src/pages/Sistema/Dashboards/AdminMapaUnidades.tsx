@@ -1,4 +1,4 @@
-﻿import { useCallback, useEffect, useMemo, useState } from "react";
+﻿import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { format, isValid, parseISO, subDays } from "date-fns";
 import { isCargoProfissionalSaude } from "@/security/acess";
 
@@ -16,6 +16,12 @@ import { getEficiencia } from "../../../components/dashboard-gestor/UnidadeDetal
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
+import { useMapaMedicamentos } from "@/hooks/sistema/useMapaMedicamentos";
+import { MedicamentosHeatLayer } from "@/components/dashboard-gestor/mapa/MedicamentosHeatLayer";
+import { MedicamentosHeatControls } from "@/components/dashboard-gestor/mapa/MedicamentosHeatControls";
+import { nomeMedicamento } from "@/lib/mapaAssistencial";
+import { formatSla } from "@/lib/sla";
+import type { AnaliseUnidade, DemandaUnidade, MedicamentoMapa } from "@/types/mapaAssistencial";
 
 type OrigemAtendimento = "156" | "RECEPCAO" | "SITE" | "FILA";
 type OrigemAtendimentoCount = Record<OrigemAtendimento, number>;
@@ -27,7 +33,7 @@ export type ServicoMetrica = {
   esperadoMin: number;
   total: number;
   tempoMedioEsperaMin: number;
-  tempoMedioAtendimentoMin: number;
+  tempoMedioAtendimentoMin: number | null;
   tempoExcedenteMedioMin: number;
   pctAcimaEsperado: number;
 };
@@ -71,6 +77,7 @@ export type UnidadeProfissional = {
 };
 
 export type UnidadeMapa = {
+  analise?: AnaliseUnidade | null;
   id: string;
   nome: string;
   logradouro: string;
@@ -89,6 +96,7 @@ export type UnidadeMapa = {
 };
 
 type MapaUnidadeApi = {
+  analise?: AnaliseUnidade | null;
   id: string;
   nome: string;
   created_at: string | null;
@@ -188,21 +196,6 @@ type MapaUnidadeSeriesApiResponse = {
     data_fim?: string;
     serie?: MapaUnidadeSerieApiItem[] | null;
   };
-};
-
-type UnidadePostoListApiItem = {
-  id: string;
-  nome: string;
-  created_at?: string | null;
-  logradouro?: string;
-  numero?: string;
-  complemento?: string | null;
-  cep?: string;
-  bairro?: string | { id?: string; nome?: string } | null;
-  telefone?: string;
-  email?: string;
-  latitude?: string | number | null;
-  longitude?: string | number | null;
 };
 
 const extractApiList = <T,>(payload: unknown): T[] => {
@@ -441,6 +434,7 @@ const parseUnidadeMapa = (raw: MapaUnidadeApi): UnidadeMapa => {
   const coords = parseLatLng(raw?.latitude, raw?.longitude);
 
   return {
+    analise: raw.analise,
     id: String(raw?.id ?? ""),
     nome: String(raw?.nome ?? ""),
     createdAt: raw?.created_at ?? null,
@@ -460,31 +454,10 @@ const parseUnidadeMapa = (raw: MapaUnidadeApi): UnidadeMapa => {
     email: String(raw?.email ?? ""),
     latitude: coords.latitude,
     longitude: coords.longitude,
-    metricas: parseUnidadeMetricas(raw?.metricas),
-  };
-};
-
-const parseUnidadeCard = (raw: UnidadePostoListApiItem): UnidadeMapa => {
-  const bairroId = typeof raw?.bairro === "string" ? raw.bairro : String(raw?.bairro?.id ?? "");
-  const bairroNome = typeof raw?.bairro === "object" && raw?.bairro ? String(raw.bairro.nome ?? "") : "";
-  const coords = parseLatLng(raw?.latitude, raw?.longitude);
-
-  return {
-    id: String(raw?.id ?? ""),
-    nome: String(raw?.nome ?? ""),
-    createdAt: raw?.created_at ?? null,
-    logradouro: String(raw?.logradouro ?? ""),
-    numero: String(raw?.numero ?? ""),
-    complemento: String(raw?.complemento ?? ""),
-    cep: String(raw?.cep ?? ""),
-    bairroId,
-    bairroNome,
-    bairrosAbrangencia: [],
-    telefone: String(raw?.telefone ?? ""),
-    email: String(raw?.email ?? ""),
-    latitude: coords.latitude,
-    longitude: coords.longitude,
-    metricas: { ...EMPTY_METRICAS },
+    metricas: {
+      ...parseUnidadeMetricas(raw?.metricas),
+      ...(raw.analise ? { tempoMedioAtendimentoMin: raw.analise.media_min } : {}),
+    },
   };
 };
 
@@ -535,7 +508,9 @@ function FlyTo({ position }: { position: [number, number] }) {
   return null;
 }
 
-function UnidadePopup({ unidade, metricas }: { unidade: UnidadeMapa; metricas: UnidadeMetricas }) {
+function UnidadePopup({ unidade, metricas, demanda, medicamento }: {
+  unidade: UnidadeMapa; metricas: UnidadeMetricas; demanda?: DemandaUnidade; medicamento?: MedicamentoMapa | null;
+}) {
   const eficiencia = getEficiencia(
     metricas.pctAcimaEsperado,
     metricas.tempoMedioAtendimentoComumMin,
@@ -546,7 +521,8 @@ function UnidadePopup({ unidade, metricas }: { unidade: UnidadeMapa; metricas: U
     <div className="min-w-[280px] space-y-2 text-sm">
       <div className="min-w-0">
         <div className="font-semibold leading-tight break-words">{unidade.nome || `Unidade ${unidade.id}`}</div>
-        <div className="text-xs text-muted-foreground">Últimos 30 dias • métricas via API</div>
+        <div className="text-xs text-muted-foreground">{unidade.logradouro}, {unidade.numero} · {unidade.bairroNome}</div>
+        <div className="text-xs text-muted-foreground">Indicadores no período selecionado</div>
       </div>
 
       <div className="grid grid-cols-2 gap-x-4 gap-y-1">
@@ -583,6 +559,18 @@ function UnidadePopup({ unidade, metricas }: { unidade: UnidadeMapa; metricas: U
           </div>
         </div>
       </div>
+      {medicamento && <div className="rounded-lg bg-primary/10 p-2"><p className="font-medium">{nomeMedicamento(medicamento)}</p><p>{demanda?.solicitacoes ?? 0} receitas nesta unidade</p></div>}
+      {unidade.analise && <div className="space-y-2 border-t pt-2">
+        <div><p className="font-semibold">Serviços e tempo médio</p>
+          {unidade.analise.servicos.slice(0, 3).map((servico) => <div key={servico.id} className="flex justify-between gap-3 text-xs"><span>{servico.nome}</span><span className="whitespace-nowrap">{formatSla(servico.media_min)}</span></div>)}
+          {!unidade.analise.servicos.length && <p className="text-xs">Nenhum serviço informado.</p>}
+        </div>
+        <div><p className="font-semibold">Medicamentos mais solicitados</p>
+          {unidade.analise.medicamentos.slice(0, 3).map((med) => <p key={med.id} className="text-xs">{med.nome} {med.concentracao} {med.unidade_medida.toLowerCase()}: {med.solicitacoes} receitas</p>)}
+          {!unidade.analise.medicamentos.length && <p className="text-xs">Nenhuma solicitação no período.</p>}
+        </div>
+        <p className="text-xs text-primary">Clique na unidade para ver todos os detalhes.</p>
+      </div>}
     </div>
   );
 }
@@ -604,11 +592,13 @@ export default function AdminMapaUnidades() {
   const [busca, setBusca] = useState("");
   const [filtroDataInicio, setFiltroDataInicio] = useState(periodo30d.dataInicio);
   const [filtroDataFim, setFiltroDataFim] = useState(periodo30d.dataFim);
+  const [camada, setCamada] = useState<"unidades" | "medicamentos">("unidades");
+  const [medicamentoId, setMedicamentoId] = useState("");
+  const medicamentosMapa = useMapaMedicamentos({
+    data_inicio: filtroDataInicio, data_fim: filtroDataFim, medicamento_id: medicamentoId || undefined,
+  }, camada === "medicamentos");
   const [filtroBairro, setFiltroBairro] = useState("todos");
   const [filtroUnidadeId, setFiltroUnidadeId] = useState("todas");
-  const [unidadesCard, setUnidadesCard] = useState<UnidadeMapa[]>([]);
-  const [unidadesCardLoading, setUnidadesCardLoading] = useState(false);
-  const [unidadesCardError, setUnidadesCardError] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [unidadeSelecionada, setUnidadeSelecionada] = useState<UnidadeMapa | null>(null);
 
@@ -617,10 +607,15 @@ export default function AdminMapaUnidades() {
   const [serieError, setSerieError] = useState<string | null>(null);
   const [serieDataInicio, setSerieDataInicio] = useState(periodo30d.dataInicio);
   const [serieDataFim, setSerieDataFim] = useState(periodo30d.dataFim);
+  const requisicaoMapa = useRef(0);
+  const requisicaoDetalhe = useRef(0);
 
   const fetchMapaUnidades = useCallback(async () => {
+    const requisicao = ++requisicaoMapa.current;
     if (filtroDataInicio && filtroDataFim && filtroDataInicio > filtroDataFim) {
       setUnidadesError("Data de início não pode ser maior que data fim.");
+      setUnidades([]);
+      setLoading(false);
       return;
     }
 
@@ -638,41 +633,22 @@ export default function AdminMapaUnidades() {
       }
 
       const parsed = lista.map(parseUnidadeMapa).filter((u) => Boolean(u.id));
+      if (requisicao !== requisicaoMapa.current) return;
       setUnidades(parsed);
     } catch (err) {
+      if (requisicao !== requisicaoMapa.current) return;
       const message = getApiErrorMessage(err, "Não foi possível carregar as unidades do mapa.");
+      setUnidades([]);
       setUnidadesError(message);
       toast.error(message);
     } finally {
-      setLoading(false);
+      if (requisicao === requisicaoMapa.current) setLoading(false);
     }
   }, [filtroDataFim, filtroDataInicio]);
-
-  const fetchUnidadesCard = useCallback(async () => {
-    setUnidadesCardLoading(true);
-    setUnidadesCardError(null);
-
-    try {
-      const { data } = await api.get("/unidade_posto_list/");
-      const lista = extractApiList<UnidadePostoListApiItem>(data);
-      const parsed = lista.map(parseUnidadeCard).filter((u) => Boolean(u.id));
-      setUnidadesCard(parsed);
-    } catch (err) {
-      const message = getApiErrorMessage(err, "Não foi possível carregar as unidades.");
-      setUnidadesCardError(message);
-      toast.error(message);
-    } finally {
-      setUnidadesCardLoading(false);
-    }
-  }, []);
 
   useEffect(() => {
     void fetchMapaUnidades();
   }, [fetchMapaUnidades]);
-
-  useEffect(() => {
-    void fetchUnidadesCard();
-  }, [fetchUnidadesCard]);
 
   const bairros = useMemo(() => {
     const map = new Map<string, string>();
@@ -693,12 +669,12 @@ export default function AdminMapaUnidades() {
   const unidadesFiltradas = useMemo(() => {
     const term = busca.trim().toLowerCase();
 
-    return unidadesCard.filter((u) => {
+    return unidades.filter((u) => {
       if (term && !(u.nome || "").toLowerCase().includes(term)) return false;
       if (filtroBairro !== "todos" && u.bairroId !== filtroBairro) return false;
       return true;
     });
-  }, [busca, filtroBairro, unidadesCard]);
+  }, [busca, filtroBairro, unidades]);
 
   const unidadesComCoords = useMemo(() => {
     const term = busca.trim().toLowerCase();
@@ -713,6 +689,23 @@ export default function AdminMapaUnidades() {
   }, [busca, filtroBairro, filtroUnidadeId, unidades]);
 
   const pontos = useMemo<[number, number][]>(() => unidadesComCoords.map((u) => [u.latitude as number, u.longitude as number]), [unidadesComCoords]);
+  const demandaPorUnidade = useMemo(() => new Map((medicamentosMapa.data?.unidades ?? []).map((item) => [item.unidade_id, item])), [medicamentosMapa.data]);
+  const demandaSemLocalizacao = useMemo(() => unidades.reduce((total, unidade) =>
+    unidade.latitude === null || unidade.longitude === null
+      ? total + (demandaPorUnidade.get(unidade.id)?.solicitacoes ?? 0) : total, 0), [unidades, demandaPorUnidade]);
+  const pontosCalor = useMemo<Array<[number, number, number]>>(() => {
+    const maximo = medicamentosMapa.data?.maior_demanda ?? 0;
+    if (!maximo) return [];
+    return unidadesComCoords.flatMap((u) => {
+      const total = demandaPorUnidade.get(u.id)?.solicitacoes ?? 0;
+      return total > 0 ? [[u.latitude as number, u.longitude as number, total / maximo] as [number, number, number]] : [];
+    });
+  }, [demandaPorUnidade, medicamentosMapa.data?.maior_demanda, unidadesComCoords]);
+  const listaUnidades = useMemo(() => unidadesFiltradas
+    .filter((u) => filtroUnidadeId === "todas" || u.id === filtroUnidadeId)
+    .sort((a, b) => camada === "medicamentos"
+      ? (demandaPorUnidade.get(b.id)?.solicitacoes ?? 0) - (demandaPorUnidade.get(a.id)?.solicitacoes ?? 0) || a.nome.localeCompare(b.nome)
+      : a.nome.localeCompare(b.nome)), [unidadesFiltradas, filtroUnidadeId, camada, demandaPorUnidade]);
 
   const metricasPorUnidade = useMemo(() => {
     return new Map(unidades.map((u) => [u.id, u.metricas ?? EMPTY_METRICAS]));
@@ -756,29 +749,33 @@ export default function AdminMapaUnidades() {
       if (!unidadeId) return;
       if (!dataInicio) return;
       if (!dataFim) return;
+      const requisicao = ++requisicaoDetalhe.current;
 
       setSerieLoading(true);
       setSerieError(null);
 
       try {
-        const [detalhe, serieResponse] = await Promise.all([
+        const [detalhe, serieResponse] = await Promise.allSettled([
           carregarDetalhesUnidade(unidadeId, dataInicio, dataFim),
           api.get<MapaUnidadeSeriesApiResponse>("/mapa/unidades/series/", {
             params: { unidade_id: unidadeId, data_inicio: dataInicio, data_fim: dataFim },
           }),
         ]);
-        if (!detalhe) {
+        if (requisicao !== requisicaoDetalhe.current) return;
+        if (detalhe.status === "fulfilled" && detalhe.value) setUnidadeSelecionada(detalhe.value);
+        if (serieResponse.status === "fulfilled") setSeriePontos(parseSeriePontos(serieResponse.value.data));
+        else {
           setSeriePontos([]);
-          return;
+          setSerieError("Não foi possível carregar a série temporal. Os detalhes da unidade continuam disponíveis.");
         }
-        setUnidadeSelecionada(detalhe);
-        setSeriePontos(parseSeriePontos(serieResponse.data));
+        if (detalhe.status === "rejected") setSerieError("Não foi possível atualizar os detalhes da unidade.");
       } catch (err) {
+        if (requisicao !== requisicaoDetalhe.current) return;
         const message = getApiErrorMessage(err, "Não foi possível carregar os detalhes da unidade.");
         setSerieError(message);
         setSeriePontos([]);
       } finally {
-        setSerieLoading(false);
+        if (requisicao === requisicaoDetalhe.current) setSerieLoading(false);
       }
     },
     [carregarDetalhesUnidade],
@@ -820,21 +817,23 @@ export default function AdminMapaUnidades() {
     setFiltroDataFim(periodo30d.dataFim);
     setFiltroBairro("todos");
     setFiltroUnidadeId("todas");
+    setMedicamentoId("");
   };
 
   const handleAtualizar = useCallback(() => {
     void fetchMapaUnidades();
-    void fetchUnidadesCard();
+    if (camada === "medicamentos") void medicamentosMapa.refetch();
     if (unidadeSelecionada?.id) {
       void carregarSerieUnidade(unidadeSelecionada.id, serieDataInicio, serieDataFim);
     }
-  }, [carregarSerieUnidade, fetchMapaUnidades, fetchUnidadesCard, serieDataFim, serieDataInicio, unidadeSelecionada?.id]);
+  }, [carregarSerieUnidade, fetchMapaUnidades, serieDataFim, serieDataInicio, unidadeSelecionada?.id, camada, medicamentosMapa.refetch]);
 
   useEffect(() => {
     const unidadeIdSelecionada = unidadeSelecionada?.id;
 
     const refresh = () => {
       void fetchMapaUnidades();
+      if (camada === "medicamentos") void medicamentosMapa.refetch();
       if (dialogOpen && unidadeIdSelecionada) {
         void carregarSerieUnidade(unidadeIdSelecionada, serieDataInicio, serieDataFim);
       }
@@ -849,14 +848,14 @@ export default function AdminMapaUnidades() {
     return () => {
       window.clearInterval(intervalId);
     };
-  }, [carregarSerieUnidade, dialogOpen, fetchMapaUnidades, serieDataFim, serieDataInicio, unidadeSelecionada?.id]);
+  }, [carregarSerieUnidade, dialogOpen, fetchMapaUnidades, serieDataFim, serieDataInicio, unidadeSelecionada?.id, camada, medicamentosMapa.refetch]);
 
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-background">
         <RoleBasedSidebar />
         <main className="flex min-h-screen min-w-0 flex-1 flex-col">
-          <header className="flex h-16 items-center justify-between border-b bg-background px-4 md:px-6">
+          <header className="flex flex-wrap items-center justify-between gap-3 border-b bg-background px-4 py-4 md:px-6">
             <div className="flex items-center gap-3">
               <SidebarTrigger />
               <div>
@@ -864,14 +863,19 @@ export default function AdminMapaUnidades() {
                 <p className="text-sm text-muted-foreground">Visualize todas as unidades de postos de Fortaleza.</p>
               </div>
             </div>
-            <Button type="button" variant="outline" onClick={handleAtualizar} disabled={loading || unidadesCardLoading}>
+            <Button type="button" variant="outline" onClick={handleAtualizar} disabled={loading || medicamentosMapa.isFetching}>
               Atualizar
             </Button>
           </header>
 
-          <div className="flex min-h-0 flex-1">
-            <aside className="w-full max-w-[360px] shrink-0 overflow-y-auto border-r bg-muted/30 p-4 md:p-5">
+          <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
+            <aside className="max-h-[55vh] w-full shrink-0 overflow-y-auto border-r bg-muted/30 p-4 md:p-5 lg:max-h-[calc(100vh-110px)] lg:w-[340px]">
               <div className="space-y-4">
+                <div role="group" aria-label="Camada do mapa" className="grid grid-cols-2 gap-1 rounded-lg border bg-card p-1">
+                  <Button size="sm" className="min-w-0 whitespace-normal px-2 text-xs" variant={camada === "unidades" ? "default" : "ghost"} aria-pressed={camada === "unidades"} onClick={() => setCamada("unidades")}>Unidades</Button>
+                  <Button size="sm" className="min-w-0 whitespace-normal px-2 text-xs" variant={camada === "medicamentos" ? "default" : "ghost"} aria-pressed={camada === "medicamentos"} onClick={() => setCamada("medicamentos")}>Calor por medicamento</Button>
+                </div>
+                {camada === "medicamentos" && <MedicamentosHeatControls data={medicamentosMapa.data} loading={medicamentosMapa.isFetching} error={medicamentosMapa.isError} onChange={setMedicamentoId} onRetry={() => void medicamentosMapa.refetch()} semLocalizacao={demandaSemLocalizacao} />}
                 <div className="space-y-1">
                   <Label htmlFor="busca-unidade">Buscar unidade</Label>
                   <Input id="busca-unidade" placeholder="Ex: Unidade Centro..." value={busca} onChange={(e) => setBusca(e.target.value)} />
@@ -900,9 +904,9 @@ export default function AdminMapaUnidades() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label>Bairro</Label>
+                  <Label htmlFor="filtro-bairro">Bairro</Label>
                   <Select value={filtroBairro} onValueChange={setFiltroBairro}>
-                    <SelectTrigger>
+                    <SelectTrigger id="filtro-bairro">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -917,9 +921,9 @@ export default function AdminMapaUnidades() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label>Unidade</Label>
+                  <Label htmlFor="filtro-unidade">Unidade</Label>
                   <Select value={filtroUnidadeId} onValueChange={setFiltroUnidadeId}>
-                    <SelectTrigger>
+                    <SelectTrigger id="filtro-unidade">
                       <SelectValue placeholder="Selecione a unidade" />
                     </SelectTrigger>
                     <SelectContent>
@@ -937,9 +941,9 @@ export default function AdminMapaUnidades() {
                   Limpar filtros
                 </Button>
 
-                {(unidadesCardError || unidadesError) && (
+                {unidadesError && (
                   <div className="rounded-md border border-destructive/30 bg-destructive/5 p-3 text-xs text-destructive">
-                    {unidadesCardError || unidadesError}
+                    {unidadesError}
                   </div>
                 )}
 
@@ -949,25 +953,38 @@ export default function AdminMapaUnidades() {
                   </div>
                 )}
 
-                {unidadesCardLoading && <div className="text-xs text-muted-foreground">Carregando unidades para o seletor...</div>}
+                {loading && <div className="text-xs text-muted-foreground">Carregando unidades...</div>}
+                <div className="space-y-2">
+                  <h2 className="text-sm font-semibold">Unidades cadastradas ({listaUnidades.length})</h2>
+                  <p className="text-xs text-muted-foreground">Selecione um ponto no mapa ou uma unidade abaixo.</p>
+                  {listaUnidades.map((unidade) => <Button key={unidade.id} variant="ghost" className="h-auto w-full flex-col items-start gap-1 whitespace-normal rounded-xl border bg-card p-3 text-left" onClick={() => handleSelecionarUnidade(unidades.find((u) => u.id === unidade.id) ?? unidade)}>
+                    <span className="font-semibold">{unidade.nome}</span>
+                    <span className="text-xs font-normal text-muted-foreground">{unidade.logradouro}, {unidade.numero}</span>
+                    {camada === "medicamentos" && medicamentosMapa.data && <span className="text-xs font-medium text-primary">{demandaPorUnidade.get(unidade.id)?.solicitacoes ?? 0} receitas com o medicamento</span>}
+                    {(unidade.latitude === null || unidade.longitude === null) && <span className="text-xs font-normal text-amber-700">Localização não cadastrada no mapa</span>}
+                  </Button>)}
+                  {!listaUnidades.length && !loading && <p className="text-xs text-muted-foreground">Nenhuma unidade encontrada para os filtros.</p>}
+                </div>
               </div>
             </aside>
 
-            <section className="relative min-w-0 flex-1 overflow-hidden">
-              <div className="h-full w-full">
-                <MapContainer center={DEFAULT_POSITION} zoom={12} className="h-full w-full">
+            <section className="relative min-w-0 flex-1 overflow-hidden" aria-label="Mapa das unidades">
+              <div className="h-[60vh] min-h-[420px] w-full lg:h-[calc(100vh-110px)]">
+                <MapContainer center={DEFAULT_POSITION} zoom={12} className="z-0 h-full w-full" key="mapa-unidades-gestor">
                   <TileLayer
                     attribution="&copy; OpenStreetMap contributors"
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     referrerPolicy="origin"
                   />
-                  {pontos.length > 0 && <FitBounds pontos={pontos} />}
+                  {pontos.length > 0 && <FitBounds key={camada} pontos={pontos} />}
                   {selectedPosition && <FlyTo position={selectedPosition} />}
+                  {camada === "medicamentos" && <MedicamentosHeatLayer pontos={pontosCalor} />}
                   {unidadesComCoords.map((unidade) => {
                     const metricas = metricasPorUnidade.get(unidade.id) ?? unidade.metricas ?? EMPTY_METRICAS;
                     return (
                       <Marker
                         key={unidade.id}
+                        title={unidade.nome}
                         position={[unidade.latitude as number, unidade.longitude as number]}
                         icon={houseIcon}
                         eventHandlers={{
@@ -983,13 +1000,19 @@ export default function AdminMapaUnidades() {
                           },
                         }}
                       >
-                        <Popup closeButton={false} autoPan autoPanPadding={[24, 24]} keepInView minWidth={280}>
-                          <UnidadePopup unidade={unidade} metricas={metricas} />
+                        <Popup closeButton={false} autoPan autoPanPadding={[24, 24]} keepInView minWidth={240} maxWidth={320}>
+                          <UnidadePopup unidade={unidade} metricas={metricas} demanda={demandaPorUnidade.get(unidade.id)} medicamento={camada === "medicamentos" ? medicamentosMapa.data?.medicamento : null} />
                         </Popup>
                       </Marker>
                     );
                   })}
                 </MapContainer>
+                {camada === "medicamentos" && medicamentosMapa.data?.medicamento && <div className="pointer-events-none absolute bottom-5 left-4 right-4 z-10 max-w-sm rounded-xl border bg-card/95 p-3 shadow-md">
+                  <p className="text-xs font-semibold">{nomeMedicamento(medicamentosMapa.data.medicamento)}</p>
+                  <p className="mb-2 mt-1 text-[11px] text-muted-foreground">Concentração de receitas por unidade no período</p>
+                  <div className="h-2 rounded-full" style={{ background: "linear-gradient(to right, #14b8a6, #facc15, #f97316, #dc2626)" }} />
+                  <div className="mt-1 flex justify-between text-[11px]"><span>Menor demanda</span><span>Maior: {medicamentosMapa.data.maior_demanda} receitas</span></div>
+                </div>}
 
                 {loading && unidades.length === 0 && (
                   <div className="absolute inset-0 flex items-center justify-center bg-background/60 backdrop-blur-[1px]">

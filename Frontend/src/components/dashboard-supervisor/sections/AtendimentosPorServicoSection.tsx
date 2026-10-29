@@ -13,7 +13,7 @@ import { AtendentesChart } from "@/components/dashboard-supervisor/charts/Atende
 type AtendimentosPorServicoItem = {
   atendente: string;
   total: number;
-  tempoMedioColaborador: number;
+  tempoMedioColaborador: number | null;
 };
 
 type AtendimentosPorServicoSectionProps = {

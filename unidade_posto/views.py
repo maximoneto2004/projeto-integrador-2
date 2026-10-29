@@ -40,6 +40,7 @@ from dashboard.metrics import (
     calculate_tempo_excedente_medio_min,
 )
 from dashboard.serializers import DashboardSupervisorSerializer
+from dashboard.mapa_assistencial import PeriodoMapaSerializer, analise_por_unidade, pode_ver_analise_gestor
 
 
 def _normalize_text(value):
@@ -64,11 +65,10 @@ def _resolve_supervisor_period(request):
     data_inicio_raw = request.query_params.get("data_inicio")
     data_fim_raw = request.query_params.get("data_fim")
 
-    if not data_inicio_raw and not data_fim_raw:
-        today = timezone.localdate().isoformat()
-        return data_inicio_raw, data_fim_raw, today, today
-
-    return data_inicio_raw, data_fim_raw, data_inicio_raw, data_fim_raw
+    params = PeriodoMapaSerializer(data=request.query_params)
+    params.is_valid(raise_exception=True)
+    return (data_inicio_raw, data_fim_raw, params.validated_data["data_inicio"].isoformat(),
+            params.validated_data["data_fim"].isoformat())
 
 
 def _load_supervisor_data_for_unidade(unidade_id, data_inicio_raw, data_fim_raw, data_inicio, data_fim):
@@ -772,6 +772,8 @@ class UnidadePostoMapaListView(generics.ListAPIView):
             }
 
         context["metricas_por_unidade"] = metricas_por_unidade
+        if pode_ver_analise_gestor(self.request.user):
+            context["analise_por_unidade"] = analise_por_unidade(unidade_ids, data_inicio, data_fim)
         return context
 
     def list(self, request, *args, **kwargs):
@@ -824,6 +826,8 @@ class UnidadePostoMapaRetrieveView(generics.RetrieveAPIView):
                 profissionais=profissionais_detalhe_por_unidade.get(unidade_id_str, []),
             ),
         }
+        if pode_ver_analise_gestor(self.request.user):
+            context["analise_por_unidade"] = analise_por_unidade([unidade_id_str], data_inicio, data_fim)
         return context
 
     def retrieve(self, request, *args, **kwargs):

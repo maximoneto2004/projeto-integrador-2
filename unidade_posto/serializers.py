@@ -54,6 +54,10 @@ class UnidadePostoIdNomeSerializer(serializers.ModelSerializer):
 class UnidadePostoMapaSerializer(serializers.ModelSerializer):
     bairro = BairroSerializer()
     metricas = serializers.SerializerMethodField()
+    analise = serializers.SerializerMethodField()
+
+    def get_analise(self, obj):
+        return self.context.get("analise_por_unidade", {}).get(str(obj.id))
 
   
 
@@ -72,7 +76,8 @@ class UnidadePostoMapaSerializer(serializers.ModelSerializer):
             "email",
             "latitude",
             "longitude",
-            "metricas"
+            "metricas",
+            "analise",
         ]
 
 

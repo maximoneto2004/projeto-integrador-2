@@ -33,7 +33,7 @@ interface AtendentesChartProps {
   data: {
     atendente: string;
     total: number;
-    tempoMedioColaborador: number;
+    tempoMedioColaborador: number | null;
   }[];
 }
 

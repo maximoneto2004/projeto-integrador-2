@@ -15,6 +15,7 @@ import {
   AlertCircle,
   Building2,
   UserCheck,
+  Pill,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -36,6 +37,8 @@ import type {
   UnidadeProfissional,
   UnidadeSeriePonto,
 } from "../../pages/Sistema/Dashboards/AdminMapaUnidades";
+import { MedicamentosUnidadePanel, ServicosUnidadePanel } from "./mapa/UnidadeAssistencialPanel";
+import { formatSla } from "@/lib/sla";
 
 type UnidadeDetalheDialogProps = {
   open: boolean;
@@ -134,8 +137,8 @@ function InfoRow({ label, value, icon: Icon }: { label: string; value: ReactNode
 
 const SERVICOS_POR_PAGINA = 10;
 
-const getSlaStatus = (tempo: number, meta: number) => {
-  if (!Number.isFinite(tempo) || tempo <= 0) {
+const getSlaStatus = (tempo: number | null, meta: number) => {
+  if (tempo === null || !Number.isFinite(tempo) || tempo < 0) {
     return { label: "Sem dados", color: "bg-slate-200 text-slate-700 border-slate-200", icon: AlertCircle };
   }
   if (!Number.isFinite(meta) || meta <= 0) {
@@ -177,7 +180,7 @@ export function UnidadeDetalheDialog({
   onAtualizarSerie,
   tempoMetaPadraoMin,
 }: UnidadeDetalheDialogProps) {
-  const statusSla = getSlaStatus(metricas?.tempoMedioAtendimentoMin ?? 0, tempoMetaPadraoMin);
+  const statusSla = getSlaStatus(metricas?.tempoMedioAtendimentoMin ?? null, tempoMetaPadraoMin);
   const eficiencia = getEficiencia(metricas?.pctAcimaEsperado ?? 0, metricas?.tempoMedioAtendimentoMin ?? 0, tempoMetaPadraoMin);
   const metaAtendimentoLabel =
     Number.isFinite(tempoMetaPadraoMin) && tempoMetaPadraoMin > 0 ? `Meta media: ${tempoMetaPadraoMin.toFixed(1)} min` : "Meta indisponivel";
@@ -239,7 +242,7 @@ export function UnidadeDetalheDialog({
 
     return {
       label: "Tempo Médio Geral",
-      value: formatMinutesCard(metricas?.tempoMedioAtendimentoMin),
+      value: unidade?.analise ? formatSla(unidade.analise.media_min) : formatMinutesCard(metricas?.tempoMedioAtendimentoMin),
       subValue: metaAtendimentoLabel,
     };
   }, [
@@ -252,6 +255,7 @@ export function UnidadeDetalheDialog({
     esperadoEspecialLabel,
     tempoEspecialLabel,
     tempoMedioView,
+    unidade?.analise,
   ]);
 
   const formatTickDate = (value: unknown) => {
@@ -298,7 +302,7 @@ export function UnidadeDetalheDialog({
         </div>
 
         <Tabs defaultValue="metricas" className="flex-1 flex flex-col overflow-hidden bg-background">
-          <div className="px-8 border-b">
+          <div className="overflow-x-auto border-b px-4 sm:px-8">
             <TabsList className="h-14 bg-transparent gap-8 p-0">
               <TabsTrigger
                 value="metricas"
@@ -311,6 +315,9 @@ export function UnidadeDetalheDialog({
                 className="h-14 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none font-bold text-muted-foreground data-[state=active]:text-foreground"
               >
                 <Users className="h-4 w-4 mr-2" /> Equipe
+              </TabsTrigger>
+              <TabsTrigger value="medicamentos" className="h-14 rounded-none border-b-2 border-transparent font-bold text-muted-foreground data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground">
+                <Pill className="mr-2 h-4 w-4" /> Medicamentos
               </TabsTrigger>
               <TabsTrigger
                 value="informacoes"
@@ -468,7 +475,7 @@ export function UnidadeDetalheDialog({
                   </CardContent>
                 </Card>
 
-                <Card className="shadow-sm border-slate-200">
+                {unidade?.analise ? <ServicosUnidadePanel analise={unidade.analise} /> : <Card className="shadow-sm border-slate-200">
                   <CardHeader>
                     <CardTitle className="text-base font-bold">Desempenho por Tipo de Serviço (apenas atendimentos finalizados)</CardTitle>
                   </CardHeader>
@@ -538,7 +545,11 @@ export function UnidadeDetalheDialog({
                       </div>
                     )}
                   </CardContent>
-                </Card>
+                </Card>}
+              </TabsContent>
+
+              <TabsContent value="medicamentos" className="mt-0 outline-none">
+                <MedicamentosUnidadePanel analise={unidade?.analise} />
               </TabsContent>
 
               {/* --- ABA EQUIPE --- */}

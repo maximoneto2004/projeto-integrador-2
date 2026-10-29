@@ -311,6 +311,7 @@ export type FilaEsperaResponse = {
 };
 
 export type DashboardSupervisorResult = {
+  sla?: import("./sla").SlaResumo;
   data_inicio: string;
   data_fim: string;
   unidade_id: string;

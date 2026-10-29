@@ -3,7 +3,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { RoleBasedSidebar } from "@/components/RoleBasedSidebar";
 import { Button } from "@/components/ui/button";
 import { endOfWeek, format, startOfWeek } from "date-fns";
-import { Activity, AlertTriangle, Clock3 } from "lucide-react";
+import { Activity, AlertTriangle } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
@@ -19,6 +19,7 @@ import { VolumeStatusSection } from "@/components/dashboard-supervisor/sections/
 import { CapacidadeCargaSection } from "@/components/dashboard-supervisor/sections/CapacidadeCargaSection";
 import { ResumoStatusSection } from "@/components/dashboard-supervisor/sections/ResumoStatusSection";
 import { OrigemAtendimentosSection } from "@/components/dashboard-supervisor/sections/OrigemAtendimentosSection";
+import { SupervisorSlaSection } from "@/components/dashboard-supervisor/sla/SupervisorSlaSection";
 
 type RangeTipo = "hoje" | "semana" | "periodo";
 
@@ -32,10 +33,8 @@ const statusColors: Record<string, string> = {
   Finalizados: "#10b981",
 };
 
-const formatMinutes = (value: number) => `${Math.round(value)} min`;
-
 const AdminDashboardSupervisor = () => {
-  const today = new Date();
+  const todayKey = format(new Date(), "yyyy-MM-dd");
   const { user } = useAuth();
   const [range, setRange] = useState<RangeTipo>("hoje");
   const [dateRange, setDateRange] = useState<DateRange>({ from: new Date(), to: new Date() });
@@ -43,6 +42,7 @@ const AdminDashboardSupervisor = () => {
   const unidadeId = user?.unidade_ativa?.id || "";
 
   const { dataInicio, dataFim } = useMemo(() => {
+    const today = new Date(`${todayKey}T00:00:00`);
     const weekStart = startOfWeek(today, { weekStartsOn: 1 });
     const weekEnd = endOfWeek(today, { weekStartsOn: 1 });
 
@@ -53,7 +53,7 @@ const AdminDashboardSupervisor = () => {
       dataInicio: format(from, "yyyy-MM-dd"),
       dataFim: format(to, "yyyy-MM-dd"),
     };
-  }, [dateRange?.from, dateRange?.to, range, today]);
+  }, [dateRange?.from, dateRange?.to, range, todayKey]);
 
   const {
     data: dashboard,
@@ -87,7 +87,6 @@ const AdminDashboardSupervisor = () => {
   };
 
   const noShowRate = Number(dashboard?.taxa_nao_comparecimento || 0);
-  const tempoMedio = Number(dashboard?.tempo_medio || 0);
 
   const horariosChartData = (dashboard?.atendimentos_por_hora || [])
     .map((item) => ({ hora: `${String(item.hour).padStart(2, "0")}h`, total: item.total || 0 }))
@@ -98,10 +97,10 @@ const AdminDashboardSupervisor = () => {
     { hora: "--", total: 0 }
   );
 
-  const produtividadePorColaborador = (dashboard?.servicos_metricas || []).map((item) => ({
-    atendente: item.servico_nome || "Serviço",
+  const produtividadePorColaborador = (dashboard?.sla?.por_servico || []).map((item) => ({
+    atendente: item.nome,
     total: item.total || 0,
-    tempoMedioColaborador: item.tempo_medio_atendimento_min || 0,
+    tempoMedioColaborador: item.media_min,
   }));
 
   const categoriaChartData = (dashboard?.agendamentos_por_classe || []).map((item) => ({
@@ -126,7 +125,7 @@ const AdminDashboardSupervisor = () => {
       <div className="flex min-h-screen w-full bg-background">
         <RoleBasedSidebar />
 
-        <main className="flex-1 bg-muted/30">
+        <main className="min-w-0 flex-1 bg-muted/30">
           <header className="sticky top-0 z-10 flex flex-col gap-3 border-b bg-background px-6 py-4 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-3">
               <SidebarTrigger />
@@ -138,7 +137,7 @@ const AdminDashboardSupervisor = () => {
 
             <div className="flex flex-col gap-2 md:items-end">
               <div className="flex flex-wrap items-center gap-2">
-                <div className="flex rounded-md border bg-card p-1 gap-2">
+                <div className="flex max-w-full flex-wrap gap-2 rounded-md border bg-card p-1">
                   <Button size="sm" variant={range === "hoje" ? "default" : "ghost"} onClick={() => setRange("hoje")}>
                     Hoje
                   </Button>
@@ -155,7 +154,7 @@ const AdminDashboardSupervisor = () => {
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
-                        className={cn("w-[260px] justify-start text-left font-normal", !dateRange?.from && "text-muted-foreground")}
+                        className={cn("w-full min-w-0 justify-start text-left font-normal sm:w-[260px]", !dateRange?.from && "text-muted-foreground")}
                         onClick={() => setRange("periodo")}
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
@@ -179,7 +178,7 @@ const AdminDashboardSupervisor = () => {
                         defaultMonth={dateRange?.from}
                         selected={dateRange}
                         onSelect={(selected) => {
-                          setDateRange(selected ?? {});
+                          setDateRange(selected ?? { from: undefined });
                           if (selected?.from && selected?.to) setRange("periodo");
                         }}
                         numberOfMonths={2}
@@ -201,7 +200,15 @@ const AdminDashboardSupervisor = () => {
             )}
             {error && <p className="text-sm text-destructive">{error instanceof Error ? error.message : "Erro ao carregar dashboard."}</p>}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+            {unidadeId && !error && <SupervisorSlaSection
+              key={`${unidadeId}:${dataInicio}:${dataFim}`}
+              params={{ unidade_id: unidadeId, data_inicio: dataInicio, data_fim: dataFim }}
+              resumo={dashboard?.sla}
+              loading={loading}
+              unidadeNome={user?.unidade_ativa?.nome || "Unidade ativa"}
+            />}
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <DashboardCard
                 title={`Atendimentos (${rangeLabel})`}
                 value={`${totalAgendamentos}`}
@@ -223,12 +230,6 @@ const AdminDashboardSupervisor = () => {
                 accent="bg-amber-100 text-amber-600 dark:bg-amber-950/40 dark:text-amber-100"
               />
 
-              <DashboardCard
-                title="Tempo médio"
-                value={totalAgendamentos ? formatMinutes(tempoMedio) : "--"}
-                icon={Clock3}
-                accent="bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-100"
-              />
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">

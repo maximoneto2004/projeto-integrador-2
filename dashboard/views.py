@@ -24,33 +24,21 @@ from usuarios.models import Usuario
 
 from .filters import DashboardGestorFilter, DashboardMonitorUnidadeFilter, DashboardSupervisorFilter
 from .metrics import calculate_pct_acima_esperado, calculate_tempo_excedente_medio_min
+from .supervisor import SupervisorScopeMixin
 from .serializers import (
     DashboardGestorSerializer,
     DashboardMonitorUnidadeSerializer,
     DashboardSupervisorSerializer,
 )
-class DashboardSupervisorAPIView(generics.GenericAPIView):
-    permission_classes = [permissions.IsAuthenticated, DjangoModelPermissionsWithView]
+class DashboardSupervisorAPIView(SupervisorScopeMixin, generics.GenericAPIView):
     queryset = Agendamento.objects.all()
     filterset_class = DashboardSupervisorFilter
     filter_backends = [DjangoFilterBackend]
 
     def get(self, request):
         qs = self.filter_queryset(self.get_queryset())
-
-        data_inicio = request.query_params.get("data_inicio")
-        data_fim = request.query_params.get("data_fim")
-
-        if not data_inicio and not data_fim:
-            today = timezone.now().date()
-            data_inicio = data_fim = today
-
         serializer = DashboardSupervisorSerializer(
-            data={
-                "data_inicio": data_inicio,
-                "data_fim": data_fim,
-                "unidade_id": request.query_params.get("unidade_id"),
-            },
+            data=self.periodo,
             context={"queryset": qs},
         )
 

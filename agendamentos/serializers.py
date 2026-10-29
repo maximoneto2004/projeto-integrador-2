@@ -17,6 +17,20 @@ class AgendaVagaSerializer(serializers.ModelSerializer):
 
 
 class AgendamentoSerializer(serializers.ModelSerializer):
+    def update(self, instance, validated_data):
+        """Registra os marcos da consulta no servidor, sem recontar a retirada na farmácia."""
+        situacao = validated_data.get("situacao", instance.situacao)
+        agora = timezone.now()
+        if situacao == "ATENDIMENTO" and instance.situacao != "ATENDIMENTO":
+            if instance.inicio_atendimento_em is None and instance.data_hora_inicio_atendimento is None:
+                validated_data["inicio_atendimento_em"] = agora
+                validated_data["data_hora_inicio_atendimento"] = timezone.localtime(agora).time()
+        if situacao == "FINALIZADO" and instance.situacao == "ATENDIMENTO":
+            if instance.fim_atendimento_em is None and instance.data_hora_fim_atendimento is None:
+                validated_data["fim_atendimento_em"] = agora
+                validated_data["data_hora_fim_atendimento"] = timezone.localtime(agora).time()
+        return super().update(instance, validated_data)
+
     def validate(self, attrs):
         attrs = super().validate(attrs)
         cidadao = attrs.get("cidadao")
@@ -76,7 +90,8 @@ class AgendamentoSerializer(serializers.ModelSerializer):
         fields = "__all__"
         validators = []
         # Controlados pelo fluxo de prescrição/retirada, nunca pelo payload do cliente.
-        read_only_fields = ["retirar_medicamento", "farmaceutico"]
+        read_only_fields = ["retirar_medicamento", "farmaceutico", "inicio_atendimento_em", "fim_atendimento_em",
+                            "data_hora_inicio_atendimento", "data_hora_fim_atendimento"]
 
 
 class AgendamentoDetailSerializer(serializers.ModelSerializer):

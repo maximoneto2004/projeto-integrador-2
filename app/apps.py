@@ -12,6 +12,7 @@ EXCLUDED_COMMANDS = {
     "test",
     "dumpdata",
     "loaddata",
+    "carregar_demonstracao",
 }
 
 
