@@ -166,6 +166,17 @@ class MinhasReceitasTest(AreaCidadaoBaseTest):
         self.assertEqual(self.client.get(f"{URL_RECEITAS}{alheia.id}/").status_code, 404)
         self.assertEqual(self.client.get(f"{URL_RECEITAS}{alheia.id}/disponibilidade/").status_code, 404)
 
+    def test_baixa_pdf_da_propria_receita(self):
+        resp = self.client.get(f"{URL_RECEITAS}{self.receita.id}/pdf/", {"download": "true"})
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp["Content-Type"], "application/pdf")
+        self.assertTrue(resp.content.startswith(b"%PDF"))
+        self.assertIn("attachment;", resp["Content-Disposition"])
+
+    def test_nao_gera_pdf_de_receita_de_outro_cidadao(self):
+        alheia = self._receita(self.outro, quantidade=5)
+        self.assertEqual(self.client.get(f"{URL_RECEITAS}{alheia.id}/pdf/").status_code, 404)
+
     def test_disponibilidade_considera_so_estoque_valido(self):
         posto_b = criar_unidade("Posto B")
         posto_c = criar_unidade("Posto C")

@@ -3,6 +3,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import type { MapaMedicamentosResult } from "@/types/mapaAssistencial";
 import { nomeMedicamento } from "@/lib/mapaAssistencial";
+import { SeletorComBusca } from "@/components/SeletorComBusca";
 
 type Props = {
   data?: MapaMedicamentosResult;
@@ -19,10 +20,18 @@ export function MedicamentosHeatControls({ data, loading, error, onChange, onRet
       <h2 className="flex items-center gap-2 text-sm font-semibold text-primary"><Pill className="h-4 w-4" />Demanda por medicamento</h2>
       <div>
         <Label htmlFor="medicamento-mapa">Medicamento e apresentação</Label>
-        <select id="medicamento-mapa" className="mt-1 h-10 w-full min-w-0 rounded-md border border-input bg-background px-2 text-sm" value={data?.medicamento?.id ?? ""} disabled={loading || !data?.medicamentos.length} onChange={(event) => onChange(event.target.value)}>
-          {!data?.medicamentos.length && <option value="">{loading ? "Carregando..." : "Nenhum medicamento cadastrado"}</option>}
-          {data?.medicamentos.map((med) => <option key={med.id} value={med.id}>{nomeMedicamento(med)}</option>)}
-        </select>
+        <div className="mt-1">
+          <SeletorComBusca
+            id="medicamento-mapa"
+            opcoes={(data?.medicamentos ?? []).map((med) => ({ valor: med.id, rotulo: nomeMedicamento(med), detalhe: `${med.solicitacoes} receitas no período` }))}
+            valor={data?.medicamento?.id ?? ""}
+            onChange={onChange}
+            placeholder={loading && !data ? "Carregando..." : "Nenhum medicamento cadastrado"}
+            placeholderBusca="Buscar medicamento..."
+            vazio="Nenhum medicamento encontrado."
+            desabilitado={!data?.medicamentos.length}
+          />
+        </div>
       </div>
       {loading && <p role="status" className="text-xs text-muted-foreground">Atualizando demanda...</p>}
       {error && <div role="alert" className="text-xs text-destructive">Não foi possível carregar os medicamentos.<Button size="sm" variant="outline" className="mt-2" onClick={onRetry}>Tentar novamente</Button></div>}

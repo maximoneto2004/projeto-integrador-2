@@ -7,7 +7,8 @@ import { RoleBasedSidebar } from "@/components/RoleBasedSidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SeletorComBusca } from "@/components/SeletorComBusca";
+import { Building2, Flame, MapPinOff, ShieldCheck, UserX, Users, X, type LucideIcon } from "lucide-react";
 import { getApiErrorMessage } from "@/lib/notifications";
 import { toast } from "@/lib/sonner";
 import { api } from "@/services/api";
@@ -499,8 +500,33 @@ function FitBounds({ pontos }: { pontos: [number, number][] }) {
   useEffect(() => {
     if (!pontos.length) return;
     const bounds = L.latLngBounds(pontos.map(([lat, lng]) => [lat, lng]));
-    map.fitBounds(bounds.pad(0.18), { animate: true, duration: 0.6 });
+    map.fitBounds(bounds.pad(0.18), { animate: true, duration: 0.6, maxZoom: 15 });
   }, [map, pontos]);
+
+  return null;
+}
+
+// Fortaleza com uma margem em volta: a área precisa ser maior que a tela no zoom mínimo,
+// senão o Leaflet entra em loop ao reposicionar o mapa dentro do maxBounds (Maximum call stack size exceeded).
+const LIMITES_FORTALEZA = L.latLngBounds([-4.0, -38.75], [-3.62, -38.3]);
+
+// Impede que o mapa saia de Fortaleza: o zoom mínimo é o menor em que a tela inteira cabe dentro dos limites.
+function RestringirAFortaleza() {
+  const map = useMap();
+
+  useEffect(() => {
+    const ajustarZoomMinimo = () => {
+      const zoomMinimo = map.getBoundsZoom(LIMITES_FORTALEZA, true);
+      // Sem animação: durante uma animação a tela ainda ficaria maior que os limites.
+      if (map.getZoom() < zoomMinimo) map.setZoom(zoomMinimo, { animate: false });
+      map.setMinZoom(zoomMinimo);
+    };
+    ajustarZoomMinimo();
+    map.on("resize", ajustarZoomMinimo);
+    return () => {
+      map.off("resize", ajustarZoomMinimo);
+    };
+  }, [map]);
 
   return null;
 }
@@ -583,14 +609,27 @@ function UnidadePopup({ unidade, metricas, demanda, medicamento }: {
 
 type Camada = "unidades" | "medicamentos" | CamadaBairro;
 
-const CAMADAS: Array<{ valor: Camada; rotulo: string }> = [
-  { valor: "unidades", rotulo: "Unidades" },
-  { valor: "medicamentos", rotulo: "Calor por medicamento" },
-  { valor: "demanda", rotulo: "Consultas por bairro" },
-  { valor: "faltas", rotulo: "Faltas por bairro" },
-  { valor: "fora", rotulo: "Fora do território" },
-  { valor: "cobertura", rotulo: "Cobertura" },
+type OpcaoCamada = { valor: Camada; rotulo: string; descricao: string; icone: LucideIcon };
+
+const GRUPOS_CAMADAS: Array<{ titulo: string; camadas: OpcaoCamada[] }> = [
+  {
+    titulo: "Rede de unidades",
+    camadas: [
+      { valor: "unidades", rotulo: "Unidades", descricao: "Postos de saúde e seus indicadores no período.", icone: Building2 },
+      { valor: "medicamentos", rotulo: "Medicamentos", descricao: "Mapa de calor das receitas de um medicamento por unidade.", icone: Flame },
+    ],
+  },
+  {
+    titulo: "Bairros de residência",
+    camadas: [
+      { valor: "demanda", rotulo: "Consultas", descricao: "Quantidade de consultas por bairro de residência do paciente.", icone: Users },
+      { valor: "faltas", rotulo: "Faltas", descricao: "Taxa de não comparecimento dos pacientes de cada bairro.", icone: UserX },
+      { valor: "fora", rotulo: "Fora do território", descricao: "Consultas feitas fora da unidade de referência do bairro.", icone: MapPinOff },
+      { valor: "cobertura", rotulo: "Cobertura", descricao: "Bairros que têm unidade de referência cadastrada.", icone: ShieldCheck },
+    ],
+  },
 ];
+const CAMADAS = GRUPOS_CAMADAS.flatMap((g) => g.camadas);
 const CAMADAS_BAIRRO: readonly Camada[] = ["demanda", "faltas", "fora", "cobertura"];
 
 export default function AdminMapaUnidades() {
@@ -607,7 +646,6 @@ export default function AdminMapaUnidades() {
     };
   }, []);
 
-  const [busca, setBusca] = useState("");
   const [filtroDataInicio, setFiltroDataInicio] = useState(periodo30d.dataInicio);
   const [filtroDataFim, setFiltroDataFim] = useState(periodo30d.dataFim);
   const [camada, setCamada] = useState<Camada>("unidades");
@@ -693,27 +731,20 @@ export default function AdminMapaUnidades() {
   const bairrosPorId = useMemo(() => new Map(bairros.map((b) => [b.id, b.nome])), [bairros]);
   const getBairroNome = useCallback((bairroId: string) => bairrosPorId.get(bairroId) || bairroId || "-", [bairrosPorId]);
 
-  const unidadesFiltradas = useMemo(() => {
-    const term = busca.trim().toLowerCase();
+  const unidadesFiltradas = useMemo(
+    () => unidades.filter((u) => filtroBairro === "todos" || u.bairroId === filtroBairro).sort((a, b) => a.nome.localeCompare(b.nome)),
+    [filtroBairro, unidades],
+  );
 
-    return unidades.filter((u) => {
-      if (term && !(u.nome || "").toLowerCase().includes(term)) return false;
-      if (filtroBairro !== "todos" && u.bairroId !== filtroBairro) return false;
-      return true;
-    });
-  }, [busca, filtroBairro, unidades]);
-
-  const unidadesComCoords = useMemo(() => {
-    const term = busca.trim().toLowerCase();
-
-    return unidades.filter((u) => {
-      if (u.latitude === null || u.longitude === null) return false;
-      if (term && !(u.nome || "").toLowerCase().includes(term)) return false;
-      if (filtroBairro !== "todos" && u.bairroId !== filtroBairro) return false;
-      if (filtroUnidadeId !== "todas" && u.id !== filtroUnidadeId) return false;
-      return true;
-    });
-  }, [busca, filtroBairro, filtroUnidadeId, unidades]);
+  const unidadesComCoords = useMemo(
+    () =>
+      unidadesFiltradas.filter((u) => {
+        if (u.latitude === null || u.longitude === null) return false;
+        if (filtroUnidadeId !== "todas" && u.id !== filtroUnidadeId) return false;
+        return true;
+      }),
+    [filtroUnidadeId, unidadesFiltradas],
+  );
 
   const pontos = useMemo<[number, number][]>(() => unidadesComCoords.map((u) => [u.latitude as number, u.longitude as number]), [unidadesComCoords]);
   const demandaPorUnidade = useMemo(() => new Map((medicamentosMapa.data?.unidades ?? []).map((item) => [item.unidade_id, item])), [medicamentosMapa.data]);
@@ -728,11 +759,20 @@ export default function AdminMapaUnidades() {
       return total > 0 ? [[u.latitude as number, u.longitude as number, total / maximo] as [number, number, number]] : [];
     });
   }, [demandaPorUnidade, medicamentosMapa.data?.maior_demanda, unidadesComCoords]);
-  const listaUnidades = useMemo(() => unidadesFiltradas
-    .filter((u) => filtroUnidadeId === "todas" || u.id === filtroUnidadeId)
-    .sort((a, b) => camada === "medicamentos"
-      ? (demandaPorUnidade.get(b.id)?.solicitacoes ?? 0) - (demandaPorUnidade.get(a.id)?.solicitacoes ?? 0) || a.nome.localeCompare(b.nome)
-      : a.nome.localeCompare(b.nome)), [unidadesFiltradas, filtroUnidadeId, camada, demandaPorUnidade]);
+  const unidadeFiltrada = useMemo(() => unidades.find((u) => u.id === filtroUnidadeId) ?? null, [unidades, filtroUnidadeId]);
+  const unidadesSemLocalizacao = useMemo(() => unidadesFiltradas.filter((u) => u.latitude === null || u.longitude === null).length, [unidadesFiltradas]);
+  const rankingMedicamento = useMemo(() => unidadesFiltradas
+    .map((u) => ({ unidade: u, solicitacoes: demandaPorUnidade.get(u.id)?.solicitacoes ?? 0 }))
+    .filter((item) => item.solicitacoes > 0)
+    .sort((a, b) => b.solicitacoes - a.solicitacoes || a.unidade.nome.localeCompare(b.unidade.nome))
+    .slice(0, 5), [unidadesFiltradas, demandaPorUnidade]);
+  const opcoesBairro = useMemo(() => [{ valor: "todos", rotulo: "Todos os bairros" }, ...bairros.map((b) => ({ valor: b.id, rotulo: b.nome }))], [bairros]);
+  const opcoesUnidade = useMemo(() => [
+    { valor: "todas", rotulo: "Todas as unidades" },
+    ...unidadesFiltradas.map((u) => ({ valor: u.id, rotulo: u.nome || `Unidade ${u.id}`, detalhe: [u.bairroNome, `${u.logradouro}, ${u.numero}`].filter(Boolean).join(" · ") })),
+  ], [unidadesFiltradas]);
+  const camadaAtual = CAMADAS.find((c) => c.valor === camada);
+  const filtrosAlterados = filtroBairro !== "todos" || filtroUnidadeId !== "todas" || filtroDataInicio !== periodo30d.dataInicio || filtroDataFim !== periodo30d.dataFim;
 
   const metricasPorUnidade = useMemo(() => {
     return new Map(unidades.map((u) => [u.id, u.metricas ?? EMPTY_METRICAS]));
@@ -839,7 +879,6 @@ export default function AdminMapaUnidades() {
   };
 
   const handleLimparFiltros = () => {
-    setBusca("");
     setFiltroDataInicio(periodo30d.dataInicio);
     setFiltroDataFim(periodo30d.dataFim);
     setFiltroBairro("todos");
@@ -898,13 +937,34 @@ export default function AdminMapaUnidades() {
           <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
             <aside className="max-h-[55vh] w-full shrink-0 overflow-y-auto border-r bg-muted/30 p-4 md:p-5 lg:max-h-[calc(100vh-110px)] lg:w-[340px]">
               <div className="space-y-4">
-                <div role="group" aria-label="Camada do mapa" className="grid grid-cols-2 gap-1 rounded-lg border bg-card p-1">
-                  {CAMADAS.map((opcao) => (
-                    <Button key={opcao.valor} size="sm" className="min-w-0 whitespace-normal px-2 text-xs" variant={camada === opcao.valor ? "default" : "ghost"} aria-pressed={camada === opcao.valor} onClick={() => setCamada(opcao.valor)}>
-                      {opcao.rotulo}
-                    </Button>
+                <section aria-label="Camada do mapa" className="space-y-3 rounded-xl border bg-card p-3">
+                  {GRUPOS_CAMADAS.map((grupo) => (
+                    <div key={grupo.titulo} className="space-y-1.5">
+                      <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{grupo.titulo}</p>
+                      <div role="group" aria-label={grupo.titulo} className="grid grid-cols-2 gap-1.5">
+                        {grupo.camadas.map((opcao) => {
+                          const ativa = camada === opcao.valor;
+                          const Icone = opcao.icone;
+                          return (
+                            <Button
+                              key={opcao.valor}
+                              type="button"
+                              size="sm"
+                              variant={ativa ? "default" : "outline"}
+                              aria-pressed={ativa}
+                              className="h-9 min-w-0 justify-start gap-1.5 px-2 text-xs"
+                              onClick={() => setCamada(opcao.valor)}
+                            >
+                              <Icone className="h-3.5 w-3.5 shrink-0" />
+                              <span className="truncate">{opcao.rotulo}</span>
+                            </Button>
+                          );
+                        })}
+                      </div>
+                    </div>
                   ))}
-                </div>
+                  {camadaAtual && <p className="border-t pt-2 text-xs text-muted-foreground">{camadaAtual.descricao}</p>}
+                </section>
                 {camadaBairro && (
                   <div className="space-y-1 rounded-md border bg-card p-3 text-xs text-muted-foreground">
                     <p>Os bairros são os de residência dos pacientes, no período escolhido abaixo. Passe o mouse sobre um bairro para ver os números.</p>
@@ -916,70 +976,74 @@ export default function AdminMapaUnidades() {
                   </div>
                 )}
                 {camada === "medicamentos" && <MedicamentosHeatControls data={medicamentosMapa.data} loading={medicamentosMapa.isFetching} error={medicamentosMapa.isError} onChange={setMedicamentoId} onRetry={() => void medicamentosMapa.refetch()} semLocalizacao={demandaSemLocalizacao} />}
-                <div className="space-y-1">
-                  <Label htmlFor="busca-unidade">Buscar unidade</Label>
-                  <Input id="busca-unidade" placeholder="Ex: Unidade Centro..." value={busca} onChange={(e) => setBusca(e.target.value)} />
-                </div>
 
-                <div className="space-y-1">
-                  <Label htmlFor="filtro-data-inicio">Data início</Label>
-                  <Input
-                    id="filtro-data-inicio"
-                    type="date"
-                    value={filtroDataInicio}
-                    max={filtroDataFim || undefined}
-                    onChange={(e) => setFiltroDataInicio(e.target.value)}
-                  />
-                </div>
+                <section aria-label="Filtros" className="space-y-3 rounded-xl border bg-card p-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <h2 className="text-sm font-semibold">Filtros</h2>
+                    {filtrosAlterados && (
+                      <Button type="button" variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={handleLimparFiltros}>
+                        <X className="mr-1 h-3.5 w-3.5" /> Limpar
+                      </Button>
+                    )}
+                  </div>
 
-                <div className="space-y-1">
-                  <Label htmlFor="filtro-data-fim">Data fim</Label>
-                  <Input
-                    id="filtro-data-fim"
-                    type="date"
-                    value={filtroDataFim}
-                    min={filtroDataInicio || undefined}
-                    onChange={(e) => setFiltroDataFim(e.target.value)}
-                  />
-                </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="filtro-data-inicio">Período</Label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <Input
+                        id="filtro-data-inicio"
+                        type="date"
+                        aria-label="Data início"
+                        value={filtroDataInicio}
+                        max={filtroDataFim || undefined}
+                        onChange={(e) => setFiltroDataInicio(e.target.value)}
+                        className="min-w-0 px-2 text-xs"
+                      />
+                      <Input
+                        id="filtro-data-fim"
+                        type="date"
+                        aria-label="Data fim"
+                        value={filtroDataFim}
+                        min={filtroDataInicio || undefined}
+                        onChange={(e) => setFiltroDataFim(e.target.value)}
+                        className="min-w-0 px-2 text-xs"
+                      />
+                    </div>
+                  </div>
 
-                <div className="space-y-1">
-                  <Label htmlFor="filtro-bairro">Bairro</Label>
-                  <Select value={filtroBairro} onValueChange={setFiltroBairro}>
-                    <SelectTrigger id="filtro-bairro">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="todos">Todos</SelectItem>
-                      {bairros.map((b) => (
-                        <SelectItem key={String(b.id)} value={String(b.id)}>
-                          {b.nome}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="filtro-bairro">Bairro da unidade</Label>
+                    <SeletorComBusca
+                      id="filtro-bairro"
+                      opcoes={opcoesBairro}
+                      valor={filtroBairro}
+                      onChange={(valor) => {
+                        setFiltroBairro(valor);
+                        setFiltroUnidadeId("todas");
+                      }}
+                      placeholder="Todos os bairros"
+                      placeholderBusca="Buscar bairro..."
+                      vazio="Nenhum bairro encontrado."
+                    />
+                  </div>
 
-                <div className="space-y-1">
-                  <Label htmlFor="filtro-unidade">Unidade</Label>
-                  <Select value={filtroUnidadeId} onValueChange={setFiltroUnidadeId}>
-                    <SelectTrigger id="filtro-unidade">
-                      <SelectValue placeholder="Selecione a unidade" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="todas">Todas as unidades</SelectItem>
-                      {unidadesFiltradas.map((u) => (
-                        <SelectItem key={u.id} value={u.id}>
-                          {u.nome || `Unidade ${u.id}`}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="filtro-unidade">Unidade</Label>
+                    <SeletorComBusca
+                      id="filtro-unidade"
+                      opcoes={opcoesUnidade}
+                      valor={filtroUnidadeId}
+                      onChange={setFiltroUnidadeId}
+                      placeholder="Todas as unidades"
+                      placeholderBusca="Buscar por nome ou endereço..."
+                      vazio="Nenhuma unidade encontrada."
+                    />
+                  </div>
 
-                <Button type="button" variant="outline" className="w-full" onClick={handleLimparFiltros}>
-                  Limpar filtros
-                </Button>
+                  <p className="text-xs text-muted-foreground">
+                    {loading ? "Carregando unidades..." : `${unidadesComCoords.length} de ${unidadesFiltradas.length} unidades no mapa.`}
+                  </p>
+                </section>
 
                 {unidadesError && (
                   <div className="rounded-md border border-destructive/30 bg-destructive/5 p-3 text-xs text-destructive">
@@ -987,30 +1051,58 @@ export default function AdminMapaUnidades() {
                   </div>
                 )}
 
-                {unidades.length > 0 && unidadesComCoords.length === 0 && (
+                {unidades.length > 0 && unidadesComCoords.length === 0 && !unidadeFiltrada && (
                   <div className="rounded-md border border-amber-200 bg-amber-50 p-2 text-xs text-amber-900">
                     Nenhuma unidade com coordenadas válidas. Verifique os campos de latitude/longitude no cadastro (ex.: -3.7319 e -38.5267).
                   </div>
                 )}
 
-                {loading && <div className="text-xs text-muted-foreground">Carregando unidades...</div>}
-                <div className="space-y-2">
-                  <h2 className="text-sm font-semibold">Unidades cadastradas ({listaUnidades.length})</h2>
-                  <p className="text-xs text-muted-foreground">Selecione um ponto no mapa ou uma unidade abaixo.</p>
-                  {listaUnidades.map((unidade) => <Button key={unidade.id} variant="ghost" className="h-auto w-full flex-col items-start gap-1 whitespace-normal rounded-xl border bg-card p-3 text-left" onClick={() => handleSelecionarUnidade(unidades.find((u) => u.id === unidade.id) ?? unidade)}>
-                    <span className="font-semibold">{unidade.nome}</span>
-                    <span className="text-xs font-normal text-muted-foreground">{unidade.logradouro}, {unidade.numero}</span>
-                    {camada === "medicamentos" && medicamentosMapa.data && <span className="text-xs font-medium text-primary">{demandaPorUnidade.get(unidade.id)?.solicitacoes ?? 0} receitas com o medicamento</span>}
-                    {(unidade.latitude === null || unidade.longitude === null) && <span className="text-xs font-normal text-amber-700">Localização não cadastrada no mapa</span>}
-                  </Button>)}
-                  {!listaUnidades.length && !loading && <p className="text-xs text-muted-foreground">Nenhuma unidade encontrada para os filtros.</p>}
-                </div>
+                {unidadeFiltrada && (
+                  <div className="space-y-2 rounded-xl border bg-card p-3">
+                    <div className="min-w-0">
+                      <p className="font-semibold leading-tight">{unidadeFiltrada.nome}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {unidadeFiltrada.logradouro}, {unidadeFiltrada.numero}
+                        {unidadeFiltrada.bairroNome ? ` · ${unidadeFiltrada.bairroNome}` : ""}
+                      </p>
+                    </div>
+                    {camada === "medicamentos" && medicamentosMapa.data && <p className="text-xs font-medium text-primary">{demandaPorUnidade.get(unidadeFiltrada.id)?.solicitacoes ?? 0} receitas com o medicamento</p>}
+                    {(unidadeFiltrada.latitude === null || unidadeFiltrada.longitude === null) && <p className="text-xs text-amber-700">Localização não cadastrada no mapa.</p>}
+                    <Button type="button" size="sm" className="w-full" onClick={() => handleSelecionarUnidade(unidadeFiltrada)}>
+                      Ver detalhes da unidade
+                    </Button>
+                  </div>
+                )}
+
+                {!unidadeFiltrada && camada === "medicamentos" && medicamentosMapa.data && rankingMedicamento.length > 0 && (
+                  <div className="space-y-2 rounded-xl border bg-card p-3">
+                    <h2 className="text-sm font-semibold">Unidades com mais receitas</h2>
+                    <ol className="space-y-1">
+                      {rankingMedicamento.map(({ unidade, solicitacoes }, i) => (
+                        <li key={unidade.id}>
+                          <button type="button" className="flex w-full items-center gap-2 rounded-md px-1 py-1 text-left text-xs hover:bg-muted" onClick={() => setFiltroUnidadeId(unidade.id)}>
+                            <span className="w-4 shrink-0 text-muted-foreground">{i + 1}.</span>
+                            <span className="min-w-0 flex-1 truncate">{unidade.nome}</span>
+                            <span className="shrink-0 font-semibold tabular-nums">{solicitacoes}</span>
+                          </button>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                )}
+
+                {!unidadeFiltrada && unidadesSemLocalizacao > 0 && (
+                  <p className="rounded-md bg-amber-50 p-2 text-xs text-amber-900">
+                    {unidadesSemLocalizacao} {unidadesSemLocalizacao === 1 ? "unidade não aparece" : "unidades não aparecem"} no mapa por falta de localização. Selecione-a no filtro de unidade para ver os detalhes.
+                  </p>
+                )}
               </div>
             </aside>
 
             <section className="relative min-w-0 flex-1 overflow-hidden" aria-label="Mapa das unidades">
               <div className="h-[60vh] min-h-[420px] w-full lg:h-[calc(100vh-110px)]">
-                <MapContainer center={DEFAULT_POSITION} zoom={12} className="z-0 h-full w-full" key="mapa-unidades-gestor">
+                <MapContainer center={DEFAULT_POSITION} zoom={12} maxBounds={LIMITES_FORTALEZA} maxBoundsViscosity={1} className="z-0 h-full w-full" key="mapa-unidades-gestor">
+                  <RestringirAFortaleza />
                   <TileLayer
                     attribution="&copy; OpenStreetMap contributors"
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

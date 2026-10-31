@@ -7,7 +7,6 @@ import {
   Calendar,
   Users,
   Clock,
-  Star,
   TrendingUp,
   Activity,
   Filter,
@@ -40,6 +39,7 @@ import type {
 import { MedicamentosUnidadePanel, ServicosUnidadePanel } from "./mapa/UnidadeAssistencialPanel";
 import { formatSla } from "@/lib/sla";
 import { META_DENTRO_PRAZO_MIN_PCT } from "@/constants/indicadores";
+import { Paginacao } from "@/components/Paginacao";
 
 type UnidadeDetalheDialogProps = {
   open: boolean;
@@ -131,6 +131,7 @@ function InfoRow({ label, value, icon: Icon }: { label: string; value: ReactNode
 }
 
 const SERVICOS_POR_PAGINA = 10;
+const EQUIPE_POR_PAGINA = 10;
 
 const getSlaStatus = (tempo: number | null, meta: number) => {
   if (tempo === null || !Number.isFinite(tempo) || tempo < 0) {
@@ -178,6 +179,11 @@ export function UnidadeDetalheDialog({
   const equipeSorted = useMemo(() => [...(metricas?.profissionais ?? [])].sort((a, b) => a.nome.localeCompare(b.nome)), [metricas]);
   const [tempoMedioView, setTempoMedioView] = useState<TempoMedioView>("geral");
   const [paginaServicos, setPaginaServicos] = useState(1);
+  const [paginaEquipe, setPaginaEquipe] = useState(1);
+  const equipePaginada = useMemo(
+    () => equipeSorted.slice((paginaEquipe - 1) * EQUIPE_POR_PAGINA, paginaEquipe * EQUIPE_POR_PAGINA),
+    [equipeSorted, paginaEquipe],
+  );
 
   const listaServicos = useMemo(() => servicosMetricas ?? [], [servicosMetricas]);
   const totalPaginasServicos = Math.max(1, Math.ceil(listaServicos.length / SERVICOS_POR_PAGINA));
@@ -185,7 +191,6 @@ export function UnidadeDetalheDialog({
     const inicio = (paginaServicos - 1) * SERVICOS_POR_PAGINA;
     return listaServicos.slice(inicio, inicio + SERVICOS_POR_PAGINA);
   }, [listaServicos, paginaServicos]);
-  const equipe = (metricas?.profissionais ?? []).slice().sort((a, b) => a.nome.localeCompare(b.nome));
   const serie = seriePontos ?? [];
 
   const createdAtMinDate = (() => {
@@ -200,6 +205,7 @@ export function UnidadeDetalheDialog({
   useEffect(() => {
     if (!open) return;
     setPaginaServicos(1);
+    setPaginaEquipe(1);
     setTempoMedioView("geral");
   }, [unidade?.id, open]);
 
@@ -538,7 +544,7 @@ export function UnidadeDetalheDialog({
               </TabsContent>
 
               <TabsContent value="medicamentos" className="mt-0 outline-none">
-                <MedicamentosUnidadePanel analise={unidade?.analise} />
+                <MedicamentosUnidadePanel key={unidade.id} analise={unidade?.analise} />
               </TabsContent>
 
               {/* --- ABA EQUIPE --- */}
@@ -556,12 +562,11 @@ export function UnidadeDetalheDialog({
                         <TableRow>
                           <TableHead className="pl-6">Profissional</TableHead>
                           <TableHead>Cargo / Função</TableHead>
-                          <TableHead>Contato</TableHead>
-                          <TableHead className="text-right pr-6">Avaliação (Média)</TableHead>
+                          <TableHead className="pr-6">Contato</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {equipeSorted.map((p) => (
+                        {equipePaginada.map((p) => (
                           <TableRow key={p.id || p.cpf}>
                             <TableCell className="pl-6 font-bold flex items-center gap-2">
                               <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs">
@@ -570,26 +575,28 @@ export function UnidadeDetalheDialog({
                               {p.nome}
                             </TableCell>
                             <TableCell className="text-slate-600">{formatCargoLabel(p.cargo)}</TableCell>
-                            <TableCell>
+                            <TableCell className="pr-6">
                               <div className="flex flex-col text-xs">
                                 <span>{p.contato}</span>
                                 <span className="text-muted-foreground">{p.email}</span>
                               </div>
                             </TableCell>
-                            <TableCell className="text-right pr-6">
-                              {p.ehAtendente ? (
-                                <div className="flex items-center justify-end gap-1.5 font-bold">
-                                  {p.notaMedia?.toFixed(1) || "N/A"}
-                                  <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                                </div>
-                              ) : (
-                                "-"
-                              )}
-                            </TableCell>
                           </TableRow>
                         ))}
+                        {!equipeSorted.length && (
+                          <TableRow>
+                            <TableCell colSpan={3} className="py-8 text-center text-sm text-muted-foreground">
+                              Nenhum profissional vinculado a esta unidade.
+                            </TableCell>
+                          </TableRow>
+                        )}
                       </TableBody>
                     </Table>
+                    {equipeSorted.length > EQUIPE_POR_PAGINA && (
+                      <div className="border-t px-6 py-4">
+                        <Paginacao paginaAtual={paginaEquipe} totalItens={equipeSorted.length} tamanhoPagina={EQUIPE_POR_PAGINA} onMudarPagina={setPaginaEquipe} />
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </TabsContent>

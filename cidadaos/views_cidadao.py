@@ -4,7 +4,7 @@ O cidadão vem sempre do token, nunca do corpo ou da URL: um cidadão não alcan
 """
 
 from django.db import transaction
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, status
 from rest_framework.pagination import LimitOffsetPagination
@@ -18,6 +18,7 @@ from agendamentos.views import criar_agendamento
 from medicamentos.services import calcular_saldos
 from prontuario.filters import ReceitaFilter
 from prontuario.models import Receita
+from prontuario.pdf_receita import codigo_receita, gerar_pdf_receita
 from unidade_posto.models import UnidadePosto
 
 from .autenticacao import CidadaoJWTAuthentication, IsCidadao
@@ -154,6 +155,25 @@ class MinhaReceitaView(_MinhasReceitasMixin, generics.RetrieveAPIView):
 
     def retrieve(self, request, *args, **kwargs):
         return Response({"success": True, "result": self.get_serializer(self.get_object()).data})
+
+
+class ReceitaPdfView(_MinhasReceitasMixin, generics.GenericAPIView):
+    """Receituário em PDF, para o cidadão baixar ou o agente enviar no chat."""
+
+    def get_queryset(self):
+        return super().get_queryset().select_related("cidadao", "agendamento__unidade__bairro").prefetch_related(
+            "medicamentos__medicamento"
+        )
+
+    def get(self, request, pk):
+        receita = self.get_queryset().filter(pk=pk).first()
+        if receita is None:
+            return Response({"success": False, "result": "Receita não encontrada."}, status=status.HTTP_404_NOT_FOUND)
+
+        resposta = HttpResponse(gerar_pdf_receita(receita), content_type="application/pdf")
+        disposicao = "attachment" if request.query_params.get("download") in ("1", "true") else "inline"
+        resposta["Content-Disposition"] = f'{disposicao}; filename="receita-{codigo_receita(receita)}.pdf"'
+        return resposta
 
 
 class DisponibilidadeReceitaView(_MinhasReceitasMixin, generics.GenericAPIView):

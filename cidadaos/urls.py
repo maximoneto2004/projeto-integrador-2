@@ -13,6 +13,7 @@ from cidadaos.views_cidadao import (
     MeusAgendamentosView,
     MinhaReceitaView,
     MinhasReceitasView,
+    ReceitaPdfView,
 )
 
 urlpatterns = [
@@ -38,6 +39,7 @@ urlpatterns = [
     ),
     path("cidadaos/eu/receitas/", MinhasReceitasView.as_view(), name="cidadao_minhas_receitas"),
     path("cidadaos/eu/receitas/<uuid:pk>/", MinhaReceitaView.as_view(), name="cidadao_minha_receita"),
+    path("cidadaos/eu/receitas/<uuid:pk>/pdf/", ReceitaPdfView.as_view(), name="cidadao_receita_pdf"),
     path(
         "cidadaos/eu/receitas/<uuid:pk>/disponibilidade/",
         DisponibilidadeReceitaView.as_view(),

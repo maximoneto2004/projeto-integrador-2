@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { Pill, BriefcaseMedical } from "lucide-react";
+import { Paginacao } from "@/components/Paginacao";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatSla } from "@/lib/sla";
@@ -23,7 +25,10 @@ export function ServicosUnidadePanel({ analise }: { analise: AnaliseUnidade }) {
   </Card>;
 }
 
+const MEDICAMENTOS_POR_PAGINA = 10;
+
 export function MedicamentosUnidadePanel({ analise }: { analise?: AnaliseUnidade | null }) {
+  const [pagina, setPagina] = useState(1);
   if (!analise) return <p className="text-sm text-muted-foreground">Dados de medicamentos indisponíveis neste ambiente.</p>;
   return <Card>
     <CardHeader>
@@ -33,11 +38,12 @@ export function MedicamentosUnidadePanel({ analise }: { analise?: AnaliseUnidade
     <CardContent className="space-y-3">
       {!analise.medicamentos.length ? <p className="text-sm text-muted-foreground">Nenhuma solicitação de medicamento cadastrado neste período.</p> : <Table>
         <TableHeader><TableRow><TableHead>Medicamento / apresentação</TableHead><TableHead>Receitas</TableHead><TableHead>Quantidade prescrita</TableHead><TableHead>Já dispensada</TableHead></TableRow></TableHeader>
-        <TableBody>{analise.medicamentos.map((med) => <TableRow key={med.id}>
+        <TableBody>{analise.medicamentos.slice((pagina - 1) * MEDICAMENTOS_POR_PAGINA, pagina * MEDICAMENTOS_POR_PAGINA).map((med) => <TableRow key={med.id}>
           <TableCell><p className="font-medium">{nomeMedicamento(med)}</p>{med.itens_sem_quantidade > 0 && <p className="text-xs text-muted-foreground">{med.itens_sem_quantidade} itens sem quantidade informada</p>}</TableCell>
           <TableCell className="font-semibold">{med.solicitacoes}</TableCell><TableCell>{med.quantidade_prescrita ?? "Não informada"}</TableCell><TableCell>{med.quantidade_dispensada}</TableCell>
         </TableRow>)}</TableBody>
       </Table>}
+      {analise.medicamentos.length > MEDICAMENTOS_POR_PAGINA && <Paginacao paginaAtual={pagina} totalItens={analise.medicamentos.length} tamanhoPagina={MEDICAMENTOS_POR_PAGINA} onMudarPagina={setPagina} />}
       {analise.itens_legados_sem_catalogo > 0 && <p className="rounded-lg bg-muted p-3 text-xs text-muted-foreground">{analise.itens_legados_sem_catalogo} itens de receitas antigas não têm vínculo com o catálogo. Eles não são agrupados por medicamento no mapa.</p>}
       <p className="text-xs text-muted-foreground">Quantidades são unidades de dispensação de cada apresentação (comprimidos, frascos etc.).</p>
     </CardContent>

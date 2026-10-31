@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 import { format, subDays } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { DateRange } from "react-day-picker";
@@ -10,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
 import { useDashboardGestor } from "@/hooks/sistema/useDashboardGestor";
 import {
   META_ABSENTEISMO_MAX_PCT,
@@ -21,7 +19,9 @@ import {
 } from "@/constants/indicadores";
 import { KpiTendenciaCard } from "@/components/dashboard-gestor/rede/KpiTendenciaCard";
 import { SerieSemanalChart } from "@/components/dashboard-gestor/rede/SerieSemanalChart";
-import { RankingMetaUnidades } from "@/components/dashboard-gestor/rede/RankingMetaUnidades";
+import { RankingMetaUnidades, unidadesMedidasNaMeta } from "@/components/dashboard-gestor/rede/RankingMetaUnidades";
+import { TabelaUnidades } from "@/components/dashboard-gestor/rede/TabelaUnidades";
+import { CardExpansivel } from "@/components/CardExpansivel";
 import { DispersaoOcupacaoAbsenteismo } from "@/components/dashboard-gestor/rede/DispersaoOcupacaoAbsenteismo";
 import { DemandaCapacidadeChart } from "@/components/dashboard-gestor/rede/DemandaCapacidadeChart";
 import { BarrasHorizontais } from "@/components/meu-dia/BarrasHorizontais";
@@ -34,11 +34,13 @@ const PRESETS: Array<{ valor: Exclude<Preset, "periodo">; rotulo: string; dias: 
   { valor: "30", rotulo: "30 dias", dias: 30 },
 ];
 
+// Quantos itens cada card mostra antes de pedir para expandir.
+const LIMITE_GRAFICO = 6;
+const LIMITE_TABELA = 8;
+
 const apiDate = (valor: Date) => format(valor, "yyyy-MM-dd");
 const br = (iso: string) => `${iso.slice(8, 10)}/${iso.slice(5, 7)}/${iso.slice(0, 4)}`;
 const pct = (valor: number) => `${valor.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%`;
-const opcional = (valor: number | null | undefined, formatar: (v: number) => string) =>
-  valor === null || valor === undefined ? "—" : formatar(valor);
 
 const AdminDashboardGestor = () => {
   const [preset, setPreset] = useState<Preset>("30");
@@ -57,6 +59,7 @@ const AdminDashboardGestor = () => {
   const atual = painel?.comparativo.atual;
   const anterior = painel?.comparativo.anterior;
   const unidades = painel?.informacoes_unidade ?? [];
+  const unidadesNaMeta = unidadesMedidasNaMeta(unidades).length;
 
   return (
     <SidebarProvider>
@@ -210,15 +213,16 @@ const AdminDashboardGestor = () => {
                 </Card>
 
                 <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Unidades por consultas dentro da meta</CardTitle>
-                      <CardDescription>Da pior para a melhor; em vermelho, abaixo da meta</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <RankingMetaUnidades unidades={unidades} />
-                    </CardContent>
-                  </Card>
+                  <CardExpansivel
+                    titulo="Unidades por consultas dentro da meta"
+                    descricao="Da pior para a melhor; em vermelho, abaixo da meta"
+                    exibidos={Math.min(unidadesNaMeta, LIMITE_GRAFICO)}
+                    total={unidadesNaMeta}
+                    rotuloItens="unidades"
+                    expandido={() => <RankingMetaUnidades unidades={unidades} />}
+                  >
+                    <RankingMetaUnidades unidades={unidades} limite={LIMITE_GRAFICO} />
+                  </CardExpansivel>
                   <Card>
                     <CardHeader>
                       <CardTitle>Ocupação × não comparecimento</CardTitle>
@@ -233,15 +237,19 @@ const AdminDashboardGestor = () => {
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
-                  <Card className="xl:col-span-2">
-                    <CardHeader>
-                      <CardTitle>Demanda × capacidade por tipo de serviço</CardTitle>
-                      <CardDescription>Vagas abertas na agenda e agendamentos não cancelados no período</CardDescription>
-                    </CardHeader>
-                    <CardContent className="h-80">
-                      <DemandaCapacidadeChart dados={painel.demanda_capacidade} />
-                    </CardContent>
-                  </Card>
+                  <CardExpansivel
+                    className="xl:col-span-2"
+                    titulo="Demanda × capacidade por tipo de serviço"
+                    descricao="Vagas abertas na agenda e agendamentos não cancelados no período"
+                    exibidos={Math.min(painel.demanda_capacidade.length, LIMITE_GRAFICO)}
+                    total={painel.demanda_capacidade.length}
+                    rotuloItens="tipos de serviço, os com mais agendamentos"
+                    expandido={() => <DemandaCapacidadeChart dados={painel.demanda_capacidade} alturaAutomatica />}
+                  >
+                    <div className="h-80">
+                      <DemandaCapacidadeChart dados={painel.demanda_capacidade} limite={LIMITE_GRAFICO} />
+                    </div>
+                  </CardExpansivel>
                   <Card>
                     <CardHeader>
                       <CardTitle>Público atendido por faixa etária</CardTitle>
@@ -257,66 +265,16 @@ const AdminDashboardGestor = () => {
                   </Card>
                 </div>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Unidades</CardTitle>
-                    <CardDescription>Indicadores de cada unidade no período. Em vermelho, o que está fora da meta.</CardDescription>
-                  </CardHeader>
-                  <CardContent className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="text-left text-muted-foreground">
-                          <th className="px-2 py-2 font-medium">Unidade</th>
-                          <th className="px-2 py-2 text-right font-medium">Agendamentos</th>
-                          <th className="px-2 py-2 text-right font-medium">Consultas</th>
-                          <th className="px-2 py-2 text-right font-medium">Faltas</th>
-                          <th className="px-2 py-2 text-right font-medium">Na meta</th>
-                          <th className="px-2 py-2 text-right font-medium">Espera</th>
-                          <th className="px-2 py-2 text-right font-medium">Ocupação</th>
-                          <th className="px-2 py-2 text-right font-medium">Fila</th>
-                          <th className="px-2 py-2 text-right font-medium">Abaixo do mínimo</th>
-                          <th className="px-2 py-2" />
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {unidades.map((u) => {
-                          const ocupacaoFora = u.ocupacao !== null && (u.ocupacao < META_OCUPACAO_MIN_PCT || u.ocupacao > META_OCUPACAO_MAX_PCT);
-                          return (
-                            <tr key={u.unidade_id} className="border-t">
-                              <td className="px-2 py-2 font-medium">{u.nome_unidade}</td>
-                              <td className="px-2 py-2 text-right tabular-nums">{u.total_agendamentos}</td>
-                              <td className="px-2 py-2 text-right tabular-nums">{u.consultas}</td>
-                              <td className={cn("px-2 py-2 text-right tabular-nums", u.taxa_nao_comparecimento > META_ABSENTEISMO_MAX_PCT && "font-semibold text-red-700")}>
-                                {pct(u.taxa_nao_comparecimento)}
-                              </td>
-                              <td className={cn("px-2 py-2 text-right tabular-nums", u.pct_dentro_meta !== null && u.pct_dentro_meta < META_DENTRO_PRAZO_MIN_PCT && "font-semibold text-red-700")}>
-                                {opcional(u.pct_dentro_meta, pct)}
-                              </td>
-                              <td className={cn("px-2 py-2 text-right tabular-nums", u.tempo_medio_espera_min > META_ESPERA_MAX_MIN && "font-semibold text-red-700")}>
-                                {Math.round(u.tempo_medio_espera_min)} min
-                              </td>
-                              <td className={cn("px-2 py-2 text-right tabular-nums", ocupacaoFora && "font-semibold text-red-700")}>
-                                {opcional(u.ocupacao, pct)}
-                              </td>
-                              <td className="px-2 py-2 text-right tabular-nums">{u.fila_aguardando}</td>
-                              <td className={cn("px-2 py-2 text-right tabular-nums", u.rupturas > 0 && "font-semibold text-red-700")}>{u.rupturas}</td>
-                              <td className="px-2 py-2 text-right">
-                                <Link className="text-primary underline-offset-4 hover:underline" to={`/sistema/monitor-unidade?unidade=${u.unidade_id}`}>
-                                  Ver unidade
-                                </Link>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                        {!unidades.length && (
-                          <tr>
-                            <td colSpan={10} className="px-2 py-6 text-center text-muted-foreground">Nenhum agendamento no período.</td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </CardContent>
-                </Card>
+                <CardExpansivel
+                  titulo="Unidades"
+                  descricao="Indicadores de cada unidade no período. Em vermelho, o que está fora da meta."
+                  exibidos={Math.min(unidades.length, LIMITE_TABELA)}
+                  total={unidades.length}
+                  rotuloItens="unidades"
+                  expandido={() => <TabelaUnidades unidades={unidades} cabecalhoFixo />}
+                >
+                  <TabelaUnidades unidades={unidades} limite={LIMITE_TABELA} />
+                </CardExpansivel>
               </>
             )}
           </div>
