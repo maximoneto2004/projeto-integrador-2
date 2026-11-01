@@ -1,13 +1,12 @@
 import { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "@/lib/sonner";
-import { Lock, Eye, EyeOff } from "lucide-react";
+import { Lock, Eye, EyeOff, KeyRound, Loader2, ArrowLeft, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authService } from "@/services/sistema/authService";
-import bgCras from "@/assets/images/bgCras.jpg";
-import { BrandLogo } from "@/components/BrandLogo";
+import { AuthLayout, CAMPO_AUTH } from "@/components/AuthLayout";
 
 const AlterarSenha = () => {
   const [novaSenha, setNovaSenha] = useState("");
@@ -19,6 +18,8 @@ const AlterarSenha = () => {
   const [searchParams] = useSearchParams();
   const uid = searchParams.get("uid") ?? "";
   const token = searchParams.get("token") ?? "";
+  const linkInvalido = !uid || !token;
+  const senhasDiferentes = confirmarSenha.length > 0 && novaSenha !== confirmarSenha;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,88 +52,99 @@ const AlterarSenha = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex">
-      <div className="w-full lg:w-[40%] flex items-center justify-center p-8 lg:p-12">
-        <div className="w-full max-w-md space-y-8">
-          <BrandLogo size="md" className="lg:hidden" />
-          <div className="space-y-2 text-left">
-            <h1 className="text-4xl font-extrabold tracking-tight text-slate-900">Alterar senha</h1>
-            <p className="text-muted-foreground">Defina sua nova senha para continuar.</p>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-xl shadow-slate-200/60 p-8 border border-slate-100">
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="space-y-2">
-                <Label htmlFor="nova-senha">Nova senha</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
-                  <Input
-                    id="nova-senha"
-                    type={showNovaSenha ? "text" : "password"}
-                    placeholder="••••••••"
-                    value={novaSenha}
-                    onChange={(e) => setNovaSenha(e.target.value)}
-                    className="pl-10 pr-11 h-12 bg-slate-50 border-slate-200 focus:bg-white transition-all"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowNovaSenha((prev) => !prev)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                    aria-label={showNovaSenha ? "Ocultar nova senha" : "Mostrar nova senha"}
-                  >
-                    {showNovaSenha ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                  </button>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="confirmar-senha">Confirmar senha</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
-                  <Input
-                    id="confirmar-senha"
-                    type={showConfirmarSenha ? "text" : "password"}
-                    placeholder="••••••••"
-                    value={confirmarSenha}
-                    onChange={(e) => setConfirmarSenha(e.target.value)}
-                    className="pl-10 pr-11 h-12 bg-slate-50 border-slate-200 focus:bg-white transition-all"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmarSenha((prev) => !prev)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                    aria-label={showConfirmarSenha ? "Ocultar confirmação de senha" : "Mostrar confirmação de senha"}
-                  >
-                    {showConfirmarSenha ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                  </button>
-                </div>
-              </div>
-
-              <Button
-                type="submit"
-                className="w-full h-12 bg-[#f25c2d] hover:bg-[#d84a1f] text-white font-bold text-md rounded-xl mt-4 transition-transform active:scale-[0.98]"
-                disabled={loading || !uid || !token}
-              >
-                {loading ? "Atualizando..." : "Atualizar senha"}
-              </Button>
-            </form>
-          </div>
-
-          {/* <p className="text-center text-sm text-slate-500">Suporte técnico: (85) 0000-0000</p> */}
-        </div>
+    <AuthLayout
+      rodape={
+        <Link to="/sistema/login" className="inline-flex items-center gap-1 font-semibold text-[#2C8576] hover:text-[#1E6B5E]">
+          <ArrowLeft className="h-3.5 w-3.5" />
+          Voltar para o login
+        </Link>
+      }
+    >
+      <div className="mb-8 space-y-3">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-[#2C8576]/10 px-3 py-1 text-xs font-semibold text-[#2C8576]">
+          <KeyRound className="h-3.5 w-3.5" />
+          Recuperação de acesso
+        </span>
+        <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">Alterar senha</h1>
+        <p className="text-muted-foreground">Defina sua nova senha para continuar.</p>
       </div>
 
-      <div className="hidden lg:block lg:w-[60%] relative overflow-hidden bg-slate-200">
-        <img src={bgCras} alt="" aria-hidden="true" className="absolute inset-0 z-0 h-full w-full object-cover" />
-        <div className="absolute inset-0 z-10 bg-black/10" />
-
-        <div className="absolute top-8 left-8 z-20 drop-shadow-lg">
-          <BrandLogo size="lg" tone="light" />
+      {linkInvalido && (
+        <div className="mb-5 flex gap-2 rounded-xl bg-amber-50 p-3 text-sm text-amber-800 ring-1 ring-amber-200">
+          <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+          Este link de recuperação é inválido ou está incompleto. Solicite um novo pela tela de login.
         </div>
-      </div>
-    </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="space-y-2">
+          <Label htmlFor="nova-senha">Nova senha</Label>
+          <div className="relative">
+            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+            <Input
+              id="nova-senha"
+              type={showNovaSenha ? "text" : "password"}
+              autoComplete="new-password"
+              placeholder="••••••••"
+              value={novaSenha}
+              onChange={(e) => setNovaSenha(e.target.value)}
+              className={`pl-11 pr-11 ${CAMPO_AUTH}`}
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowNovaSenha((prev) => !prev)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-slate-400 hover:text-slate-600"
+              aria-label={showNovaSenha ? "Ocultar nova senha" : "Mostrar nova senha"}
+            >
+              {showNovaSenha ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            </button>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="confirmar-senha">Confirmar senha</Label>
+          <div className="relative">
+            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+            <Input
+              id="confirmar-senha"
+              type={showConfirmarSenha ? "text" : "password"}
+              autoComplete="new-password"
+              placeholder="••••••••"
+              value={confirmarSenha}
+              onChange={(e) => setConfirmarSenha(e.target.value)}
+              className={`pl-11 pr-11 ${CAMPO_AUTH}`}
+              aria-invalid={senhasDiferentes}
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmarSenha((prev) => !prev)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-slate-400 hover:text-slate-600"
+              aria-label={showConfirmarSenha ? "Ocultar confirmação de senha" : "Mostrar confirmação de senha"}
+            >
+              {showConfirmarSenha ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            </button>
+          </div>
+          {senhasDiferentes && <p className="text-sm text-destructive">As senhas não conferem.</p>}
+        </div>
+
+        <Button
+          type="submit"
+          className="w-full h-12 bg-[#E2672A] hover:bg-[#C9551C] text-white font-bold text-base rounded-xl shadow-lg shadow-[#E2672A]/25 transition-all active:scale-[0.98]"
+          disabled={loading || linkInvalido}
+        >
+          {loading ? (
+            <>
+              <Loader2 className="h-5 w-5 animate-spin" />
+              Atualizando...
+            </>
+          ) : (
+            "Atualizar senha"
+          )}
+        </Button>
+      </form>
+    </AuthLayout>
   );
 };
 
