@@ -9,6 +9,27 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
+    /* Paleta da marca (cores do logo). Escalas fixas, iguais nos temas claro e escuro.
+       Verde-petróleo = cor primária; laranja = destaque. Botões com texto branco usam o tom 600. */
+    --marca-50: 167 36% 95%; /* #EEF7F5 */
+    --marca-100: 165 40% 88%; /* #D5EDE7 */
+    --marca-200: 165 39% 82%; /* #BFE3DA */
+    --marca-300: 166 33% 64%; /* #86C2B4 */
+    --marca-400: 168 34% 47%; /* #4FA090 */
+    --marca-500: 170 50% 35%; /* #2C8576 (logo) */
+    --marca-600: 170 51% 28%; /* #236B5F */
+    --marca-700: 169 51% 24%; /* #1E5C51 */
+    --marca-800: 170 55% 20%; /* #174F46 */
+    --marca-900: 170 57% 13%; /* #0E332D */
+
+    --destaque-50: 22 83% 95%; /* #FDF1EA */
+    --destaque-100: 21 86% 89%; /* #FBDCCB */
+    --destaque-300: 20 85% 72%; /* #F4A27A */
+    --destaque-500: 20 76% 53%; /* #E2672A (logo) */
+    --destaque-600: 20 76% 43%; /* #C2521B */
+    --destaque-700: 20 78% 35%; /* #9E4114 */
+    --destaque-800: 19 77% 27%; /* #7A3210 */
+
     --font-portal: "Nunito Sans", sans-serif;
     --font-portal-title: "Nunito Sans", sans-serif;
     --background: 32 40% 96%;
@@ -20,9 +41,11 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 210 25% 20%;
 
-    --primary: 16 88% 55%;
+    --primary: var(--marca-600);
     --primary-foreground: 0 0% 100%;
 
+    --destaque: var(--destaque-600);
+    --destaque-foreground: 0 0% 100%;
 
     --secondary: 30 30% 90%;
     --secondary-foreground: 210 25% 20%;
@@ -30,37 +53,37 @@ All colors MUST be HSL.
     --muted: 30 25% 92%;
     --muted-foreground: 215 16% 47%;
 
-    --accent: 190 60% 50%;
-    --accent-foreground: 0 0% 100%;
+    /* Fundo de hover/seleção em menus, botões ghost e outline */
+    --accent: var(--marca-50);
+    --accent-foreground: var(--marca-800);
 
-    --destructive: 0 72% 51%;
+    --destructive: 0 72% 51%; /* #DC2626 */
     --destructive-foreground: 0 0% 100%;
 
     --border: 30 20% 85%;
     --input: 30 15% 88%;
-    --ring: 16 88% 55%;
+    --ring: var(--marca-500);
 
     --radius: 0.75rem;
 
-    --success: 142 76% 36%;
+    --success: 142 72% 29%; /* #15803D */
     --success-foreground: 0 0% 100%;
 
-    --warning: 45 93% 47%;
+    --warning: 26 90% 37%; /* #B45309 */
     --warning-foreground: 0 0% 100%;
 
-    --info: 199 89% 48%;
+    --info: 221 83% 53%; /* #2563EB */
     --info-foreground: 0 0% 100%;
 
     --gradient-hero: linear-gradient(
       135deg,
-      hsl(199, 89%, 48%) 0%,
-      hsl(190, 60%, 50%) 50%,
-      hsl(142, 76%, 50%) 100%
+      hsl(var(--marca-500)) 0%,
+      hsl(var(--marca-800)) 100%
     );
     --gradient-card: linear-gradient(
       135deg,
-      hsl(16, 88%, 55%) 0%,
-      hsl(30, 85%, 75%) 100%
+      hsl(var(--destaque-500)) 0%,
+      hsl(var(--destaque-300)) 100%
     );
 
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -68,14 +91,25 @@ All colors MUST be HSL.
     --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 210 25% 25%;
+    --sidebar-primary: var(--marca-600);
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: var(--marca-50);
+    --sidebar-accent-foreground: var(--marca-800);
+    --sidebar-border: 30 20% 88%;
+    --sidebar-ring: var(--marca-500);
+    /* Paleta categórica dos gráficos (identidade de série), validada com o método de dataviz:
+       ordem fixa, nunca reciclada. Os tons 1 e 2 são o verde e o laranja da marca, saturados
+       o bastante para não lerem como cinza. Atribua na ordem; uma 9ª série vira "Outros". */
+    --grafico-1: 170 72% 31%; /* #168a76 */
+    --grafico-2: 20 76% 53%; /* #e2672a */
+    --grafico-3: 213 68% 50%; /* #2a78d6 */
+    --grafico-4: 41 100% 46%; /* #eda100 */
+    --grafico-5: 337 70% 70%; /* #e87ba4 */
+    --grafico-6: 120 100% 26%; /* #008300 */
+    --grafico-7: 248 62% 58%; /* #6250d6 */
+    --grafico-8: 0 73% 59%; /* #e34948 */
 
     /* Backgrounds */
     --portal-background-priority: 31 100% 90%; /* #FFE6CB */
@@ -83,15 +117,15 @@ All colors MUST be HSL.
     --portal-foreground: 220 13% 18%; /* texto padrão */
 
     /* Priority (Primary brand color) */
-    --portal-primary: 16 88% 54%; /* #F15A22 */
+    --portal-primary: var(--destaque-500);
     --portal-primary-foreground: 0 0% 100%;
 
     /*Intro */
-    --portal-intro: 16 88% 54%;
+    --portal-intro: var(--destaque-500);
     --portal-intro-foreground: 0 0% 100%;
 
     /* Secondary */
-    --portal-secondary: 173 100% 30%; /* #009889 */
+    --portal-secondary: var(--marca-500);
     --portal-secondary-foreground: 0 0% 100%;
 
     /* Tertiary */
@@ -121,7 +155,7 @@ All colors MUST be HSL.
     --portal-neutral: 210 16% 93%; /* #EAEDF0 */
     --portal-neutral-foreground: 210 16% 20%; /* #2B333B */
 
-    --portal-salmon: 16 88% 54%; /* #F15A22 */
+    --portal-salmon: var(--destaque-500);
   }
 
   .dark {
@@ -134,8 +168,11 @@ All colors MUST be HSL.
     --popover: 210 25% 15%;
     --popover-foreground: 210 20% 90%;
 
-    --primary: 16 88% 55%;
+    --primary: var(--marca-500);
     --primary-foreground: 0 0% 100%;
+
+    --destaque: var(--destaque-600);
+    --destaque-foreground: 0 0% 100%;
 
     --secondary: 210 25% 20%;
     --secondary-foreground: 210 20% 90%;
@@ -143,31 +180,39 @@ All colors MUST be HSL.
     --muted: 210 25% 20%;
     --muted-foreground: 215 20% 65%;
 
-    --accent: 190 60% 50%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 170 40% 18%;
+    --accent-foreground: var(--marca-100);
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 210 25% 25%;
     --input: 210 25% 20%;
-    --ring: 16 88% 55%;
+    --ring: var(--marca-300);
 
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-background: 210 25% 10%;
+    --sidebar-foreground: 210 20% 90%;
+    --sidebar-primary: var(--marca-500);
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 170 40% 18%;
+    --sidebar-accent-foreground: var(--marca-100);
+    --sidebar-border: 210 25% 18%;
+    --sidebar-ring: var(--marca-300);
+    --grafico-1: 170 71% 35%; /* #1a9a85 */
+    --grafico-2: 17 70% 50%; /* #d95926 */
+    --grafico-3: 213 77% 56%; /* #3987e5 */
+    --grafico-4: 40 100% 39%; /* #c98500 */
+    --grafico-5: 338 61% 58%; /* #d55181 */
+    --grafico-6: 120 100% 26%; /* #008300 */
+    --grafico-7: 247 69% 72%; /* #9085e9 */
+    --grafico-8: 0 72% 65%; /* #e66767 */
 
     /* Portal theme (dark) */
     --portal-background-priority: 210 22% 14%;
     --portal-background: 210 22% 12%;
     --portal-foreground: 210 20% 92%;
 
-    --portal-primary: 16 88% 55%;
+    --portal-primary: var(--destaque-500);
     --portal-primary-foreground: 0 0% 100%;
 
     --portal-secondary: 210 24% 16%;
@@ -280,7 +325,7 @@ All colors MUST be HSL.
   align-items: center;
   justify-content: center;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
-  background: #2563eb;
+  background: hsl(var(--marca-600));
 }
 
 .cras-house-marker__bubble svg {

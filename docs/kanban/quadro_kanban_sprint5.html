@@ -1,0 +1,98 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Kanban Sprint 5 Saúde Perto</title>
+<style>
+/* Layout: quadro no formato do Jira, com quatro colunas iguais e cartões compactos empilhados. */
+:root {
+  --bg: #ffffff; --col: #f7f8f9; --card: #ffffff; --fg: #172b4d; --sub: #44546f; --faint: #626f86; --line: #dcdfe4;
+  --blue: #0c66e4; --blue-bg: #e9f2ff; --blue-fg: #0055cc; --green: #22a06b; --green-bg: #dcfff1; --green-fg: #216e4e;
+  --purple-bg: #f3f0ff; --purple-fg: #5e4db2; --orange-bg: #fff3eb; --orange-fg: #a54800; --teal-bg: #e7faf8; --teal-fg: #206a83;
+  --body: "Segoe UI", -apple-system, "Helvetica Neue", Arial, sans-serif;
+}
+@page { size: 1400px 1951px; margin: 0; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/20px var(--body); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.wrap { padding: 24px 32px; display: grid; gap: 16px; }
+.crumbs { font-size: 13px; color: var(--faint); }
+h1 { margin: 2px 0 0; font-size: 24px; line-height: 28px; font-weight: 600; }
+.bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 24px; }
+.sprint { color: var(--sub); }
+.sprint b { color: var(--fg); font-weight: 600; }
+.resumo { display: flex; gap: 6px; align-items: center; color: var(--sub); }
+.board { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; align-items: stretch; }
+.col { background: var(--col); border-radius: 6px; padding: 8px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.col h2 { margin: 0; padding: 6px 6px 8px; font-size: 12px; line-height: 16px; font-weight: 600; color: var(--sub); text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
+.col h2 span { font-weight: 400; }
+.col h2 svg { margin-left: auto; }
+.card { background: var(--card); border-radius: 4px; padding: 10px 12px; display: grid; gap: 8px; box-shadow: 0 1px 1px rgba(9,30,66,.25), 0 0 1px rgba(9,30,66,.31); break-inside: avoid; }
+.card h3 { margin: 0; font-size: 14px; line-height: 20px; font-weight: 400; }
+.linha { display: flex; align-items: center; gap: 6px; min-height: 20px; }
+.key { font-size: 12px; font-weight: 600; color: var(--sub); }
+.done .key { text-decoration: line-through; }
+.fim { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+.lz { font-size: 11px; line-height: 16px; font-weight: 700; padding: 0 4px; border-radius: 3px; text-transform: uppercase; }
+.Aplicacao { background: var(--purple-bg); color: var(--purple-fg); }
+.Marisol { background: var(--teal-bg); color: var(--teal-fg); }
+.Documentacao { background: var(--orange-bg); color: var(--orange-fg); }
+.Validacao { background: var(--blue-bg); color: var(--blue-fg); }
+.st-rev { background: var(--blue-bg); color: var(--blue-fg); }
+.st-ok { background: var(--green-bg); color: var(--green-fg); }
+.ev { font-size: 12px; color: var(--faint); }
+.av { width: 24px; height: 24px; border-radius: 50%; background: #dcdfe4; display: inline-flex; align-items: center; justify-content: center; }
+footer { font-size: 12px; line-height: 16px; color: var(--faint); }
+</style>
+
+<div class="wrap">
+  <div>
+    <div class="crumbs">Projetos / Saúde Perto / Quadro</div>
+    <h1>Quadro da Sprint 5</h1>
+  </div>
+  <div class="bar">
+    <div class="sprint"><b>Sprint 5</b> · 20/10/2026 a 03/11/2026 · Larissa Antonia Elias Sousa e Máximo Henrique F. de M. Sá Neto</div>
+    <div class="resumo"><span class="lz st-ok">15 concluídas</span><span class="lz st-rev">1 em revisão</span><span>16 tarefas</span></div>
+  </div>
+  <main class="board" id="board"></main>
+  <footer>Quadro no formato do Jira, montado a partir da Tabela 1 do relato técnico e do histórico do repositório Git, com situação em 03/11/2026. A numeração S5 é sequencial deste documento. A referência à direita de cada cartão indica o commit ou a seção do relato que registra a entrega.</footer>
+</div>
+
+<script>
+const concluidas = [
+  ["Fluxo de retirada de medicamento e perfil Farmacêutico", "Aplicacao", "21/10 · e02b438"],
+  ["Identidade visual: logo e nome Saúde Perto", "Aplicacao", "21/10 · 4744d74"],
+  ["Verificação do cidadão por código no e-mail", "Aplicacao", "25/10 · 28050ff"],
+  ["Área do cidadão na API", "Aplicacao", "25/10 · 28050ff"],
+  ["Material de apresentação", "Documentacao", "25/10 · fa94baf"],
+  ["Dashboards de SLA, mapa de medicamentos e carga sintética", "Aplicacao", "29/10 · ed626ca"],
+  ["Módulo único de indicadores e painel Meu Dia", "Aplicacao", "29/10 · 0f14f93"],
+  ["Painéis por perfil", "Aplicacao", "29/10 · b60e60b"],
+  ["Geração da receita em PDF", "Aplicacao", "31/10 · 3dbd146"],
+  ["Novas telas de login e alteração de senha", "Aplicacao", "01/11 · 8258f82"],
+  ["Sessão do cidadão no n8n", "Marisol", "Relato §4.13"],
+  ["Cadastro pelo agente", "Marisol", "Relato §4.13"],
+  ["Envio da receita em PDF pelo canal de conversa", "Marisol", "Relato §4.13.6"],
+  ["Testes finais: 210 do backend e 19 cenários da Marisol", "Validacao", "03/11 · Relato §5"],
+  ["Versão final do relato técnico", "Documentacao", "03/11 · v7"],
+];
+const emRevisao = [["Versão final da aplicação (aguardando commit)", "Aplicacao", "03/11 · sem commit"]];
+const nomes = { Aplicacao: "Aplicação", Marisol: "Marisol", Documentacao: "Documentação", Validacao: "Validação" };
+
+const tipo = '<svg width="16" height="16" viewBox="0 0 16 16" aria-label="Tarefa"><rect width="16" height="16" rx="2" fill="#4bade8"/><path d="M4 8.2l2.6 2.6L12 5.4" fill="none" stroke="#fff" stroke-width="2"/></svg>';
+const ok = '<svg width="16" height="16" viewBox="0 0 16 16" aria-label="Concluído"><path d="M3 8.5l3.2 3.2L13 4.8" fill="none" stroke="#22a06b" stroke-width="2"/></svg>';
+const av = '<span class="av" title="Sem responsável"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="5.5" r="3" fill="#626f86"/><path d="M2.5 14c.5-3.2 2.7-5 5.5-5s5 1.800 5.500 5z" fill="#626f86"/></svg></span>';
+
+let n = 0;
+const cartao = ([titulo, epico, ref], feita) => {
+  const key = "S5-" + String(++n).padStart(2, "0");
+  return `<article class="card ${feita ? "done" : ""}"><h3>${titulo}</h3>
+    <div class="linha"><span class="lz ${epico}">${nomes[epico]}</span><span class="ev fim">${ref}</span></div>
+    <div class="linha">${tipo}<span class="key">${key}</span><span class="fim">${feita ? ok : ""}${av}</span></div></article>`;
+};
+
+const htmlDone = concluidas.map(i => cartao(i, true)).join("");
+const htmlRev = emRevisao.map(i => cartao(i, false)).join("");
+document.getElementById("board").innerHTML =
+  `<section class="col"><h2>A fazer <span>0</span></h2></section>` +
+  `<section class="col"><h2>Em andamento <span>0</span></h2></section>` +
+  `<section class="col"><h2>Em revisão <span>1</span></h2>${htmlRev}</section>` +
+  `<section class="col"><h2>Concluído <span>15</span>${ok}</h2>${htmlDone}</section>`;
+</script>

@@ -40,6 +40,7 @@ import { MedicamentosUnidadePanel, ServicosUnidadePanel } from "./mapa/UnidadeAs
 import { formatSla } from "@/lib/sla";
 import { META_DENTRO_PRAZO_MIN_PCT } from "@/constants/indicadores";
 import { Paginacao } from "@/components/Paginacao";
+import { SERIES, COR_GRADE, COR_EIXO } from "@/lib/coresGraficos";
 
 type UnidadeDetalheDialogProps = {
   open: boolean;
@@ -427,13 +428,13 @@ export function UnidadeDetalheDialog({
                       ) : (
                         <ResponsiveContainer width="100%" height="100%">
                           <ComposedChart data={seriePontos || []}>
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={COR_GRADE} />
                             <XAxis
                               dataKey="data"
                               tickFormatter={(v) => format(parseISO(v), "dd/MM")}
                               axisLine={false}
                               tickLine={false}
-                              tick={{ fontSize: 11, fill: "#64748b" }}
+                              tick={{ fontSize: 11, fill: COR_EIXO }}
                             />
                             <YAxis yAxisId="left" axisLine={false} tickLine={false} tick={{ fontSize: 11 }} />
                             <YAxis yAxisId="right" orientation="right" axisLine={false} tickLine={false} tick={{ fontSize: 11 }} />
@@ -446,7 +447,7 @@ export function UnidadeDetalheDialog({
                               yAxisId="left"
                               dataKey="atendimentosTotal"
                               name="Atendimentos"
-                              fill="#3b82f6"
+                              fill={SERIES[0]}
                               radius={[4, 4, 0, 0]}
                               barSize={24}
                               opacity={0.8}
@@ -456,9 +457,9 @@ export function UnidadeDetalheDialog({
                               type="monotone"
                               dataKey="tempoMedioAtendimentoMin"
                               name="Tempo Médio (min)"
-                              stroke="#10b981"
+                              stroke={SERIES[1]}
                               strokeWidth={3}
-                              dot={{ r: 4, fill: "#10b981" }}
+                              dot={{ r: 4, fill: SERIES[1] }}
                             />
                           </ComposedChart>
                         </ResponsiveContainer>

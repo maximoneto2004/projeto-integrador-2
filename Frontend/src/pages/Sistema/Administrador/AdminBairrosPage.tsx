@@ -312,13 +312,13 @@ export default function AdminBairrosPage() {
 
       <Dialog open={modalVisualizarAberto} onOpenChange={setModalVisualizarAberto}>
         <DialogContent className="max-w-md border-none overflow-hidden p-0 bg-white rounded-2xl shadow-lg">
-          <div className="bg-[#f05a28] h-1.5 w-full" />
+          <div className="bg-destaque-500 h-1.5 w-full" />
 
           <div className="p-6">
             <DialogHeader className="mb-6">
               <div className="flex items-center gap-3">
-                <div className="bg-orange-100 p-2.5 rounded-full">
-                  <Info className="w-5 h-5 text-[#f05a28]" />
+                <div className="bg-marca-100 p-2.5 rounded-full">
+                  <Info className="w-5 h-5 text-primary" />
                 </div>
                 <DialogTitle className="text-xl font-bold text-slate-800">Detalhes do bairro</DialogTitle>
               </div>
@@ -362,7 +362,7 @@ export default function AdminBairrosPage() {
             <DialogFooter className="mt-8">
               <Button
                 onClick={() => setModalVisualizarAberto(false)}
-                className="w-full bg-[#f05a28] hover:bg-[#d84a1d] text-white font-bold h-12 rounded-xl transition-all shadow-md shadow-orange-100"
+                className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-12 rounded-xl transition-all shadow-md shadow-marca-100"
               >
                 Concluir Visualização
               </Button>
@@ -374,13 +374,13 @@ export default function AdminBairrosPage() {
       <Dialog open={modalFormAberto} onOpenChange={setModalFormAberto}>
         <DialogContent className="max-w-md border-none overflow-hidden p-0 bg-white rounded-2xl shadow-lg">
           {/* Barra de destaque superior opcional */}
-          <div className="bg-[#f05a28] h-1.5 w-full" />
+          <div className="bg-destaque-500 h-1.5 w-full" />
 
           <div className="p-6">
             <DialogHeader className="mb-6">
               <div className="flex items-center gap-3">
-                <div className="bg-orange-100 p-2.5 rounded-full">
-                  <MapPin className="w-5 h-5 text-[#f05a28]" />
+                <div className="bg-marca-100 p-2.5 rounded-full">
+                  <MapPin className="w-5 h-5 text-primary" />
                 </div>
                 <div className="text-left">
                   <DialogTitle className="text-xl font-bold text-slate-800">{editandoId ? "Editar Bairro" : "Novo Bairro"}</DialogTitle>
@@ -400,7 +400,7 @@ export default function AdminBairrosPage() {
                 <Input
                   id="bairro-nome"
                   placeholder="Ex: Aldeota"
-                  className="rounded-xl border-slate-200 focus-visible:ring-[#f05a28] h-11"
+                  className="rounded-xl border-slate-200 focus-visible:ring-ring h-11"
                   value={bairroForm.nome}
                   onChange={(event) => setBairroForm((atual) => ({ ...atual, nome: event.target.value }))}
                 />
@@ -416,7 +416,7 @@ export default function AdminBairrosPage() {
                 </div>
                 <Switch
                   id="bairro-ativo"
-                  className="data-[state=checked]:bg-[#f05a28]"
+                  className="data-[state=checked]:bg-primary"
                   checked={bairroForm.ativo}
                   onCheckedChange={(checked) => setBairroForm((atual) => ({ ...atual, ativo: checked }))}
                 />
@@ -433,7 +433,7 @@ export default function AdminBairrosPage() {
                 Cancelar
               </Button>
               <Button
-                className="flex-1 sm:flex-none bg-[#f05a28] hover:bg-[#d84a1d] text-white font-bold px-6 rounded-xl transition-all shadow-md shadow-orange-100"
+                className="flex-1 sm:flex-none bg-primary hover:bg-primary/90 text-white font-bold px-6 rounded-xl transition-all shadow-md shadow-marca-100"
                 onClick={salvarBairro}
                 disabled={salvando}
               >

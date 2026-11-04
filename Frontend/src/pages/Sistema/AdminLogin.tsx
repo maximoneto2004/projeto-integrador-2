@@ -53,7 +53,7 @@ const AdminLogin = () => {
   return (
     <AuthLayout rodape="Uso exclusivo de profissionais autorizados. Os acessos são registrados.">
       <div className="mb-8 space-y-3">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-[#2C8576]/10 px-3 py-1 text-xs font-semibold text-[#2C8576]">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-marca-500/10 px-3 py-1 text-xs font-semibold text-primary">
           <ShieldCheck className="h-3.5 w-3.5" />
           Acesso restrito a profissionais
         </span>
@@ -85,7 +85,7 @@ const AdminLogin = () => {
             <button
               type="button"
               onClick={() => setForgotOpen(true)}
-              className="text-sm font-semibold text-[#2C8576] hover:text-[#1E6B5E] transition-colors"
+              className="text-sm font-semibold text-primary hover:text-marca-800 transition-colors"
             >
               Esqueceu a senha?
             </button>
@@ -115,7 +115,7 @@ const AdminLogin = () => {
 
         <Button
           type="submit"
-          className="group w-full h-12 bg-[#E2672A] hover:bg-[#C9551C] text-white font-bold text-base rounded-xl shadow-lg shadow-[#E2672A]/25 transition-all active:scale-[0.98]"
+          className="group w-full h-12 bg-destaque hover:bg-destaque-700 text-white font-bold text-base rounded-xl shadow-lg shadow-destaque-500/25 transition-all active:scale-[0.98]"
           disabled={loading}
         >
           {loading ? (
@@ -152,7 +152,7 @@ const AdminLogin = () => {
               />
             </div>
             <DialogFooter>
-              <Button type="submit" className="w-full h-11 rounded-xl bg-[#E2672A] hover:bg-[#C9551C]" disabled={forgotLoading}>
+              <Button type="submit" className="w-full h-11 rounded-xl bg-destaque hover:bg-destaque-700" disabled={forgotLoading}>
                 {forgotLoading ? "Enviando..." : "Enviar instruções"}
               </Button>
             </DialogFooter>

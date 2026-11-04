@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { SERIES } from "@/lib/coresGraficos";
 
 type AtendimentosPorHoraItem = {
   hora: string;
@@ -27,7 +28,7 @@ export function AtendimentosPorHoraSection({ data, tooltip }: AtendimentosPorHor
             <YAxis allowDecimals={false} />
             <RechartsTooltip content={tooltip} />
             <Legend />
-            <Line type="monotone" dataKey="total" name="Agendamentos" stroke="hsl(var(--primary))" strokeWidth={2} />
+            <Line type="monotone" dataKey="total" name="Agendamentos" stroke={SERIES[0]} strokeWidth={2} />
           </LineChart>
         </ResponsiveContainer>
       </CardContent>

@@ -75,14 +75,14 @@ export function ServicoFormModal({
     <Dialog open={open} onOpenChange={handleDialogOpenChange}>
       <DialogContent className="w-[calc(100vw-2rem)] max-w-2xl border-none overflow-hidden p-0 bg-white rounded-2xl shadow-lg max-h-[90vh] overflow-y-auto">
         {/* Barra de destaque superior laranja */}
-        <div className="bg-[#f05a28] h-1.5 w-full" />
+        <div className="bg-destaque-500 h-1.5 w-full" />
 
         <div className="p-5 sm:p-8">
           <DialogHeader className="mb-6">
             <div className="flex items-center gap-4">
               {/* Ícone com fundo laranja suave conforme referência */}
-              <div className="bg-orange-100 p-3 rounded-full">
-                <Settings2 className="w-6 h-6 text-[#f05a28]" />
+              <div className="bg-marca-100 p-3 rounded-full">
+                <Settings2 className="w-6 h-6 text-primary" />
               </div>
               <div className="text-left">
                 <DialogTitle className="text-2xl font-bold text-slate-800">
@@ -151,7 +151,7 @@ export function ServicoFormModal({
                       id={`${idPrefix}-${dia.value}`}
                       checked={servico.diasSemana.includes(dia.value)}
                       onCheckedChange={() => onToggleDia(dia.value)}
-                      className="w-5 h-5 rounded-full border-slate-300 data-[state=checked]:bg-[#f05a28] data-[state=checked]:border-[#f05a28]"
+                      className="w-5 h-5 rounded-full border-slate-300 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                     />
                     <Label 
                       htmlFor={`${idPrefix}-${dia.value}`} 
@@ -177,7 +177,7 @@ export function ServicoFormModal({
                 </div>
                 <Switch
                   id={`${idPrefix}-expediente`}
-                  className="data-[state=checked]:bg-[#f05a28]"
+                  className="data-[state=checked]:bg-primary"
                   checked={servico.usarExpedienteCras}
                   onCheckedChange={(checked) => onServicoChange("usarExpedienteCras", checked)}
                 />
@@ -199,7 +199,7 @@ export function ServicoFormModal({
                       type="time"
                       value={servico.turno1Inicio}
                       onChange={(e) => onServicoChange("turno1Inicio", e.target.value)}
-                      className="h-11 rounded-xl border-slate-200 focus-visible:ring-[#f05a28]"
+                      className="h-11 rounded-xl border-slate-200 focus-visible:ring-ring"
                     />
                   </div>
                   <div className="space-y-2">
@@ -211,7 +211,7 @@ export function ServicoFormModal({
                       type="time"
                       value={servico.turno1Fim}
                       onChange={(e) => onServicoChange("turno1Fim", e.target.value)}
-                      className="h-11 rounded-xl border-slate-200 focus-visible:ring-[#f05a28]"
+                      className="h-11 rounded-xl border-slate-200 focus-visible:ring-ring"
                     />
                   </div>
                 </div>
@@ -225,7 +225,7 @@ export function ServicoFormModal({
                       type="time"
                       value={servico.turno2Inicio}
                       onChange={(e) => onServicoChange("turno2Inicio", e.target.value)}
-                      className="h-11 rounded-xl border-slate-200 focus-visible:ring-[#f05a28]"
+                      className="h-11 rounded-xl border-slate-200 focus-visible:ring-ring"
                     />
                   </div>
                   <div className="space-y-2">
@@ -237,7 +237,7 @@ export function ServicoFormModal({
                       type="time"
                       value={servico.turno2Fim}
                       onChange={(e) => onServicoChange("turno2Fim", e.target.value)}
-                      className="h-11 rounded-xl border-slate-200 focus-visible:ring-[#f05a28]"
+                      className="h-11 rounded-xl border-slate-200 focus-visible:ring-ring"
                     />
                   </div>
                 </div>
@@ -253,7 +253,7 @@ export function ServicoFormModal({
                 </div>
                 <Switch
                   id={`${idPrefix}-ativo`}
-                  className="data-[state=checked]:bg-[#f05a28]"
+                  className="data-[state=checked]:bg-primary"
                   checked={servico.ativo}
                   onCheckedChange={(checked) => onServicoChange("ativo", checked)}
                 />
@@ -270,7 +270,7 @@ export function ServicoFormModal({
               Cancelar
             </Button>
             <Button
-              className="flex-1 sm:flex-none bg-[#f05a28] hover:bg-[#d84a1d] text-white font-bold px-8 rounded-xl h-11 transition-all shadow-md shadow-orange-100 flex items-center gap-2"
+              className="flex-1 sm:flex-none bg-primary hover:bg-primary/90 text-white font-bold px-8 rounded-xl h-11 transition-all shadow-md shadow-marca-100 flex items-center gap-2"
               onClick={onSubmit}
             >
               {submitIcon}

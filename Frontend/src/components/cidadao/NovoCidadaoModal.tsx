@@ -102,12 +102,12 @@ export function NovoCidadaoModal({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[95vh] p-0 border-none shadow-2xl bg-slate-50 rounded-2xl overflow-hidden flex flex-col">
         {/* Barra de destaque superior laranja */}
-        <div className="bg-[#f05a28] h-1.5 w-full flex-shrink-0" />
+        <div className="bg-destaque-500 h-1.5 w-full flex-shrink-0" />
 
         {/* Header Consistente */}
         <DialogHeader className="p-8 bg-white border-b flex-shrink-0">
           <div className="flex items-center gap-4">
-            <div className="bg-orange-100 p-3 rounded-2xl text-[#f05a28]">
+            <div className="bg-marca-100 p-3 rounded-2xl text-primary">
               <User className="h-6 w-6" />
             </div>
             <div className="text-left">
@@ -124,7 +124,7 @@ export function NovoCidadaoModal({
           {/* SEÇÃO 1: DADOS PESSOAIS */}
           <section className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-all hover:shadow-md">
             <div className="p-4 border-b border-slate-100 bg-white flex items-center gap-3">
-              <div className="w-1.5 h-5 bg-[#f05a28] rounded-full" />
+              <div className="w-1.5 h-5 bg-primary rounded-full" />
               <h3 className="text-[11px] font-black uppercase tracking-[0.15em] text-slate-400">Dados Pessoais</h3>
             </div>
 
@@ -241,7 +241,7 @@ export function NovoCidadaoModal({
                       className="w-full h-11 justify-between bg-slate-50/50 border-slate-200 rounded-xl font-semibold text-slate-700 hover:bg-slate-100/50 transition-all"
                     >
                       {bairroSelecionado?.label || "Selecione o bairro"}
-                      <ChevronsUpDown className="ml-2 h-4 w-4 opacity-40 text-[#f05a28]" />
+                      <ChevronsUpDown className="ml-2 h-4 w-4 opacity-40 text-primary" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-[300px] p-0 rounded-xl shadow-2xl border-slate-100" align="start">
@@ -262,7 +262,7 @@ export function NovoCidadaoModal({
                               <div
                                 className={cn(
                                   "flex items-center justify-center w-4 h-4 rounded-full border border-slate-200",
-                                  enderecoBairro === b.value ? "bg-[#f05a28] border-[#f05a28]" : "",
+                                  enderecoBairro === b.value ? "bg-primary border-primary" : "",
                                 )}
                               >
                                 {enderecoBairro === b.value && <Check className="h-3 w-3 text-white" />}
@@ -296,7 +296,7 @@ export function NovoCidadaoModal({
               </div>
 
               <div className="space-y-3 col-span-1 md:col-span-4 pt-4 mt-2 border-t border-slate-50">
-                <div className="flex items-center gap-2 text-[#f05a28]">
+                <div className="flex items-center gap-2 text-primary">
                   <MapPin className="h-4 w-4" />
                   <Label className="text-[11px] font-black uppercase tracking-widest">Unidade de Vínculo (Origem)</Label>
                 </div>
@@ -306,13 +306,13 @@ export function NovoCidadaoModal({
                       variant="outline"
                       role="combobox"
                       aria-expanded={unidadePopoverOpen}
-                      className="w-full h-12 justify-between bg-orange-50/30 border-orange-100 rounded-xl focus:ring-[#f05a28] focus:border-[#f05a28] transition-all font-bold text-slate-700 hover:bg-orange-50/60"
+                      className="w-full h-12 justify-between bg-marca-50/30 border-marca-100 rounded-xl focus:ring-ring focus:border-primary transition-all font-bold text-slate-700 hover:bg-marca-50/60"
                     >
                       <span className="truncate">{unidadeSelecionada?.label || "Selecione a unidade de referência"}</span>
-                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-40 text-[#f05a28]" />
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-40 text-primary" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[--radix-popover-trigger-width] p-0 rounded-xl border-orange-100 shadow-2xl" align="start">
+                  <PopoverContent className="w-[--radix-popover-trigger-width] p-0 rounded-xl border-marca-100 shadow-2xl" align="start">
                     <Command className="rounded-xl">
                       <CommandInput placeholder="Digite o nome da unidade..." className="h-11" />
                       <CommandList className="max-h-[240px] custom-scrollbar">
@@ -328,7 +328,7 @@ export function NovoCidadaoModal({
                               }}
                               className="py-3 px-4"
                             >
-                              <Check className={cn("mr-2 h-4 w-4", unidadeOrigem === u.value ? "opacity-100 text-[#f05a28]" : "opacity-0")} />
+                              <Check className={cn("mr-2 h-4 w-4", unidadeOrigem === u.value ? "opacity-100 text-primary" : "opacity-0")} />
                               {u.label}
                             </CommandItem>
                           ))}
@@ -350,7 +350,7 @@ export function NovoCidadaoModal({
           <Button
             onClick={() => onSubmit()}
             disabled={submitting}
-            className="h-12 px-10 bg-[#f05a28] hover:bg-[#d84a1d] text-white font-bold rounded-xl shadow-lg shadow-orange-100 transition-all active:scale-[0.98] disabled:opacity-50"
+            className="h-12 px-10 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl shadow-lg shadow-marca-100 transition-all active:scale-[0.98] disabled:opacity-50"
           >
             {submitting ? "Processando..." : cidadaoEditando ? "Atualizar Cadastro" : "Finalizar Cadastro"}
           </Button>

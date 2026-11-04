@@ -25,7 +25,7 @@ export function ModalConfirmarChegada({ open, onOpenChange, appointment, onConfi
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent className="max-w-md border-none p-0 bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh] overflow-y-auto">
         {/* Barra de destaque superior laranja (Identidade do Sistema) */}
-        <div className="bg-[#f05a28] h-1.5 w-full" />
+        <div className="bg-destaque-500 h-1.5 w-full" />
 
         <div className="p-8">
           <AlertDialogHeader className="space-y-4">
@@ -46,7 +46,7 @@ export function ModalConfirmarChegada({ open, onOpenChange, appointment, onConfi
               <div className="mt-4 bg-slate-50 border border-slate-100 rounded-2xl p-5 space-y-4 text-left">
                 {/* Nome do Cidadão em destaque */}
                 <div className="flex items-center gap-3">
-                  <div className="h-9 w-9 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-[#f05a28] shadow-sm">
+                  <div className="h-9 w-9 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-primary shadow-sm">
                     <User className="h-5 w-5" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -92,7 +92,7 @@ export function ModalConfirmarChegada({ open, onOpenChange, appointment, onConfi
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={onConfirm}
-              className="flex-1 bg-[#f05a28] hover:bg-[#d84a1d] text-white font-bold rounded-xl h-11 shadow-md shadow-orange-100 gap-2 transition-all"
+              className="flex-1 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl h-11 shadow-md shadow-marca-100 gap-2 transition-all"
             >
               Confirmar Chegada
             </AlertDialogAction>

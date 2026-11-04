@@ -43,12 +43,12 @@ export function ModalAssumirAtendimento({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md border-none p-0 bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
         {/* Barra de destaque superior laranja */}
-        <div className="bg-[#f05a28] h-1.5 w-full flex-shrink-0" />
+        <div className="bg-destaque-500 h-1.5 w-full flex-shrink-0" />
 
         <div className="p-8">
           <DialogHeader className="mb-6">
             <div className="flex items-center gap-4 text-left">
-              <div className="bg-orange-100 p-3 rounded-2xl text-[#f05a28]">
+              <div className="bg-marca-100 p-3 rounded-2xl text-primary">
                 <UserCheck className="h-6 w-6" />
               </div>
               <div>
@@ -95,7 +95,7 @@ export function ModalAssumirAtendimento({
               {/* SELEÇÃO DE GUICHÊ */}
               <div className="space-y-3 pt-2">
                 <div className="flex items-center gap-2 ml-1">
-                  <Layout className="w-4 h-4 text-[#f05a28]" />
+                  <Layout className="w-4 h-4 text-primary" />
                   <Label htmlFor="guicheAssumir" className="text-xs font-bold text-slate-600 uppercase tracking-tight">
                     Selecionar Guichê ou Mesa *
                   </Label>
@@ -103,7 +103,7 @@ export function ModalAssumirAtendimento({
                 <Select value={guicheAssumir} onValueChange={onChangeGuiche}>
                   <SelectTrigger 
                     id="guicheAssumir" 
-                    className="h-12 rounded-xl border-slate-200 bg-white focus:ring-[#f05a28] focus:border-[#f05a28] shadow-sm"
+                    className="h-12 rounded-xl border-slate-200 bg-white focus:ring-ring focus:border-primary shadow-sm"
                   >
                     <SelectValue placeholder="Onde você irá atender?" />
                   </SelectTrigger>
@@ -136,7 +136,7 @@ export function ModalAssumirAtendimento({
                 <Button 
                   onClick={onConfirm} 
                   disabled={!guicheAssumir}
-                  className="flex-1 h-12 bg-[#f05a28] hover:bg-[#d84a1d] text-white font-bold rounded-xl shadow-lg shadow-orange-100 transition-all disabled:opacity-50"
+                  className="flex-1 h-12 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl shadow-lg shadow-marca-100 transition-all disabled:opacity-50"
                 >
                   Confirmar
                 </Button>

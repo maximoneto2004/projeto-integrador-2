@@ -1,5 +1,6 @@
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import type { MeuDiaResult } from "@/types/api";
+import { SERIES } from "@/lib/coresGraficos";
 
 type Ponto = MeuDiaResult["serie"][number];
 
@@ -41,7 +42,7 @@ export function TempoConsultaChart({ serie }: { serie: MeuDiaResult["serie"] }) 
           type="monotone"
           dataKey="tempo_medio_atendimento_min"
           name="Meu tempo médio"
-          stroke="hsl(var(--primary))"
+          stroke={SERIES[0]}
           strokeWidth={2}
           dot={{ r: 4 }}
           activeDot={{ r: 5 }}

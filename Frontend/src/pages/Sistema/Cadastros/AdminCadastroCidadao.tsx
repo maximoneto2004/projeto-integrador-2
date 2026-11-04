@@ -572,12 +572,12 @@ export default function AdminCadastroCidadao() {
           <Dialog open={!!cidadaoParaVisualizar} onOpenChange={(open) => !open && setCidadaoParaVisualizar(null)}>
             <DialogContent className="max-w-3xl border-none p-0 bg-white rounded-2xl shadow-lg h-[90vh] md:h-auto md:max-h-[85vh] flex flex-col overflow-hidden">
               {/* Barra de destaque superior laranja */}
-              <div className="bg-[#f05a28] h-1.5 w-full flex-shrink-0" />
+              <div className="bg-destaque-500 h-1.5 w-full flex-shrink-0" />
 
               {/* Header Fixo */}
               <DialogHeader className="p-6 md:p-8 pb-4 border-b border-slate-50 flex-shrink-0">
                 <div className="flex items-center gap-4 text-left">
-                  <div className="bg-orange-100 p-3 rounded-2xl text-[#f05a28]"></div>
+                  <div className="bg-marca-100 p-3 rounded-2xl text-primary"></div>
                   <div>
                     <DialogTitle className="text-xl md:text-2xl font-bold text-slate-800">Agendamentos do Cidadão</DialogTitle>
                     <p className="text-sm text-slate-500 font-medium">
@@ -610,7 +610,7 @@ export default function AdminCadastroCidadao() {
                           <TableRow key={agendamento.id} className="border-slate-50 hover:bg-slate-50/30 transition-colors">
                             <TableCell className="py-4 px-6 font-bold text-slate-700">
                               <div className="flex items-center gap-2">
-                                <Calendar className="h-3.5 w-3.5 text-[#f05a28]/60" />
+                                <Calendar className="h-3.5 w-3.5 text-primary/60" />
                                 {formatarDataAgendamento(agendamento.data)}
                               </div>
                             </TableCell>

@@ -11,6 +11,7 @@ import {
   Legend,
   Line,
 } from "recharts";
+import { SERIES } from "@/lib/coresGraficos";
 
 const TooltipContent = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) {
@@ -56,7 +57,7 @@ export function AtendentesChart({ data }: AtendentesChartProps) {
           yAxisId="left"
           dataKey="total"
           name="Consultas"
-          fill="#0ea5e9"
+          fill={SERIES[0]}
           radius={[4, 4, 0, 0]}
         />
 
@@ -65,7 +66,7 @@ export function AtendentesChart({ data }: AtendentesChartProps) {
           type="monotone"
           dataKey="tempoMedioColaborador"
           name="Tempo médio (min)"
-          stroke="#f97316"
+          stroke={SERIES[1]}
           strokeWidth={2}
           dot={{ r: 3 }}
         />

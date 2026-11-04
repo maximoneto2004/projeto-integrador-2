@@ -6,6 +6,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["--prefix", "Frontend", "run", "dev"],
       "port": 5000
+    },
+    {
+      "name": "evidencias-backend",
+      "runtimeExecutable": "C:/Users/Samsung/OneDrive/Projetos/Faculdade/projeto-integrador-2/.venv/Scripts/python.exe",
+      "runtimeArgs": ["C:/Users/Samsung/AppData/Local/Temp/claude/5a57d8aa3fd05225/dca1ded6-4386-4715-9253-fb5253baf42b/scratchpad/evid/run_server.py", "C:/Users/Samsung/OneDrive/Projetos/Faculdade/projeto-integrador-2", "runserver", "8765", "--noreload"],
+      "port": 8765
     }
   ]
 }

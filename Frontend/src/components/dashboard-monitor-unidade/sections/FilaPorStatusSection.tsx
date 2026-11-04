@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { SERIES } from "@/lib/coresGraficos";
 
 type FilaPorStatusItem = {
   status: string;
@@ -27,7 +28,7 @@ export function FilaPorStatusSection({ data, tooltip }: FilaPorStatusSectionProp
             <YAxis allowDecimals={false} />
             <RechartsTooltip content={tooltip} />
             <Legend />
-            <Bar dataKey="total" name="Total" fill="hsl(var(--primary))" radius={[5, 5, 0, 0]} />
+            <Bar dataKey="total" name="Total" fill={SERIES[0]} radius={[5, 5, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </CardContent>

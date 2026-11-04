@@ -10,6 +10,7 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
+import { SERIES } from "@/lib/coresGraficos";
 
 const TooltipContent = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) {
@@ -43,7 +44,7 @@ export function OrigemAtendimentosChart({ data }: OrigemAtendimentosChartProps) 
         <Legend />
         <Tooltip content={<TooltipContent />} />
 
-        <Bar dataKey="total" name="Agendamentos" fill="#0ea5e9" radius={[4, 4, 0, 0]} />
+        <Bar dataKey="total" name="Agendamentos" fill={SERIES[0]} radius={[4, 4, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );

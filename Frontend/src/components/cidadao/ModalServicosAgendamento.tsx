@@ -176,11 +176,11 @@ export function ModalServicosAgendamento({ open, agendamentoId, onOpenChange }: 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl border-none p-0 bg-white rounded-2xl shadow-lg h-[95vh] md:h-auto md:max-h-[90vh] flex flex-col overflow-hidden">
-        <div className="bg-[#f05a28] h-1.5 w-full flex-shrink-0" />
+        <div className="bg-destaque-500 h-1.5 w-full flex-shrink-0" />
 
         <DialogHeader className="p-6 md:p-8 pb-4 border-b border-slate-50 flex-shrink-0">
           <div className="flex items-center gap-3 text-left">
-            <div className="bg-orange-100 p-3 rounded-2xl text-[#f05a28]">
+            <div className="bg-marca-100 p-3 rounded-2xl text-primary">
               <ClipboardList className="h-6 w-6" />
             </div>
             <div>
@@ -250,7 +250,7 @@ export function ModalServicosAgendamento({ open, agendamentoId, onOpenChange }: 
                       )}
                     >
                       <span className="truncate">{labelsSelecionados || "Selecione os serviços extras..."}</span>
-                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-30 text-[#f05a28]" />
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-30 text-primary" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent
@@ -312,7 +312,7 @@ export function ModalServicosAgendamento({ open, agendamentoId, onOpenChange }: 
           <Button
             onClick={salvar}
             disabled={salvando || carregando || isSomenteLeitura}
-            className="flex-1 sm:flex-none bg-[#f05a28] hover:bg-[#d84a1d] text-white font-bold rounded-xl h-11 shadow-md shadow-orange-100"
+            className="flex-1 sm:flex-none bg-primary hover:bg-primary/90 text-white font-bold rounded-xl h-11 shadow-md shadow-marca-100"
           >
             {salvando ? "Salvando..." : "Salvar Serviços"}
           </Button>

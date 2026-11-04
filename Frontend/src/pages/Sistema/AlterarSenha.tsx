@@ -54,14 +54,14 @@ const AlterarSenha = () => {
   return (
     <AuthLayout
       rodape={
-        <Link to="/sistema/login" className="inline-flex items-center gap-1 font-semibold text-[#2C8576] hover:text-[#1E6B5E]">
+        <Link to="/sistema/login" className="inline-flex items-center gap-1 font-semibold text-primary hover:text-marca-800">
           <ArrowLeft className="h-3.5 w-3.5" />
           Voltar para o login
         </Link>
       }
     >
       <div className="mb-8 space-y-3">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-[#2C8576]/10 px-3 py-1 text-xs font-semibold text-[#2C8576]">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-marca-500/10 px-3 py-1 text-xs font-semibold text-primary">
           <KeyRound className="h-3.5 w-3.5" />
           Recuperação de acesso
         </span>
@@ -131,7 +131,7 @@ const AlterarSenha = () => {
 
         <Button
           type="submit"
-          className="w-full h-12 bg-[#E2672A] hover:bg-[#C9551C] text-white font-bold text-base rounded-xl shadow-lg shadow-[#E2672A]/25 transition-all active:scale-[0.98]"
+          className="w-full h-12 bg-destaque hover:bg-destaque-700 text-white font-bold text-base rounded-xl shadow-lg shadow-destaque-500/25 transition-all active:scale-[0.98]"
           disabled={loading || linkInvalido}
         >
           {loading ? (

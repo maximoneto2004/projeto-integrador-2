@@ -881,12 +881,12 @@ export default function AdminServicosTabelasPage() {
 
       <Dialog open={modalClasseAberto} onOpenChange={setModalClasseAberto}>
         <DialogContent className="max-w-lg border-none p-0 overflow-hidden bg-white rounded-2xl shadow-lg">
-          <div className="bg-[#f05a28] h-1.5 w-full" />
+          <div className="bg-destaque-500 h-1.5 w-full" />
           <div className="p-6">
             <DialogHeader className="mb-6">
               <div className="flex items-center gap-3 text-left">
-                <div className="bg-orange-100 p-2.5 rounded-full">
-                  <Layers className="w-5 h-5 text-[#f05a28]" />
+                <div className="bg-marca-100 p-2.5 rounded-full">
+                  <Layers className="w-5 h-5 text-primary" />
                 </div>
                 <div>
                   <DialogTitle className="text-xl font-bold text-slate-800">{classeEditandoId ? "Editar Classe" : "Nova Classe"}</DialogTitle>
@@ -902,7 +902,7 @@ export default function AdminServicosTabelasPage() {
                 </Label>
                 <Input
                   id="classe-nome"
-                  className="rounded-xl border-slate-200 focus-visible:ring-[#f05a28]"
+                  className="rounded-xl border-slate-200 focus-visible:ring-ring"
                   value={classeForm.nome}
                   maxLength={150}
                   onChange={handleClasseNomeChange}
@@ -915,7 +915,7 @@ export default function AdminServicosTabelasPage() {
                 <Textarea
                   id="classe-descricao"
                   rows={3}
-                  className="rounded-xl border-slate-200 focus-visible:ring-[#f05a28] resize-none"
+                  className="rounded-xl border-slate-200 focus-visible:ring-ring resize-none"
                   value={classeForm.descricao}
                   maxLength={255}
                   onChange={handleClasseDescricaoChange}
@@ -930,7 +930,7 @@ export default function AdminServicosTabelasPage() {
                 </Label>
                 <Switch
                   id="classe-ativo"
-                  className="data-[state=checked]:bg-[#f05a28]"
+                  className="data-[state=checked]:bg-primary"
                   checked={classeForm.ativo}
                   onCheckedChange={(checked) => setClasseForm((a) => ({ ...a, ativo: checked }))}
                 />
@@ -944,7 +944,7 @@ export default function AdminServicosTabelasPage() {
               <Button
                 onClick={salvarClasse}
                 disabled={salvandoClasse}
-                className="bg-[#f05a28] hover:bg-[#d84a1d] text-white font-bold px-8 rounded-xl shadow-md shadow-orange-100"
+                className="bg-primary hover:bg-primary/90 text-white font-bold px-8 rounded-xl shadow-md shadow-marca-100"
               >
                 {salvandoClasse ? "Salvando..." : "Salvar Classe"}
               </Button>
@@ -955,12 +955,12 @@ export default function AdminServicosTabelasPage() {
       {/* ================= MODAL: TIPO (EDITAR/NOVO) ================= */}
       <Dialog open={modalTipoAberto} onOpenChange={setModalTipoAberto}>
         <DialogContent className="max-w-lg border-none p-0 overflow-hidden bg-white rounded-2xl shadow-lg">
-          <div className="bg-[#f05a28] h-1.5 w-full" />
+          <div className="bg-destaque-500 h-1.5 w-full" />
           <div className="p-6">
             <DialogHeader className="mb-6 text-left">
               <div className="flex items-center gap-3">
-                <div className="bg-orange-100 p-2.5 rounded-full">
-                  <Type className="w-5 h-5 text-[#f05a28]" />
+                <div className="bg-marca-100 p-2.5 rounded-full">
+                  <Type className="w-5 h-5 text-primary" />
                 </div>
                 <div>
                   <DialogTitle className="text-xl font-bold text-slate-800">{tipoEditandoId ? "Editar Tipo" : "Novo Tipo"}</DialogTitle>
@@ -978,7 +978,7 @@ export default function AdminServicosTabelasPage() {
               <div className="space-y-2">
                 <Label className="text-sm font-semibold text-slate-700 ml-1">Descrição</Label>
                 <Textarea
-                  className="rounded-xl border-slate-200 focus-visible:ring-[#f05a28] resize-none"
+                  className="rounded-xl border-slate-200 focus-visible:ring-ring resize-none"
                   rows={3}
                   value={tipoForm.descricao}
                   maxLength={255}
@@ -1004,7 +1004,7 @@ export default function AdminServicosTabelasPage() {
                 <div className="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-slate-50/80 self-end h-[44px]">
                   <Label className="text-xs font-bold text-slate-700">Ativo</Label>
                   <Switch
-                    className="data-[state=checked]:bg-[#f05a28]"
+                    className="data-[state=checked]:bg-primary"
                     checked={tipoForm.ativo}
                     onCheckedChange={(c) => setTipoForm((a) => ({ ...a, ativo: c }))}
                   />
@@ -1013,7 +1013,7 @@ export default function AdminServicosTabelasPage() {
             </div>
 
             <DialogFooter className="mt-8">
-              <Button onClick={salvarTipo} className="w-full bg-[#f05a28] hover:bg-[#d84a1d] text-white font-bold h-11 rounded-xl shadow-md">
+              <Button onClick={salvarTipo} className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-11 rounded-xl shadow-md">
                 {salvandoTipo ? "Salvando..." : "Salvar Configuração"}
               </Button>
             </DialogFooter>
@@ -1030,12 +1030,12 @@ export default function AdminServicosTabelasPage() {
         }}
       >
         <DialogContent className="max-w-2xl border-none p-0 overflow-hidden bg-white rounded-2xl shadow-lg">
-          <div className="bg-[#f05a28] h-1.5 w-full" />
+          <div className="bg-destaque-500 h-1.5 w-full" />
           <div className="p-8">
             <DialogHeader className="mb-6 text-left">
               <div className="flex items-center gap-3">
-                <div className="bg-orange-100 p-2.5 rounded-full">
-                  <Settings className="w-5 h-5 text-[#f05a28]" />
+                <div className="bg-marca-100 p-2.5 rounded-full">
+                  <Settings className="w-5 h-5 text-primary" />
                 </div>
                 <DialogTitle className="text-2xl font-bold text-slate-800">{servicoEditandoId ? "Editar Serviço" : "Novo Serviço"}</DialogTitle>
               </div>
@@ -1123,10 +1123,10 @@ export default function AdminServicosTabelasPage() {
                 </p>
               </div>
 
-              <div className="flex items-center justify-between p-4 rounded-xl border border-slate-100 bg-orange-50/30 md:col-span-2">
+              <div className="flex items-center justify-between p-4 rounded-xl border border-slate-100 bg-marca-50/30 md:col-span-2">
                 <div className="flex items-center gap-3">
                   <Switch
-                    className="data-[state=checked]:bg-[#f05a28]"
+                    className="data-[state=checked]:bg-primary"
                     checked={servicoForm.ativo}
                     onCheckedChange={(c) => setServicoForm((a) => ({ ...a, ativo: c }))}
                   />
@@ -1134,7 +1134,7 @@ export default function AdminServicosTabelasPage() {
                 </div>
                 <div className="text-right">
                   <span className="text-[10px] font-bold text-slate-400 uppercase block">Tempo Estimado</span>
-                  <span className="text-sm font-bold text-[#f05a28]">{servicoForm.tempoMin || 0} min</span>
+                  <span className="text-sm font-bold text-primary">{servicoForm.tempoMin || 0} min</span>
                 </div>
               </div>
 
@@ -1165,7 +1165,7 @@ export default function AdminServicosTabelasPage() {
               <Button variant="ghost" onClick={() => setModalServicoAberto(false)} className="rounded-xl px-6">
                 Cancelar
               </Button>
-              <Button onClick={salvarServico} className="bg-[#f05a28] hover:bg-[#d84a1d] text-white font-bold px-10 rounded-xl shadow-md h-11">
+              <Button onClick={salvarServico} className="bg-primary hover:bg-primary/90 text-white font-bold px-10 rounded-xl shadow-md h-11">
                 {salvandoServico ? "Salvando..." : "Finalizar Cadastro"}
               </Button>
             </DialogFooter>
@@ -1177,11 +1177,11 @@ export default function AdminServicosTabelasPage() {
       {/* Exemplo para o de Serviço (aplique a mesma lógica para Classe e Tipo) */}
       <Dialog open={!!classeVisualizar} onOpenChange={(open) => !open && setClasseVisualizar(null)}>
         <DialogContent className="max-w-lg border-none p-0 overflow-hidden bg-white rounded-2xl shadow-lg">
-          <div className="bg-[#f05a28] h-1.5 w-full" />
+          <div className="bg-destaque-500 h-1.5 w-full" />
           <div className="p-6">
             <DialogHeader className="mb-6 flex flex-row items-center gap-3">
-              <div className="bg-orange-100 p-2.5 rounded-full">
-                <Info className="w-5 h-5 text-[#f05a28]" />
+              <div className="bg-marca-100 p-2.5 rounded-full">
+                <Info className="w-5 h-5 text-primary" />
               </div>
               <DialogTitle className="text-xl font-bold text-slate-800">Detalhes da Classe</DialogTitle>
             </DialogHeader>
@@ -1208,7 +1208,7 @@ export default function AdminServicosTabelasPage() {
                 </div>
                 <Button
                   onClick={() => setClasseVisualizar(null)}
-                  className="w-full bg-[#f05a28] hover:bg-[#d84a1d] text-white font-bold px-10 rounded-xl shadow-md"
+                  className="w-full bg-primary hover:bg-primary/90 text-white font-bold px-10 rounded-xl shadow-md"
                 >
                   Fechar
                 </Button>
@@ -1220,11 +1220,11 @@ export default function AdminServicosTabelasPage() {
 
       <Dialog open={!!tipoVisualizar} onOpenChange={(open) => !open && setTipoVisualizar(null)}>
         <DialogContent className="max-w-lg border-none p-0 overflow-hidden bg-white rounded-2xl shadow-lg">
-          <div className="bg-[#f05a28] h-1.5 w-full" />
+          <div className="bg-destaque-500 h-1.5 w-full" />
           <div className="p-6">
             <DialogHeader className="mb-6 flex flex-row items-center gap-3">
-              <div className="bg-orange-100 p-2.5 rounded-full">
-                <Info className="w-5 h-5 text-[#f05a28]" />
+              <div className="bg-marca-100 p-2.5 rounded-full">
+                <Info className="w-5 h-5 text-primary" />
               </div>
               <DialogTitle className="text-xl font-bold text-slate-800">Detalhes do Tipo</DialogTitle>
             </DialogHeader>
@@ -1259,7 +1259,7 @@ export default function AdminServicosTabelasPage() {
                 </div>
                 <Button
                   onClick={() => setTipoVisualizar(null)}
-                  className="w-full bg-[#f05a28] hover:bg-[#d84a1d] text-white font-bold px-10 rounded-xl shadow-md"
+                  className="w-full bg-primary hover:bg-primary/90 text-white font-bold px-10 rounded-xl shadow-md"
                 >
                   Fechar
                 </Button>
@@ -1271,11 +1271,11 @@ export default function AdminServicosTabelasPage() {
 
       <Dialog open={!!servicoVisualizar} onOpenChange={(open) => !open && setServicoVisualizar(null)}>
         <DialogContent className="max-w-lg border-none p-0 overflow-hidden bg-white rounded-2xl shadow-lg">
-          <div className="bg-[#f05a28] h-1.5 w-full" />
+          <div className="bg-destaque-500 h-1.5 w-full" />
           <div className="p-6">
             <DialogHeader className="mb-6 flex flex-row items-center gap-3">
-              <div className="bg-orange-100 p-2.5 rounded-full">
-                <Info className="w-5 h-5 text-[#f05a28]" />
+              <div className="bg-marca-100 p-2.5 rounded-full">
+                <Info className="w-5 h-5 text-primary" />
               </div>
               <DialogTitle className="text-xl font-bold text-slate-800">Detalhes do Serviço</DialogTitle>
             </DialogHeader>
@@ -1308,7 +1308,7 @@ export default function AdminServicosTabelasPage() {
                 </div>
                 <Button
                   onClick={() => setServicoVisualizar(null)}
-                  className="w-full bg-[#f05a28] hover:bg-[#d84a1d] text-white font-bold px-10 rounded-xl shadow-md "
+                  className="w-full bg-primary hover:bg-primary/90 text-white font-bold px-10 rounded-xl shadow-md "
                 >
                   Fechar
                 </Button>

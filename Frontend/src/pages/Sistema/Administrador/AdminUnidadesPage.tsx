@@ -603,7 +603,7 @@ export default function AdminUnidadesPage() {
                             <TableCell className="font-medium text-slate-700">{getServicoNome(servico.servico)}</TableCell>
                             <TableCell className="text-slate-600 text-xs">{servico.dias_semana?.join(", ") || "-"}</TableCell>
                             <TableCell>
-                              <Badge className={servico.is_active ? "bg-orange-500 hover:bg-orange-600 rounded-full" : "rounded-full"}>
+                              <Badge className={servico.is_active ? "bg-primary hover:bg-primary/90 rounded-full" : "rounded-full"}>
                                 {servico.is_active ? "Ativo" : "Inativo"}
                               </Badge>
                             </TableCell>
@@ -632,7 +632,7 @@ export default function AdminUnidadesPage() {
               </Label>
               <Input
                 id="unidade-nome"
-                className="bg-slate-50/50 border-slate-200 focus:border-orange-500"
+                className="bg-slate-50/50 border-slate-200 focus:border-primary"
                 value={unidadeForm.nome}
                 onChange={(event) => atualizarFormulario("nome", event.target.value)}
                 placeholder="Ex: Unidade Centro"
@@ -834,7 +834,7 @@ export default function AdminUnidadesPage() {
                 id="unidade-ativo"
                 checked={unidadeForm.ativo}
                 onCheckedChange={(checked) => atualizarFormulario("ativo", checked)}
-                className="data-[state=checked]:bg-orange-500"
+                className="data-[state=checked]:bg-primary"
               />
               <Label htmlFor="unidade-ativo" className="font-semibold text-slate-700 cursor-pointer">
                 Unidade ativa para agendamentos
@@ -849,7 +849,7 @@ export default function AdminUnidadesPage() {
             <Button
               onClick={salvarUnidade}
               disabled={salvando}
-              className="bg-[#f26522] hover:bg-[#d95a1e] text-white px-8 font-bold transition-colors"
+              className="bg-primary hover:bg-primary/90 text-white px-8 font-bold transition-colors"
             >
               {salvando ? "Salvando..." : editandoId ? "Salvar alterações" : "Criar unidade"}
             </Button>

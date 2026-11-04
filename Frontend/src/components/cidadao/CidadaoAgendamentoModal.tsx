@@ -141,12 +141,12 @@ export function CidadaoAgendamentoModal({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-4xl border-none p-0 bg-white rounded-2xl shadow-lg h-[95vh] md:h-auto md:max-h-[90vh] flex flex-col overflow-hidden">
         {/* Barra de destaque superior laranja */}
-        <div className="bg-[#f05a28] h-1.5 w-full flex-shrink-0" />
+        <div className="bg-destaque-500 h-1.5 w-full flex-shrink-0" />
 
         {/* Header Fixo */}
         <DialogHeader className="p-6 md:p-8 pb-4 border-b border-slate-50 flex-shrink-0">
           <div className="flex items-center gap-4 text-left">
-            <div className="hidden sm:block bg-orange-100 p-3 rounded-2xl text-[#f05a28]">
+            <div className="hidden sm:block bg-marca-100 p-3 rounded-2xl text-primary">
               <Calendar className="h-6 w-6" />
             </div>
             <div className="space-y-1">
@@ -158,7 +158,7 @@ export function CidadaoAgendamentoModal({
                     <span className="mx-2 text-slate-300 hidden sm:inline">|</span>
                     <span className="block sm:inline">CPF: {cidadao.cpf}</span>
                   </p>
-                  <div className="flex items-center gap-1.5 text-[10px] text-[#f05a28] font-black uppercase tracking-wider bg-orange-50 w-fit px-2.5 py-1 rounded-lg">
+                  <div className="flex items-center gap-1.5 text-[10px] text-primary font-black uppercase tracking-wider bg-marca-50 w-fit px-2.5 py-1 rounded-lg">
                     <MapPin className="h-3 w-3" />
                     Unidade de Origem: {unidadeOrigem || "Não informada"}
                   </div>
@@ -176,7 +176,7 @@ export function CidadaoAgendamentoModal({
         <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8 custom-scrollbar bg-white">
           {/* SEÇÃO: BUSCA DE CIDADÃO */}
           {allowCidadaoSearch && (
-            <section className="bg-[#F8FAFC] p-4 md:p-6 rounded-2xl border border-slate-100 space-y-4">
+            <section className="bg-slate-50 p-4 md:p-6 rounded-2xl border border-slate-100 space-y-4">
               <div className="flex items-center gap-2 mb-2">
                 <Search className="h-4 w-4 text-slate-400" />
                 <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Buscar Cidadão</h3>
@@ -188,13 +188,13 @@ export function CidadaoAgendamentoModal({
                     value={cidadaoBusca}
                     onChange={(e) => onChangeCidadaoBusca?.(e.target.value.replace(/\D/g, ""))}
                     placeholder="Ex: 000.000..."
-                    className="rounded-xl border-slate-200 focus-visible:ring-[#f05a28] h-11 bg-white"
+                    className="rounded-xl border-slate-200 focus-visible:ring-ring h-11 bg-white"
                   />
                 </div>
                 <div className="space-y-2">
                   <Label className="text-xs font-bold text-slate-600 ml-1">Resultado da Busca</Label>
                   <Select value={cidadao?.id ?? ""} onValueChange={onSelecionarCidadao} disabled={loadingCidadaos || !cidadaoOpcoes.length}>
-                    <SelectTrigger className="rounded-xl border-slate-200 h-11 bg-white focus:ring-[#f05a28]">
+                    <SelectTrigger className="rounded-xl border-slate-200 h-11 bg-white focus:ring-ring">
                       <SelectValue placeholder={loadingCidadaos ? "Buscando..." : "Selecione o cidadão"} />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl">
@@ -212,8 +212,8 @@ export function CidadaoAgendamentoModal({
 
           {/* SEÇÃO: CONFIGURAÇÃO DO AGENDAMENTO */}
           <section className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-            <div className="p-4 border-b border-slate-50 bg-[#F8FAFC]/50 flex items-center gap-2">
-              <span className="w-1.5 h-4 bg-[#f05a28] rounded-full" />
+            <div className="p-4 border-b border-slate-50 bg-slate-50/50 flex items-center gap-2">
+              <span className="w-1.5 h-4 bg-primary rounded-full" />
               <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Detalhes da Consulta</h3>
             </div>
 
@@ -361,7 +361,7 @@ export function CidadaoAgendamentoModal({
                             <span className="flex items-center gap-2">
                               <Clock className="h-3 w-3" /> {h.label}
                             </span>
-                            {h.complemento && <span className="text-[10px] font-bold text-[#f05a28] uppercase">{h.complemento}</span>}
+                            {h.complemento && <span className="text-[10px] font-bold text-primary uppercase">{h.complemento}</span>}
                           </div>
                         </SelectItem>
                       ))}
@@ -375,7 +375,7 @@ export function CidadaoAgendamentoModal({
                 <div
                   className={cn(
                     "p-4 rounded-xl border transition-all",
-                    agendarOutraUnidade ? "bg-orange-50/50 border-orange-100" : "bg-slate-50 border-slate-100",
+                    agendarOutraUnidade ? "bg-marca-50/50 border-marca-100" : "bg-slate-50 border-slate-100",
                   )}
                 >
                   <div className="flex items-center gap-3">
@@ -383,7 +383,7 @@ export function CidadaoAgendamentoModal({
                       id="agendar-outra-unidade"
                       checked={agendarOutraUnidade}
                       onCheckedChange={(checked) => onToggleOutraUnidade?.(checked === true)}
-                      className="w-5 h-5 rounded-full border-slate-300 data-[state=checked]:bg-[#f05a28] data-[state=checked]:border-[#f05a28]"
+                      className="w-5 h-5 rounded-full border-slate-300 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                     />
                     <Label htmlFor="agendar-outra-unidade" className="text-sm font-semibold text-slate-700 cursor-pointer">
                       Agendar em unidade fora da origem
@@ -391,7 +391,7 @@ export function CidadaoAgendamentoModal({
                   </div>
                   {agendarOutraUnidade && (
                     <div className="mt-4 space-y-2 animate-in fade-in slide-in-from-top-1">
-                      <Label className="text-[10px] font-black uppercase text-[#f05a28] ml-1">Motivo da Exceção *</Label>
+                      <Label className="text-[10px] font-black uppercase text-primary ml-1">Motivo da Exceção *</Label>
                       <Input
                         value={motivoOutraUnidade}
                         onChange={(e) => {
@@ -399,7 +399,7 @@ export function CidadaoAgendamentoModal({
                           onChangeMotivoOutraUnidade?.(next);
                         }}
                         placeholder="Justifique o agendamento em outra unidade"
-                        className="rounded-xl bg-white border-orange-200 focus:ring-[#f05a28]"
+                        className="rounded-xl bg-white border-marca-200 focus:ring-ring"
                         maxLength={MOTIVO_MAX}
                       />
                       <div className="flex justify-end">
@@ -427,7 +427,7 @@ export function CidadaoAgendamentoModal({
           <Button
             onClick={onConfirm}
             disabled={!cidadao || !servico || !horario || confirmando}
-            className="flex-1 sm:flex-none bg-[#f05a28] hover:bg-[#d84a1d] text-white font-bold px-10 rounded-xl h-12 transition-all shadow-md shadow-orange-100 flex items-center justify-center gap-2"
+            className="flex-1 sm:flex-none bg-primary hover:bg-primary/90 text-white font-bold px-10 rounded-xl h-12 transition-all shadow-md shadow-marca-100 flex items-center justify-center gap-2"
           >
             {confirmando ? (
               "Processando..."

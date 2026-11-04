@@ -170,7 +170,7 @@ export default function AdminGuichesCoordenador() {
                 type="button"
                 onClick={() => setModalAdicionarAberto(true)}
                 disabled={!unidadeId}
-                className="bg-[#f26522] hover:bg-[#d95a1e] text-white font-bold px-6 gap-2"
+                className="bg-primary hover:bg-primary/90 text-white font-bold px-6 gap-2"
               >
                 <Plus className="h-4 w-4" />
                 Adicionar guichê
@@ -315,7 +315,7 @@ export default function AdminGuichesCoordenador() {
                 setModalAdicionarAberto(false);
               }}
               disabled={adicionandoGuiche || !novoGuicheNome.trim()}
-              className="bg-[#f26522] hover:bg-[#d95a1e] text-white font-bold px-6 gap-2"
+              className="bg-primary hover:bg-primary/90 text-white font-bold px-6 gap-2"
             >
               <Plus className="h-4 w-4" />
               {adicionandoGuiche ? "Adicionando..." : "Adicionar"}
@@ -349,7 +349,7 @@ export default function AdminGuichesCoordenador() {
               type="button"
               onClick={confirmarEdicao}
               disabled={salvandoGuicheId === guicheEditandoId || !nomeEdicao.trim()}
-              className="bg-[#f26522] hover:bg-[#d95a1e] text-white font-bold px-6 gap-2"
+              className="bg-primary hover:bg-primary/90 text-white font-bold px-6 gap-2"
             >
               <Save className="h-4 w-4" />
               {salvandoGuicheId === guicheEditandoId ? "Salvando..." : "Salvar"}

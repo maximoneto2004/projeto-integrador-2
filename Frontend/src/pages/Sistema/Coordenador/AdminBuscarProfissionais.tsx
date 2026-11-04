@@ -683,21 +683,21 @@ const AdminBuscarProfissionais = () => {
           <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
             <DialogContent className="max-w-3xl border-none overflow-y-auto p-0 bg-white rounded-2xl shadow-lg max-h-[90vh]">
               {/* Barra de destaque superior laranja */}
-              <div className="bg-[#f05a28] h-1.5 w-full" />
+              <div className="bg-destaque-500 h-1.5 w-full" />
 
               <div className="p-8">
                 <DialogHeader className="mb-6">
                   <div className="flex justify-between items-center">
-                    <DialogTitle className="text-2xl font-bold text-[#1A2B3C]">Detalhes do Profissional</DialogTitle>
+                    <DialogTitle className="text-2xl font-bold text-slate-800">Detalhes do Profissional</DialogTitle>
                   </div>
                 </DialogHeader>
 
                 {selectedProfessional && (
                   <div className="max-h-[65vh] overflow-y-auto pr-2 space-y-8">
                     {/* --- SEÇÃO HERO: Destaque Principal --- */}
-                    <div className="flex flex-col md:flex-row items-center gap-6 bg-[#F8FAFC] rounded-2xl p-6 border border-slate-100 shadow-sm">
+                    <div className="flex flex-col md:flex-row items-center gap-6 bg-slate-50 rounded-2xl p-6 border border-slate-100 shadow-sm">
                       <Avatar className="h-28 w-28 border-4 border-white shadow-md">
-                        <AvatarFallback className="text-3xl font-bold bg-[#FFF5F2] text-[#f05a28]">
+                        <AvatarFallback className="text-3xl font-bold bg-marca-50 text-primary">
                           {selectedProfessional.nome
                             .split(" ")
                             .map((n) => n[0])
@@ -708,7 +708,7 @@ const AdminBuscarProfissionais = () => {
                       </Avatar>
 
                       <div className="text-center md:text-left space-y-3 flex-1">
-                        <h2 className="text-3xl font-extrabold text-[#1A2B3C] tracking-tight">{selectedProfessional.nome}</h2>
+                        <h2 className="text-3xl font-extrabold text-slate-800 tracking-tight">{selectedProfessional.nome}</h2>
 
                         <div className="flex items-center justify-center md:justify-start gap-2 text-slate-600">
                           <Briefcase className="h-5 w-5 text-slate-400" />
@@ -716,7 +716,7 @@ const AdminBuscarProfissionais = () => {
                         </div>
 
                         <div className="pt-1">
-                          <Badge className="bg-[#f05a28] hover:bg-[#d84a1d] text-white px-4 py-1.5 rounded-full text-sm font-bold gap-2 border-none">
+                          <Badge className="bg-primary hover:bg-primary/90 text-white px-4 py-1.5 rounded-full text-sm font-bold gap-2 border-none">
                             <CheckCircle2 className="h-4 w-4" />
                             Ativo
                           </Badge>
@@ -763,7 +763,7 @@ const AdminBuscarProfissionais = () => {
                 <div className="mt-8 flex justify-end">
                   <Button
                     onClick={() => setViewDialogOpen(false)}
-                    className="bg-[#f05a28] hover:bg-[#d84a1d] text-white font-bold px-10 rounded-xl h-12 transition-all shadow-md"
+                    className="bg-primary hover:bg-primary/90 text-white font-bold px-10 rounded-xl h-12 transition-all shadow-md"
                   >
                     Fechar
                   </Button>
@@ -775,7 +775,7 @@ const AdminBuscarProfissionais = () => {
           <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
             <DialogContent className="max-w-2xl border-none overflow-y-auto p-0 bg-white rounded-2xl shadow-lg max-h-[90vh]">
               {/* Barra de destaque superior laranja */}
-              <div className="bg-[#f05a28] h-1.5 w-full" />
+              <div className="bg-destaque-500 h-1.5 w-full" />
 
               <div className="p-8">
                 <DialogHeader className="mb-6">
@@ -800,7 +800,7 @@ const AdminBuscarProfissionais = () => {
                           clearEditFieldError("nome");
                         }}
                         placeholder="Nome completo do profissional"
-                        className={`rounded-xl h-11 ${editFormErrors.nome ? "border-destructive focus-visible:ring-destructive" : "border-slate-200 focus-visible:ring-[#f05a28]"}`}
+                        className={`rounded-xl h-11 ${editFormErrors.nome ? "border-destructive focus-visible:ring-destructive" : "border-slate-200 focus-visible:ring-ring"}`}
                       />
                       {!!editFormErrors.nome && <p className="text-xs text-destructive">{editFormErrors.nome}</p>}
                     </div>
@@ -816,7 +816,7 @@ const AdminBuscarProfissionais = () => {
                           onChange={(e) => setEditFormData({ ...editFormData, cpf: e.target.value })}
                           placeholder="000.000.000-00"
                           disabled
-                          className="rounded-xl border-slate-200 focus-visible:ring-[#f05a28] h-11 bg-slate-50"
+                          className="rounded-xl border-slate-200 focus-visible:ring-ring h-11 bg-slate-50"
                         />
                       </div>
 
@@ -864,7 +864,7 @@ const AdminBuscarProfissionais = () => {
                       </div>
                       <Switch
                         id="status-profissional"
-                        className="data-[state=checked]:bg-[#f05a28]"
+                        className="data-[state=checked]:bg-primary"
                         checked={editFormData.status === "Ativo"}
                         onCheckedChange={(checked) => setEditFormData({ ...editFormData, status: checked ? "Ativo" : "Inativo" })}
                       />
@@ -887,7 +887,7 @@ const AdminBuscarProfissionais = () => {
                           }}
                         >
                           <SelectTrigger
-                            className={`rounded-xl h-11 ${editFormErrors.servicoIds ? "border-destructive focus:ring-destructive" : "border-slate-200 focus:ring-[#f05a28]"}`}
+                            className={`rounded-xl h-11 ${editFormErrors.servicoIds ? "border-destructive focus:ring-destructive" : "border-slate-200 focus:ring-ring"}`}
                           >
                             <SelectValue placeholder="Selecione o tipo de serviço" />
                           </SelectTrigger>
@@ -916,7 +916,7 @@ const AdminBuscarProfissionais = () => {
                             clearEditFieldError("telefone");
                           }}
                           placeholder="(00) 00000-0000"
-                          className={`rounded-xl h-11 ${editFormErrors.telefone ? "border-destructive focus-visible:ring-destructive" : "border-slate-200 focus-visible:ring-[#f05a28]"}`}
+                          className={`rounded-xl h-11 ${editFormErrors.telefone ? "border-destructive focus-visible:ring-destructive" : "border-slate-200 focus-visible:ring-ring"}`}
                         />
                         {!!editFormErrors.telefone && <p className="text-xs text-destructive">{editFormErrors.telefone}</p>}
                       </div>
@@ -932,7 +932,7 @@ const AdminBuscarProfissionais = () => {
                             clearEditFieldError("email");
                           }}
                           placeholder="email@exemplo.com"
-                          className={`rounded-xl h-11 ${editFormErrors.email ? "border-destructive focus-visible:ring-destructive" : "border-slate-200 focus-visible:ring-[#f05a28]"}`}
+                          className={`rounded-xl h-11 ${editFormErrors.email ? "border-destructive focus-visible:ring-destructive" : "border-slate-200 focus-visible:ring-ring"}`}
                         />
                         {!!editFormErrors.email && <p className="text-xs text-destructive">{editFormErrors.email}</p>}
                       </div>
@@ -948,7 +948,7 @@ const AdminBuscarProfissionais = () => {
                         Cancelar
                       </Button>
                       <Button
-                        className="flex-1 sm:flex-none bg-[#f05a28] hover:bg-[#d84a1d] text-white font-bold px-8 rounded-xl h-11 transition-all shadow-md shadow-orange-100"
+                        className="flex-1 sm:flex-none bg-primary hover:bg-primary/90 text-white font-bold px-8 rounded-xl h-11 transition-all shadow-md shadow-marca-100"
                         onClick={handleSaveEdit}
                       >
                         Salvar Alterações
@@ -963,14 +963,14 @@ const AdminBuscarProfissionais = () => {
           <Dialog open={escalaDialogOpen} onOpenChange={setEscalaDialogOpen}>
             <DialogContent className="max-w-3xl border-none overflow-y-auto p-0 bg-white rounded-2xl shadow-lg max-h-[90vh]">
               {/* Barra de destaque superior laranja */}
-              <div className="bg-[#f05a28] h-1.5 w-full" />
+              <div className="bg-destaque-500 h-1.5 w-full" />
 
               <div className="p-8">
                 <DialogHeader className="mb-6">
                   <div className="flex items-center gap-4">
                     {/* Ícone com fundo laranja suave */}
-                    <div className="bg-orange-100 p-3 rounded-full">
-                      <Clock className="w-6 h-6 text-[#f05a28]" />
+                    <div className="bg-marca-100 p-3 rounded-full">
+                      <Clock className="w-6 h-6 text-primary" />
                     </div>
                     <div className="text-left">
                       <DialogTitle className="text-2xl font-bold text-slate-800">Editar Escala</DialogTitle>
@@ -992,7 +992,7 @@ const AdminBuscarProfissionais = () => {
                       variant="outline"
                       size="sm"
                       onClick={adicionarEscala}
-                      className="rounded-xl border-orange-200 text-[#f05a28] hover:bg-orange-50 hover:text-[#f05a28] gap-2 font-semibold"
+                      className="rounded-xl border-marca-200 text-primary hover:bg-marca-50 hover:text-primary gap-2 font-semibold"
                     >
                       <Plus className="h-4 w-4" /> Adicionar Escala
                     </Button>
@@ -1003,10 +1003,10 @@ const AdminBuscarProfissionais = () => {
                     {editEscalas.map((escala, index) => (
                       <Card
                         key={escala.id ?? index}
-                        className="relative bg-[#F8FAFC] border border-slate-100 rounded-2xl shadow-sm overflow-hidden transition-all hover:shadow-md"
+                        className="relative bg-slate-50 border border-slate-100 rounded-2xl shadow-sm overflow-hidden transition-all hover:shadow-md"
                       >
                         {/* Indicador lateral sutil em vez de borda grossa, para um look mais clean */}
-                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-orange-200" />
+                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-marca-200" />
 
                         {editEscalas.length > 1 && (
                           <Button
@@ -1032,11 +1032,11 @@ const AdminBuscarProfissionais = () => {
                                       id={`dia-escala-${index}-${dia}`}
                                       checked={escala.dias.includes(dia)}
                                       onCheckedChange={() => toggleDiaSemana(index, dia)}
-                                      className="w-5 h-5 rounded-full border-slate-300 data-[state=checked]:bg-[#f05a28] data-[state=checked]:border-[#f05a28]"
+                                      className="w-5 h-5 rounded-full border-slate-300 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                                     />
                                     <label
                                       htmlFor={`dia-escala-${index}-${dia}`}
-                                      className="text-sm font-semibold text-slate-700 cursor-pointer group-hover:text-[#f05a28] transition-colors"
+                                      className="text-sm font-semibold text-slate-700 cursor-pointer group-hover:text-primary transition-colors"
                                     >
                                       {dia}
                                     </label>
@@ -1053,7 +1053,7 @@ const AdminBuscarProfissionais = () => {
                                   <Input
                                     type="time"
                                     step="1"
-                                    className="rounded-xl border-slate-200 focus-visible:ring-[#f05a28] h-11 bg-white"
+                                    className="rounded-xl border-slate-200 focus-visible:ring-ring h-11 bg-white"
                                     value={escala.turno1.inicio}
                                     onChange={(e) => updateEscala(index, "turno1", { ...escala.turno1, inicio: e.target.value })}
                                   />
@@ -1063,7 +1063,7 @@ const AdminBuscarProfissionais = () => {
                                   <Input
                                     type="time"
                                     step="1"
-                                    className="rounded-xl border-slate-200 focus-visible:ring-[#f05a28] h-11 bg-white"
+                                    className="rounded-xl border-slate-200 focus-visible:ring-ring h-11 bg-white"
                                     value={escala.turno1.fim}
                                     onChange={(e) => updateEscala(index, "turno1", { ...escala.turno1, fim: e.target.value })}
                                   />
@@ -1076,7 +1076,7 @@ const AdminBuscarProfissionais = () => {
                                   <Input
                                     type="time"
                                     step="1"
-                                    className="rounded-xl border-slate-200 focus-visible:ring-[#f05a28] h-11 bg-white"
+                                    className="rounded-xl border-slate-200 focus-visible:ring-ring h-11 bg-white"
                                     value={escala.turno2.inicio}
                                     onChange={(e) => updateEscala(index, "turno2", { ...escala.turno2, inicio: e.target.value })}
                                   />
@@ -1086,7 +1086,7 @@ const AdminBuscarProfissionais = () => {
                                   <Input
                                     type="time"
                                     step="1"
-                                    className="rounded-xl border-slate-200 focus-visible:ring-[#f05a28] h-11 bg-white"
+                                    className="rounded-xl border-slate-200 focus-visible:ring-ring h-11 bg-white"
                                     value={escala.turno2.fim}
                                     onChange={(e) => updateEscala(index, "turno2", { ...escala.turno2, fim: e.target.value })}
                                   />
@@ -1111,7 +1111,7 @@ const AdminBuscarProfissionais = () => {
                   </Button>
                   <Button
                     onClick={handleSaveEscala}
-                    className="flex-1 sm:flex-none bg-[#f05a28] hover:bg-[#d84a1d] text-white font-bold px-8 rounded-xl h-11 transition-all shadow-md shadow-orange-100"
+                    className="flex-1 sm:flex-none bg-primary hover:bg-primary/90 text-white font-bold px-8 rounded-xl h-11 transition-all shadow-md shadow-marca-100"
                   >
                     Salvar Alterações
                   </Button>

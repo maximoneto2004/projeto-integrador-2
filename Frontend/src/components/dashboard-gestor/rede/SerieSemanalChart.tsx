@@ -1,5 +1,6 @@
 import { CartesianGrid, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import type { DashboardGestorSemana } from "@/services/sistema/dashboardGestorService";
+import { SERIES } from "@/lib/coresGraficos";
 
 type SerieSemanalChartProps = {
   serie: DashboardGestorSemana[];
@@ -33,7 +34,7 @@ export function SerieSemanalChart({ serie, campo, nome, sufixo = "", meta }: Ser
             label={{ value: meta.rotulo, position: "insideTopRight", fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
           />
         )}
-        <Line type="linear" dataKey={campo} name={nome} stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 5 }} />
+        <Line type="linear" dataKey={campo} name={nome} stroke={SERIES[0]} strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 5 }} />
       </LineChart>
     </ResponsiveContainer>
   );

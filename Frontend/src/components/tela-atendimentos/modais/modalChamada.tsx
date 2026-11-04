@@ -18,12 +18,12 @@ export function ModalChamada({ open, onOpenChange, appointment, onIniciarAtendim
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg border-none p-0 bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
         {/* Barra de destaque superior laranja */}
-        <div className="bg-[#f05a28] h-1.5 w-full flex-shrink-0" />
+        <div className="bg-destaque-500 h-1.5 w-full flex-shrink-0" />
 
         <div className="p-8">
           <DialogHeader className="mb-6">
             <div className="flex items-center gap-4 text-left">
-              <div className="bg-orange-100 p-3 rounded-2xl text-[#f05a28]">
+              <div className="bg-marca-100 p-3 rounded-2xl text-primary">
                 <Megaphone className="h-6 w-6" />
               </div>
               <div>
@@ -37,7 +37,7 @@ export function ModalChamada({ open, onOpenChange, appointment, onIniciarAtendim
             <div className="space-y-6">
               {/* PAINEL DE NOME EM DESTAQUE */}
               <div className="bg-slate-50 border border-slate-100 p-6 rounded-2xl text-center space-y-1">
-                <p className="text-[10px] font-black uppercase text-[#f05a28] tracking-[0.2em]">Cidadão Chamado</p>
+                <p className="text-[10px] font-black uppercase text-primary tracking-[0.2em]">Cidadão Chamado</p>
                 <p className="text-3xl font-black text-slate-800 break-words">{appointment.nomeCidadao}</p>
               </div>
 
@@ -96,7 +96,7 @@ export function ModalChamada({ open, onOpenChange, appointment, onIniciarAtendim
 
                 <Button
                   onClick={onIniciarAtendimento}
-                  className="flex-1 h-12 bg-[#f05a28] hover:bg-[#d84a1d] text-white font-bold rounded-xl shadow-lg shadow-orange-100 gap-2 transition-all order-1 sm:order-2"
+                  className="flex-1 h-12 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl shadow-lg shadow-marca-100 gap-2 transition-all order-1 sm:order-2"
                 >
                   <PlayCircle className="h-5 w-5" />
                   Iniciar Atendimento
@@ -114,7 +114,7 @@ function InfoItem({ icon, label, value }: { icon: React.ReactNode; label: string
   return (
     <div className="space-y-1">
       <div className="flex items-center gap-1.5 text-slate-400">
-        <span className="text-[#f05a28]/70">{icon}</span>
+        <span className="text-primary/70">{icon}</span>
         <span className="text-[10px] font-black uppercase tracking-widest">{label}</span>
       </div>
       <p className="text-sm font-bold text-slate-700">{value || "-"}</p>

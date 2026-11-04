@@ -39,12 +39,12 @@ export function ModalDetalhesAgendamento({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md p-0 overflow-hidden border-none shadow-2xl bg-white rounded-2xl max-h-[90vh] overflow-y-auto">
         {/* Barra de destaque superior laranja */}
-        <div className="bg-[#f05a28] h-1.5 w-full flex-shrink-0" />
+        <div className="bg-destaque-500 h-1.5 w-full flex-shrink-0" />
 
         <div className="p-8">
           <DialogHeader className="mb-6">
             <div className="flex justify-between items-start mb-4">
-              <div className="bg-orange-100 p-2.5 rounded-xl text-[#f05a28]">
+              <div className="bg-marca-100 p-2.5 rounded-xl text-primary">
                 <CalendarDays className="h-5 w-5" />
               </div>
               <Badge className="bg-emerald-50 text-emerald-600 border-emerald-100 px-3 py-1 rounded-lg font-bold text-[10px] uppercase tracking-wider">
@@ -124,7 +124,7 @@ export function ModalDetalhesAgendamento({
                     <FileText className="w-3.5 h-3.5" />
                     <span className="text-[10px] font-black uppercase tracking-widest">Motivo do Agendamento</span>
                   </div>
-                  <p className="text-sm text-slate-600 bg-slate-50 p-4 rounded-xl border-l-4 border-[#f05a28]">
+                  <p className="text-sm text-slate-600 bg-slate-50 p-4 rounded-xl border-l-4 border-primary">
                     {appointment.motivo}
                   </p>
                 </div>
@@ -148,7 +148,7 @@ export function ModalDetalhesAgendamento({
         <DialogFooter className="p-8 pt-0">
           <Button 
             variant="default" 
-            className="w-full h-12 text-sm font-bold bg-[#f05a28] hover:bg-[#d84a1d] text-white rounded-xl shadow-md shadow-orange-100 transition-all"
+            className="w-full h-12 text-sm font-bold bg-primary hover:bg-primary/90 text-white rounded-xl shadow-md shadow-marca-100 transition-all"
             onClick={() => onOpenChange(false)}
           >
             Concluir Visualização
@@ -163,7 +163,7 @@ function InfoItem({ icon, label, value }: { icon: React.ReactNode, label: string
   return (
     <div className="space-y-1.5 text-left">
       <div className="flex items-center gap-2 text-slate-400">
-        <span className="text-[#f05a28]/70">{icon}</span>
+        <span className="text-primary/70">{icon}</span>
         <span className="text-[10px] font-black uppercase tracking-widest">{label}</span>
       </div>
       <p className="text-sm font-bold text-slate-700 leading-tight ml-6">

@@ -1,8 +1,9 @@
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import type { FarmaciaResult } from "@/types/api";
+import { SERIES } from "@/lib/coresGraficos";
 
 // Quatro primeiros tons da paleta categórica validada; a legenda traz nome e total de cada um.
-const CORES = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100"];
+const CORES = SERIES.slice(0, 4);
 
 const diaMes = (iso: string) => `${iso.slice(8, 10)}/${iso.slice(5, 7)}`;
 

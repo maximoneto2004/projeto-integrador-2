@@ -8,6 +8,7 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
+import { SERIES, COR_OUTROS } from "@/lib/coresGraficos";
 
 const TooltipContent = ({ active, payload }: any) => {
   if (!active || !payload?.length) {
@@ -38,15 +39,6 @@ export function CategoriaChart({
   outerRadius = 80,
   showLegend = true,
 }: CategoriaChartProps) {
-  const colors = [
-    "#2563eb",
-    "#0ea5e9",
-    "#22c55e",
-    "#f97316",
-    "#ef4444",
-    "#6366f1",
-  ];
-
   return (
     <ResponsiveContainer width="100%" height="100%">
       <PieChart>
@@ -61,7 +53,7 @@ export function CategoriaChart({
           {data.map((_, index) => (
             <Cell
               key={index}
-              fill={colors[index % colors.length]}
+              fill={SERIES[index] ?? COR_OUTROS}
             />
           ))}
         </Pie>

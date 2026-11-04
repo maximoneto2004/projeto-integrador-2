@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import type { MapaMedicamentosResult } from "@/types/mapaAssistencial";
 import { nomeMedicamento } from "@/lib/mapaAssistencial";
 import { SeletorComBusca } from "@/components/SeletorComBusca";
+import { GRADIENTE_CALOR } from "@/lib/coresGraficos";
 
 type Props = {
   data?: MapaMedicamentosResult;
@@ -37,7 +38,7 @@ export function MedicamentosHeatControls({ data, loading, error, onChange, onRet
       {error && <div role="alert" className="text-xs text-destructive">Não foi possível carregar os medicamentos.<Button size="sm" variant="outline" className="mt-2" onClick={onRetry}>Tentar novamente</Button></div>}
       {data && <>
         <div className="flex items-baseline gap-2"><strong className="text-2xl tabular-nums">{data.total_solicitacoes}</strong><span className="text-xs text-muted-foreground">solicitações na rede, no período</span></div>
-        <div className="h-2 rounded-full" style={{ background: "linear-gradient(to right, #14b8a6, #facc15, #f97316, #dc2626)" }} aria-hidden="true" />
+        <div className="h-2 rounded-full" style={{ background: GRADIENTE_CALOR }} aria-hidden="true" />
         <div className="flex justify-between text-[11px] text-muted-foreground"><span>Menor demanda</span><span>Maior: {data.maior_demanda} receitas</span></div>
         {!data.total_solicitacoes && <p className="rounded-md bg-muted p-2 text-xs">Nenhuma solicitação deste medicamento no período.</p>}
       </>}

@@ -210,7 +210,7 @@ export default function AdminBloquearHorarios() {
               >
                 <DialogContent className="max-w-2xl border-none overflow-y-auto p-0 bg-white rounded-2xl shadow-lg max-h-[90vh]">
                   {/* Barra de destaque superior laranja */}
-                  <div className="bg-[#f05a28] h-1.5 w-full" />
+                  <div className="bg-destaque-500 h-1.5 w-full" />
 
                   <div className="p-8">
                     <DialogHeader className="mb-6">
@@ -232,7 +232,7 @@ export default function AdminBloquearHorarios() {
                           {bloqueioEditando ? (
                             <Input
                               type="date"
-                              className="rounded-xl border-slate-200 focus-visible:ring-[#f05a28] h-11"
+                              className="rounded-xl border-slate-200 focus-visible:ring-ring h-11"
                               value={dataInicio ? format(dataInicio, "yyyy-MM-dd") : ""}
                               onChange={(e) => setDataInicio(parseDataLocal(e.target.value))}
                             />
@@ -262,7 +262,7 @@ export default function AdminBloquearHorarios() {
                           {bloqueioEditando ? (
                             <Input
                               type="date"
-                              className="rounded-xl border-slate-200 focus-visible:ring-[#f05a28] h-11"
+                              className="rounded-xl border-slate-200 focus-visible:ring-ring h-11"
                               value={dataFim ? format(dataFim, "yyyy-MM-dd") : ""}
                               onChange={(e) => setDataFim(parseDataLocal(e.target.value))}
                               min={dataInicio ? format(dataInicio, "yyyy-MM-dd") : undefined}
@@ -304,7 +304,7 @@ export default function AdminBloquearHorarios() {
                           </Label>
                           <Input
                             type="time"
-                            className="rounded-xl border-slate-200 focus-visible:ring-[#f05a28] h-11"
+                            className="rounded-xl border-slate-200 focus-visible:ring-ring h-11"
                             value={horaInicio}
                             onChange={(e) => setHoraInicio(e.target.value)}
                           />
@@ -315,7 +315,7 @@ export default function AdminBloquearHorarios() {
                           </Label>
                           <Input
                             type="time"
-                            className="rounded-xl border-slate-200 focus-visible:ring-[#f05a28] h-11"
+                            className="rounded-xl border-slate-200 focus-visible:ring-ring h-11"
                             value={horaFim}
                             onChange={(e) => setHoraFim(e.target.value)}
                           />
@@ -328,7 +328,7 @@ export default function AdminBloquearHorarios() {
                           <div className="space-y-2">
                             <Label className="text-sm font-semibold text-slate-700 ml-1">Motivo:</Label>
                             <Textarea
-                              className="rounded-xl border-slate-200 focus-visible:ring-[#f05a28] min-h-[100px] resize-none bg-slate-50"
+                              className="rounded-xl border-slate-200 focus-visible:ring-ring min-h-[100px] resize-none bg-slate-50"
                               value={motivo}
                               disabled
                             />
@@ -336,7 +336,7 @@ export default function AdminBloquearHorarios() {
                           <div className="space-y-2">
                             <Label className="text-sm font-semibold text-slate-700 ml-1">Justificativa para a alteração:</Label>
                             <Textarea
-                              className="rounded-xl border-slate-200 focus-visible:ring-[#f05a28] min-h-[100px] resize-none"
+                              className="rounded-xl border-slate-200 focus-visible:ring-ring min-h-[100px] resize-none"
                               value={justificativaCancelamento}
                               maxLength={MOTIVO_MAX_LENGTH}
                               onChange={(e) => setJustificativaCancelamento(e.target.value.slice(0, MOTIVO_MAX_LENGTH))}
@@ -348,7 +348,7 @@ export default function AdminBloquearHorarios() {
                         <div className="space-y-2 text-left">
                           <Label className="text-sm font-semibold text-slate-700 ml-1">Motivo *</Label>
                           <Textarea
-                            className="rounded-xl border-slate-200 focus-visible:ring-[#f05a28] min-h-[100px] resize-none"
+                            className="rounded-xl border-slate-200 focus-visible:ring-ring min-h-[100px] resize-none"
                             value={motivo}
                             maxLength={MOTIVO_MAX_LENGTH}
                             onChange={(e) => setMotivo(e.target.value.slice(0, MOTIVO_MAX_LENGTH))}
@@ -367,7 +367,7 @@ export default function AdminBloquearHorarios() {
                             <Label className="text-sm font-bold text-slate-700">Status do bloqueio</Label>
                             <p className="text-xs text-slate-500">Ative ou cancele este bloqueio.</p>
                           </div>
-                          <Switch checked={ativo} onCheckedChange={setAtivo} className="data-[state=checked]:bg-[#f05a28]" />
+                          <Switch checked={ativo} onCheckedChange={setAtivo} className="data-[state=checked]:bg-primary" />
                         </div>
                       )}
 
@@ -383,7 +383,7 @@ export default function AdminBloquearHorarios() {
                         </Button>
                         <Button
                           type="submit"
-                          className="flex-1 sm:flex-none bg-[#f05a28] hover:bg-[#d84a1d] text-white font-bold px-8 rounded-xl h-11 transition-all shadow-md shadow-orange-100 gap-2"
+                          className="flex-1 sm:flex-none bg-primary hover:bg-primary/90 text-white font-bold px-8 rounded-xl h-11 transition-all shadow-md shadow-marca-100 gap-2"
                         >
                           <Save className="h-4 w-4" />
                           {bloqueioEditando ? "Salvar Alterações" : "Cadastrar"}

@@ -20,14 +20,14 @@ const TONES = {
     coracao: "#FFFFFF",
     cruz: "#E2672A",
     primeira: "text-[#2A2724] dark:text-white",
-    segunda: "text-[#2C8576] dark:text-[#86C2B4]",
+    segunda: "text-marca-500 dark:text-marca-300",
   },
   light: {
     pin: "#FFFFFF",
     coracao: "#2C8576",
     cruz: "#E2672A",
     primeira: "text-white",
-    segunda: "text-[#BFE3DA]",
+    segunda: "text-marca-200",
   },
 };
 

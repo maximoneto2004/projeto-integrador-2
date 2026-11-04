@@ -1,6 +1,7 @@
 import { CartesianGrid, ReferenceLine, ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAxis, YAxis, ZAxis } from "recharts";
 import { META_ABSENTEISMO_MAX_PCT, META_OCUPACAO_MAX_PCT } from "@/constants/indicadores";
 import type { DashboardGestorUnidade } from "@/services/sistema/dashboardGestorService";
+import { SERIES } from "@/lib/coresGraficos";
 
 type Ponto = { nome: string; ocupacao: number; absenteismo: number; agendamentos: number };
 
@@ -56,7 +57,7 @@ export function DispersaoOcupacaoAbsenteismo({ unidades }: { unidades: Dashboard
           label={{ value: `meta de faltas ${META_ABSENTEISMO_MAX_PCT}%`, position: "insideTopRight", fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
         />
         <Tooltip content={<Dica />} cursor={{ strokeDasharray: "3 3" }} />
-        <Scatter data={pontos} fill="hsl(var(--primary))" fillOpacity={0.8} stroke="hsl(var(--background))" strokeWidth={2} />
+        <Scatter data={pontos} fill={SERIES[0]} fillOpacity={0.8} stroke="hsl(var(--background))" strokeWidth={2} />
       </ScatterChart>
     </ResponsiveContainer>
   );

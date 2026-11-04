@@ -24,6 +24,7 @@ import { useBairrosGeojson, useMapaBairros } from "@/hooks/sistema/useMapaBairro
 import { nomeMedicamento } from "@/lib/mapaAssistencial";
 import { formatSla } from "@/lib/sla";
 import type { AnaliseUnidade, DemandaUnidade, MedicamentoMapa } from "@/types/mapaAssistencial";
+import { GRADIENTE_CALOR } from "@/lib/coresGraficos";
 
 type OrigemAtendimento = "RECEPCAO" | "SITE" | "FILA";
 type OrigemAtendimentoCount = Record<OrigemAtendimento, number>;
@@ -1145,7 +1146,7 @@ export default function AdminMapaUnidades() {
                 {camada === "medicamentos" && medicamentosMapa.data?.medicamento && <div className="pointer-events-none absolute bottom-5 left-4 right-4 z-10 max-w-sm rounded-xl border bg-card/95 p-3 shadow-md">
                   <p className="text-xs font-semibold">{nomeMedicamento(medicamentosMapa.data.medicamento)}</p>
                   <p className="mb-2 mt-1 text-[11px] text-muted-foreground">Concentração de receitas por unidade no período</p>
-                  <div className="h-2 rounded-full" style={{ background: "linear-gradient(to right, #14b8a6, #facc15, #f97316, #dc2626)" }} />
+                  <div className="h-2 rounded-full" style={{ background: GRADIENTE_CALOR }} />
                   <div className="mt-1 flex justify-between text-[11px]"><span>Menor demanda</span><span>Maior: {medicamentosMapa.data.maior_demanda} receitas</span></div>
                 </div>}
 

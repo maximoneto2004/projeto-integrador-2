@@ -32,7 +32,7 @@ export function ModalConfirmarExclusao({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent className="max-w-md border-none p-0 bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh] overflow-y-auto">
         {/* Barra de destaque superior laranja */}
-        <div className="bg-[#f05a28] h-1.5 w-full" />
+        <div className="bg-destaque-500 h-1.5 w-full" />
 
         <div className="p-8">
           <AlertDialogHeader className="space-y-4">

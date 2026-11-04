@@ -9,6 +9,7 @@ import {
   CartesianGrid,
   Tooltip,
 } from "recharts";
+import { SERIES } from "@/lib/coresGraficos";
 
 const TooltipContent = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) {
@@ -40,7 +41,7 @@ export function HorariosChart({ data }: HorariosChartProps) {
         <YAxis allowDecimals={false} />
         <Tooltip content={<TooltipContent />} />
 
-        <Bar dataKey="total" fill="#f97316" radius={[4, 4, 0, 0]} />
+        <Bar dataKey="total" fill={SERIES[0]} radius={[4, 4, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );

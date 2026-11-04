@@ -21,18 +21,9 @@ import { ResumoStatusSection } from "@/components/dashboard-supervisor/sections/
 import { OrigemAtendimentosSection } from "@/components/dashboard-supervisor/sections/OrigemAtendimentosSection";
 import { SupervisorSlaSection } from "@/components/dashboard-supervisor/sla/SupervisorSlaSection";
 import { motivoCancelamentoLabel, origemLabel } from "@/constants/indicadores";
+import { SERIES } from "@/lib/coresGraficos";
 
 type RangeTipo = "hoje" | "semana" | "periodo";
-
-const statusColors: Record<string, string> = {
-  Marcados: "#2563eb",
-  Atendimentos: "#0ea5e9",
-  Ativados: "#f59e0b",
-  Ausentes: "#dc2626",
-  Cancelados: "#ef4444",
-  "Na farmácia": "#14b8a6",
-  Finalizados: "#10b981",
-};
 
 const AdminDashboardSupervisor = () => {
   const todayKey = format(new Date(), "yyyy-MM-dd");
@@ -250,7 +241,7 @@ const AdminDashboardSupervisor = () => {
                 data={Object.keys(statusSelecionado).map((status) => ({
                   status,
                   total: statusSelecionado[status as keyof typeof statusSelecionado],
-                  fill: statusColors[status] || "#94a3b8",
+                  fill: SERIES[0],
                 }))}
               />
               <AtendimentosPorServicoSection data={consultasPorServico} />

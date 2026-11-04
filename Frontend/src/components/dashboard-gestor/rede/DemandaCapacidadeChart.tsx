@@ -1,9 +1,10 @@
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import type { DashboardGestorResult } from "@/services/sistema/dashboardGestorService";
+import { SERIES } from "@/lib/coresGraficos";
 
 // Dois primeiros tons da paleta categórica validada.
-const COR_VAGAS = "#2a78d6";
-const COR_AGENDAMENTOS = "#eb6834";
+const COR_VAGAS = SERIES[0];
+const COR_AGENDAMENTOS = SERIES[1];
 // Altura por tipo de serviço no modo completo, para as barras não se espremerem quando há muitos serviços.
 const ALTURA_POR_SERVICO = 56;
 
