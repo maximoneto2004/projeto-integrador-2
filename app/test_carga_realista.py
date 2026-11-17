@@ -4,6 +4,7 @@ from datetime import date, time, timedelta
 
 from django.core.management import call_command
 from django.test import TestCase, override_settings
+from django.utils import timezone
 from rest_framework.test import APIClient
 
 from agendamentos.models import AgendaVaga, Agendamento
@@ -139,3 +140,17 @@ class CargaRealistaTests(TestCase):
         resumo = client.get("/api/v1/dashboard-supervisor/", params)
         self.assertEqual(resumo.status_code, 200, resumo.content)
         self.assertTrue(all("@saudeperto.com.br" in e for e in logins.values()))
+
+
+@override_settings(PASSWORD_HASHERS=["django.contrib.auth.hashers.MD5PasswordHasher"])
+class HorarioEstendidoTests(TestCase):
+    def test_expediente_estendido_e_retirada_perto_da_referencia(self):
+        call_command("carregar_dados_apresentacao", stdout=io.StringIO(), senha="x", data_base=BASE,
+                     hora_referencia=time(20, 40), fim_expediente=time(22), unidades=2, cidadaos=80,
+                     agendamentos=300, hoje=60, dias=20, dias_futuros=3, fila=6, seed=3, json=True)
+        self.assertTrue(UnidadePosto.objects.filter(hora_tarde_fim=time(22)).exists())
+        self.assertTrue(Agendamento.objects.filter(data=BASE, horario__hour=21, situacao="AGENDADO").exists())
+        for ag in Agendamento.objects.filter(data=BASE, situacao="AGUARDANDO_RETIRADA"):
+            self.assertGreaterEqual(ag.horario, time(19, 0))
+        for item in FilaEspera.objects.all():
+            self.assertGreaterEqual(timezone.localtime(item.created_at).time(), time(19, 30))

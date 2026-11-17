@@ -189,6 +189,10 @@ class CargaDemonstracao:
     def situacao_no_dia(self, idx, dia, horario, situacao):
         return situacao
 
+    def aguarda_retirada(self, horario):
+        """Se a consulta de hoje com receita pendente ainda deixa o paciente na fila da farmácia."""
+        return True
+
     def observacao_agendamento(self, idx):
         return f"{TAG} Atendimento sintético."
 
@@ -215,6 +219,9 @@ class CargaDemonstracao:
     def motivo_movimento(self, tipo):
         return {"entrada": f"{TAG} Entrada sintética", "saida": f"{TAG} Dispensação sintética",
                 "vencido": f"{TAG} Lote vencido para testar alertas"}[tipo]
+
+    def fim_expediente(self):
+        return time(17)
 
     def casos_de_borda(self):
         """Inclui agendamentos atípicos (23h50, duração zero) usados pelos testes de SLA."""
@@ -257,7 +264,7 @@ class CargaDemonstracao:
             bairro = bairros[0]
             unidade = self.entidade(UnidadePosto, chave, bairro=bairro,
                 latitude=str(lat) if lat is not None else None, longitude=str(lon) if lon is not None else None,
-                hora_manha_inicio=time(8), hora_manha_fim=time(12), hora_tarde_inicio=time(13), hora_tarde_fim=time(17),
+                hora_manha_inicio=time(8), hora_manha_fim=time(12), hora_tarde_inicio=time(13), hora_tarde_fim=self.fim_expediente(),
                 **self.campos_unidade(idx, nome))
             # Os dois bairros mais próximos são o território; os outros ficam fora dele.
             unidade.bairros_abrangencia.add(*bairros[:2])
@@ -298,7 +305,7 @@ class CargaDemonstracao:
                             Usuario.objects.using(self.db).filter(pk=user.pk).update(guiche_atual=guiche)
                     self.entidade(EscalaTrabalho, chave, profissional=user, unidade=unidade,
                         dias_semana=["SEG", "TER", "QUA", "QUI", "SEX", "SAB", "DOM"],
-                        turno1_inicio=time(8), turno1_fim=time(12), turno2_inicio=time(13), turno2_fim=time(17))
+                        turno1_inicio=time(8), turno1_fim=time(12), turno2_inicio=time(13), turno2_fim=self.fim_expediente())
                     self.profissionais[unidade.pk].setdefault(perfil, []).append(user)
                     self.logins_por_unidade[unidade.nome][f"{perfil} {repeticao + 1}" if perfil == "medico" else perfil] = user.email
                     if ui == 0 and repeticao == 0:
@@ -475,7 +482,7 @@ class CargaDemonstracao:
                 receita_pendente = receita_pendente or entregue < quantidade
                 if entregue:
                     self.dispensacoes[(unidade.pk, med.pk)].append((item, entregue, emissao + timedelta(minutes=10)))
-            if dia == self.base and receita_pendente and par not in ativos:
+            if dia == self.base and receita_pendente and par not in ativos and self.aguarda_retirada(horario):
                 ativos.add(par)
                 ag.situacao = "AGUARDANDO_RETIRADA"
                 ag.retirar_medicamento = True

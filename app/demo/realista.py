@@ -176,7 +176,10 @@ def cns_provisorio(rng):
 class CargaRealista(CargaDemonstracao):
     NAMESPACE = NAMESPACE_REALISTA
 
-    def __init__(self, *, dominio, hora_referencia, agendamentos_no_dia=200, dias_futuros=14, **kwargs):
+    def __init__(self, *, dominio, hora_referencia, agendamentos_no_dia=200, dias_futuros=14, fim_expediente=time(17), **kwargs):
+        self._fim_expediente = fim_expediente
+        # Horas cheias com atendimento: manhã das 8h às 12h e tarde das 13h até o fim do expediente.
+        self.horas = tuple(range(8, 12)) + tuple(range(13, max(14, fim_expediente.hour + (1 if fim_expediente.minute else 0))))
         super().__init__(**kwargs)
         self.dominio = dominio
         self.hora_referencia = hora_referencia
@@ -363,10 +366,13 @@ class CargaRealista(CargaDemonstracao):
             return paciente
         return self.r(f"paciente:{paciente.pk}:{servico.pk}:{unidade.pk}").choice(pool)
 
+    def fim_expediente(self):
+        return self._fim_expediente
+
     def horario_do_agendamento(self, idx):
         bloco = idx // len(self.unidades)
-        hora = (8, 9, 10, 11, 13, 14, 15, 16)[bloco % 8]
-        return time(hora, (0, 20, 40)[(bloco // 8 + idx) % 3])
+        hora = self.horas[bloco % len(self.horas)]
+        return time(hora, (0, 20, 40)[(bloco // len(self.horas) + idx) % 3])
 
     def situacao_no_dia(self, idx, dia, horario, situacao):
         """No dia-base, o andamento acompanha a hora de referência: antes dela já resolvido, perto dela em curso, depois agendado."""
@@ -381,6 +387,12 @@ class CargaRealista(CargaDemonstracao):
         if situacao in {"AGENDADO", "ATIVADO", "CHAMANDO", "ATENDIMENTO"}:
             return self.r(f"dia:{idx}").choices(["FINALIZADO", "AUSENCIA_CIDADAO", "CANCELADO_CRAS"], weights=[84, 11, 5])[0]
         return situacao
+
+    def aguarda_retirada(self, horario):
+        # Só quem saiu da consulta pouco antes da hora de referência ainda está na fila da farmácia.
+        marcado = datetime.combine(self.base, horario)
+        referencia = datetime.combine(self.base, self.hora_referencia)
+        return referencia - timedelta(minutes=100) <= marcado <= referencia
 
     def casos_de_borda(self):
         return False
@@ -418,7 +430,7 @@ class CargaRealista(CargaDemonstracao):
                     if par in self.ativos:
                         continue
                     self.ativos.add(par)
-                    horario = time(r.choice((8, 9, 10, 11, 13, 14, 15, 16)), r.choice((0, 20, 40)))
+                    horario = time(r.choice(self.horas), r.choice((0, 20, 40)))
                     chave_vaga = f"{unidade.pk}:{servico.tipo_servico_id}:{dia}:{horario}"
                     if chave_vaga not in vagas:
                         vagas[chave_vaga] = self.registro(AgendaVaga, chave_vaga, unidade=unidade,
@@ -440,7 +452,7 @@ class CargaRealista(CargaDemonstracao):
         for idx, paciente in enumerate(self.pacientes[-quantidade:] if quantidade else []):
             r = self.r(f"fila:{idx}")
             unidade = self.unidades[idx % len(self.unidades)]
-            chegada = datetime.combine(self.base, self.hora_referencia) - timedelta(minutes=r.randint(5, 110))
+            chegada = datetime.combine(self.base, self.hora_referencia) - timedelta(minutes=r.randint(5, 70))
             entradas.append(self.registro(FilaEspera, idx, criado=self.instante(self.base, max(chegada.time(), time(7, 30))),
                 cidadao=paciente, unidade=unidade, servico=r.choice(livres),
                 prioridade=r.choices(["NORMAL", "PREFERENCIAL", "PREFERENCIAL+"], weights=[62, 30, 8])[0],

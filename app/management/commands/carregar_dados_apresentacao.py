@@ -28,6 +28,8 @@ class Command(BaseCommand):
                             help="Dia que aparece como 'hoje' nos painéis (AAAA-MM-DD). Padrão: hoje.")
         parser.add_argument("--hora-referencia", type=_hora, default=None,
                             help="Hora da apresentação (HH:MM): antes dela a agenda do dia está resolvida, depois está agendada.")
+        parser.add_argument("--fim-expediente", type=_hora, default=time(17),
+                            help="Fim do expediente das UAPS (HH:MM). Use 21:00 ou 22:00 para horário estendido.")
         parser.add_argument("--unidades", type=int, default=8)
         parser.add_argument("--cidadaos", type=int, default=1600)
         parser.add_argument("--agendamentos", type=int, default=9000)
@@ -61,7 +63,7 @@ class Command(BaseCommand):
             senha=opts["senha"] or "-", data_base=data_base, unidades=opts["unidades"], cidadaos=opts["cidadaos"],
             agendamentos=opts["agendamentos"], fila=opts["fila"], dias=opts["dias"], seed=opts["seed"],
             database=opts["database"], dominio=opts["dominio"], hora_referencia=hora,
-            agendamentos_no_dia=opts["hoje"], dias_futuros=opts["dias_futuros"],
+            agendamentos_no_dia=opts["hoje"], dias_futuros=opts["dias_futuros"], fim_expediente=opts["fim_expediente"],
         )
         saida = {}
         try:
