@@ -128,3 +128,29 @@ visão geral da rede. Use **Semana** ou **Período** para explorar o histórico.
 Os testes verificam reexecução sem duplicação, preservação do histórico e de outros
 registros, autenticação dos oito perfis, emissão histórica das receitas, coerência
 de vagas, fila e estoque, além de leitura efetiva das APIs de SLA e mapa de calor.
+
+## Carga para apresentação (sem etiquetas)
+
+`carregar_dados_apresentacao` usa o mesmo motor, mas grava a rede com aparência de
+operação real: oito UAPS nos bairros Centro, Messejana, Parangaba, Aldeota, Barra do
+Ceará, Montese, Bom Jardim e Jangurussu; profissionais e pacientes com nomes comuns no
+Ceará; CPF e CNS com dígitos válidos; queixas coerentes com o CID; posologias, lotes e
+fornecedores plausíveis; e agenda dos próximos 14 dias úteis. Nenhum texto contém
+`[DEMO]`. Os dados continuam fictícios, e os IDs usam outro namespace, então a carga
+convive com a de demonstração sem colidir.
+
+```bash
+python manage.py carregar_dados_apresentacao --senha 'SENHA' --remover-demo \
+  --data-base 2026-11-25 --hora-referencia 19:00
+```
+
+- `--data-base` é o dia que aparece como "hoje"; `--hora-referencia` é a hora da
+  apresentação: antes dela os atendimentos do dia estão resolvidos, perto dela estão
+  em andamento e depois dela estão agendados.
+- `--remover-demo` apaga a carga antiga marcada com `[DEMO]`.
+- `--recarregar` apaga a carga realista anterior e grava de novo, por exemplo para
+  trocar a data-base. `--apenas-remover` só apaga.
+- `--dominio` muda o domínio dos e-mails de login (padrão `saudeperto.com.br`).
+- Cidadãos ficam sem e-mail, para o sistema nunca enviar mensagens a endereços reais.
+
+O comando lista no final os logins de cada unidade. Testes: `app/test_carga_realista.py`.

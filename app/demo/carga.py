@@ -28,9 +28,16 @@ from .catalogo import (
 )
 from .territorio import bairros_do_mapa, mais_proximos
 
+NAMESPACE_DEMONSTRACAO = "saude-perto:demonstracao:v1"
+TIPOS_DOS_PERFIS = {
+    "medico": ("Consulta Médica",),
+    "enfermeiro": ("Consulta de Enfermagem", "Procedimento de Enfermagem"),
+    "farmaceutico": ("Dispensação de Medicamentos",),
+}
 
-def identificador(modelo, chave):
-    return uuid5(NAMESPACE_URL, f"saude-perto:demonstracao:v1:{modelo}:{chave}")
+
+def identificador(modelo, chave, namespace=NAMESPACE_DEMONSTRACAO):
+    return uuid5(NAMESPACE_URL, f"{namespace}:{modelo}:{chave}")
 
 
 def cpf_sintetico(numero):
@@ -44,6 +51,12 @@ def cpf_sintetico(numero):
 
 
 class CargaDemonstracao:
+    """Carga de demonstração marcada com [DEMO]. As subclasses trocam só os textos e os cadastros pelos ganchos abaixo."""
+
+    NAMESPACE = NAMESPACE_DEMONSTRACAO
+    # Quantos agendamentos caem no dia-base (os demais se espalham pelo histórico).
+    AGENDAMENTOS_NO_DIA = 80
+
     def __init__(self, *, senha, data_base, unidades=8, cidadaos=400, agendamentos=3000, fila=80, dias=90, seed=42, database="default"):
         self.senha_hash = make_password(senha)
         self.base, self.dias, self.db = data_base, dias, database
@@ -61,9 +74,12 @@ class CargaDemonstracao:
     def instante(data, horario):
         return timezone.make_aware(datetime.combine(data, horario))
 
+    def id(self, model, chave):
+        return identificador(model._meta.label_lower, chave, self.NAMESPACE)
+
     def entidade(self, model, chave, **defaults):
         """IDs estáveis tornam a reexecução aditiva; colisões de cadastro causam rollback."""
-        pk = identificador(model._meta.label_lower, chave)
+        pk = self.id(model, chave)
         obj, criado = model.objects.using(self.db).get_or_create(pk=pk, defaults=defaults)
         if criado:
             model.objects.using(self.db).filter(pk=pk).update(created_at=self.antigo, updated_at=self.antigo)
@@ -107,13 +123,108 @@ class CargaDemonstracao:
         return self.entidade(Bairro, f"real:{nome}", nome=nome)
 
     def registro(self, model, chave, *, criado=None, atualizado=None, **campos):
-        return model(id=identificador(model._meta.label_lower, chave),
+        return model(id=self.id(model, chave),
             created_at=criado or self.antigo, updated_at=atualizado or criado or self.antigo, **campos)
+
+    # ------------------------------------------------------------------ ganchos de conteúdo
+
+    def rotulo(self, texto):
+        return f"{TAG} {texto}"
+
+    def carga_incompativel(self):
+        quantidade_anterior = Agendamento.objects.using(self.db).filter(observacoes_gerais=f"{TAG} Atendimento sintético.").count()
+        return bool(quantidade_anterior) and quantidade_anterior != self.quantidades["agendamentos"]
+
+    def item_catalogo(self, model, nome, **campos):
+        return self.entidade(model, nome, nome=self.rotulo(nome), **campos)
+
+    def servicos_da_carga(self):
+        return [SERVICOS[idx] for idx in (0, 2, 3, 7, 11, 14, 19)]
+
+    def unidades_da_carga(self):
+        """(chave, nome, latitude, longitude, bairro principal ou None)."""
+        return [(idx, nome, lat, lon, None) for idx, (nome, lat, lon) in enumerate(UNIDADES)]
+
+    def campos_unidade(self, idx, nome):
+        return dict(nome=f"{TAG} Unidade {nome}", logradouro=f"Rua de Demonstração {idx + 1}", numero=str((idx + 1) * 100),
+            cep="60000000", telefone="8533333333", email=f"unidade{idx + 1}@{DOMINIO}")
+
+    def medicamento(self, idx, especificacao):
+        nome, concentracao, forma = especificacao
+        return self.entidade(Medicamento, idx, nome=f"{TAG} {nome}", principio_ativo=nome,
+            concentracao=concentracao, forma_farmaceutica=forma, unidade_medida="MG", via_administracao="ORAL", estoque_minimo=100)
+
+    def medicamentos_da_carga(self):
+        return MEDICAMENTOS
+
+    def profissional(self, perfil, ui, repeticao, contador):
+        """(chave estável, campos do usuário)."""
+        sufixo = "" if ui == 0 and repeticao == 0 else f".{ui + 1:02d}.{repeticao + 1:02d}"
+        email = f"{perfil}{sufixo}@{DOMINIO}"
+        return email, dict(email=email, username=email,
+            nome_completo=f"{TAG} {perfil.capitalize()} {ui + 1:02d}-{repeticao + 1:02d}",
+            cpf=cpf_sintetico(910000000 + contador), telefone="85999999999")
+
+    def nome_guiche(self, perfil, repeticao):
+        return f"{TAG} Sala {perfil} {repeticao + 1}"
+
+    def cidadao(self, idx, unidade, perfil):
+        """Campos de identificação e endereço; `perfil` traz sexo, nascimento, bairro e CNS já sorteados."""
+        return dict(nome=f"{TAG} Pessoa {idx + 1:04d}", cpf=cpf_sintetico(810000000 + idx),
+            email=f"pessoa{idx + 1:04d}@{DOMINIO}", telefone="85988888888",
+            logradouro=f"Rua Fictícia {idx % 20 + 1}", numero=str(idx % 500 + 1), cep="60000000")
+
+    def queixa(self, cid, paciente):
+        return f"{TAG} Registro clínico sintético."
+
+    def servico_do_agendamento(self, idx):
+        return self.servicos[(idx // len(self.unidades)) % len(self.servicos)]
+
+    def ajustar_paciente(self, paciente, servico, unidade):
+        return paciente
+
+    def horario_do_agendamento(self, idx):
+        return time(8 + (idx // len(self.unidades)) % 9, 30 if idx % 2 else 0)
+
+    def situacao_no_dia(self, idx, dia, horario, situacao):
+        return situacao
+
+    def observacao_agendamento(self, idx):
+        return f"{TAG} Atendimento sintético."
+
+    def observacao_receita(self):
+        return f"{TAG} Receita fictícia para demonstração; sem finalidade clínica."
+
+    def posologia(self, med):
+        """(dosagem, frequência, duração) do item da receita."""
+        return f"{med.concentracao} mg", "Prescrição fictícia", "Demonstração"
+
+    def lote(self, ui, mi, med, vencido=False):
+        """Número, fornecedor e validade do lote."""
+        if vencido:
+            return dict(numero_lote=f"DEMO-VENCIDO-{ui:02d}", fornecedor=None, validade=self.base - timedelta(days=5))
+        return dict(numero_lote=f"DEMO-{ui:02d}-{mi:02d}", fornecedor=f"{TAG} Fornecedor fictício",
+                    validade=self.base + timedelta(days=180))
+
+    def saldo_alvo(self, ui, mi, med):
+        return 20 if (ui + mi) % 7 == 0 else self.rng.randint(150, 600)
+
+    def tem_lote_vencido(self, ui):
+        return True
+
+    def motivo_movimento(self, tipo):
+        return {"entrada": f"{TAG} Entrada sintética", "saida": f"{TAG} Dispensação sintética",
+                "vencido": f"{TAG} Lote vencido para testar alertas"}[tipo]
+
+    def casos_de_borda(self):
+        """Inclui agendamentos atípicos (23h50, duração zero) usados pelos testes de SLA."""
+        return True
+
+    # ------------------------------------------------------------------ execução
 
     def executar(self):
         with transaction.atomic(using=self.db):
-            quantidade_anterior = Agendamento.objects.using(self.db).filter(observacoes_gerais=f"{TAG} Atendimento sintético.").count()
-            if quantidade_anterior and quantidade_anterior != self.quantidades["agendamentos"]:
+            if self.carga_incompativel():
                 raise CommandError("Já existe uma carga com outro tamanho. Os registros foram preservados; use outro banco para um cenário diferente.")
             self.catalogo()
             self.usuarios()
@@ -121,28 +232,33 @@ class CargaDemonstracao:
             self.atendimentos()
             self.estoque()
             self.fila()
+            self.complementos()
         return {"novos": dict(self.criados), "registros_da_carga": dict(self.totais), "logins": self.logins}
+
+    def complementos(self):
+        """Etapas extras das subclasses, dentro da mesma transação."""
 
     def catalogo(self):
         self.unidades, self.servicos, self.medicamentos = [], [], []
-        classes = {nome: self.entidade(ClasseServico, nome, nome=f"{TAG} {nome}", descricao=descricao) for nome, descricao in CLASSES}
-        tipos = {nome: self.entidade(TipoServico, nome, nome=f"{TAG} {nome}", descricao=descricao, tempo_atendimento=tempo) for nome, descricao, tempo in TIPOS}
-        for idx in (0, 2, 3, 7, 11, 14, 19):
-            nome, classe, tipo, marcacao, receita, dispensacao = SERVICOS[idx]
-            self.servicos.append(self.entidade(Servico, nome, nome=f"{TAG} {nome}", classe=classes[classe],
+        classes = {nome: self.item_catalogo(ClasseServico, nome, descricao=descricao) for nome, descricao in CLASSES}
+        tipos = {nome: self.item_catalogo(TipoServico, nome, descricao=descricao, tempo_atendimento=tempo) for nome, descricao, tempo in TIPOS}
+        for nome, classe, tipo, marcacao, receita, dispensacao in self.servicos_da_carga():
+            self.servicos.append(self.item_catalogo(Servico, nome, classe=classes[classe],
                 tipo_servico=tipos[tipo], tipo_marcacao=marcacao, gera_receita=receita, envolve_dispensacao=dispensacao))
-        for idx, (nome, lat, lon) in enumerate(UNIDADES[:self.quantidades["unidades"]]):
+        for idx, (chave, nome, lat, lon, principal) in enumerate(self.unidades_da_carga()[:self.quantidades["unidades"]]):
             # Bairros reais perto da unidade, para as camadas por bairro do mapa; sem o GeoJSON, volta ao bairro fictício.
             if bairros_do_mapa():
-                bairros = [self.bairro_real(b) for b in mais_proximos(lat, lon, 4, self.variacao)]
+                nomes = mais_proximos(lat, lon, 4 if principal is None else 5, self.variacao)
+                if principal is not None:
+                    nomes = [principal] + [b for b in nomes if b != principal][:3]
+                bairros = [self.bairro_real(b) for b in nomes]
             else:
-                bairros = [self.entidade(Bairro, nome, nome=f"{TAG} {nome}")]
+                bairros = [self.entidade(Bairro, nome, nome=self.rotulo(nome))]
             bairro = bairros[0]
-            unidade = self.entidade(UnidadePosto, idx, nome=f"{TAG} Unidade {nome}", bairro=bairro,
-                logradouro=f"Rua de Demonstração {idx + 1}", numero=str((idx + 1) * 100), cep="60000000",
-                telefone="8533333333", email=f"unidade{idx + 1}@{DOMINIO}",
+            unidade = self.entidade(UnidadePosto, chave, bairro=bairro,
                 latitude=str(lat) if lat is not None else None, longitude=str(lon) if lon is not None else None,
-                hora_manha_inicio=time(8), hora_manha_fim=time(12), hora_tarde_inicio=time(13), hora_tarde_fim=time(17))
+                hora_manha_inicio=time(8), hora_manha_fim=time(12), hora_tarde_inicio=time(13), hora_tarde_fim=time(17),
+                **self.campos_unidade(idx, nome))
             # Os dois bairros mais próximos são o território; os outros ficam fora dele.
             unidade.bairros_abrangencia.add(*bairros[:2])
             self.territorio[unidade.pk] = bairros
@@ -150,12 +266,12 @@ class CargaDemonstracao:
             for servico in self.servicos:
                 self.entidade(ServicoUnidadePosto, f"{idx}:{servico.pk}", unidade=unidade, servico=servico,
                     dias_semana=[1, 2, 3, 4, 5, 6, 7], mesmo_expediente=True)
-        for idx, (nome, concentracao, forma) in enumerate(MEDICAMENTOS):
-            self.medicamentos.append(self.entidade(Medicamento, idx, nome=f"{TAG} {nome}", principio_ativo=nome,
-                concentracao=concentracao, forma_farmaceutica=forma, unidade_medida="MG", via_administracao="ORAL", estoque_minimo=100))
+        for idx, especificacao in enumerate(self.medicamentos_da_carga()):
+            self.medicamentos.append(self.medicamento(idx, especificacao))
 
     def usuarios(self):
         contador = 0
+        self.logins_por_unidade = defaultdict(dict)
         for ui, unidade in enumerate(self.unidades):
             self.profissionais[unidade.pk] = {}
             for perfil in PERFIS:
@@ -163,12 +279,9 @@ class CargaDemonstracao:
                     continue
                 for repeticao in range(2 if perfil == "medico" else 1):
                     contador += 1
-                    sufixo = "" if ui == 0 and repeticao == 0 else f".{ui + 1:02d}.{repeticao + 1:02d}"
-                    email = f"{perfil}{sufixo}@{DOMINIO}"
-                    user = self.entidade(Usuario, email, email=email, username=email, password=self.senha_hash,
-                        nome_completo=f"{TAG} {perfil.capitalize()} {ui + 1:02d}-{repeticao + 1:02d}",
-                        cpf=cpf_sintetico(910000000 + contador), telefone="85999999999",
-                        is_staff=perfil == "admin", is_superuser=perfil == "admin")
+                    chave, campos = self.profissional(perfil, ui, repeticao, contador)
+                    user = self.entidade(Usuario, chave, password=self.senha_hash,
+                        is_staff=perfil == "admin", is_superuser=perfil == "admin", **campos)
                     grupo = Group.objects.using(self.db).filter(name__iexact=PERFIS[perfil]).first()
                     if grupo is None:
                         grupo = Group.objects.using(self.db).create(name=PERFIS[perfil])
@@ -176,19 +289,20 @@ class CargaDemonstracao:
                     user.user_permissions.add(*Permission.objects.using(self.db).filter(
                         codename__in=LEITURA_COMUM | EXTRAS_POR_PERFIL[perfil]))
                     user.unidades_lotacao.add(unidade)
-                    if perfil in {"medico", "enfermeiro", "farmaceutico"}:
-                        esperados = {"medico": ("Consulta Médica",), "enfermeiro": ("Consulta de Enfermagem", "Procedimento de Enfermagem"),
-                                     "farmaceutico": ("Dispensação de Medicamentos",)}[perfil]
-                        user.tipo_ofertados.add(*{s.tipo_servico for s in self.servicos if s.tipo_servico.nome.removeprefix(f"{TAG} ") in esperados})
-                        guiche = self.entidade(Guiche, email, unidade=unidade, nome=f"{TAG} Sala {perfil} {repeticao + 1}")
+                    if perfil in TIPOS_DOS_PERFIS:
+                        esperados = TIPOS_DOS_PERFIS[perfil]
+                        user.tipo_ofertados.add(*{s.tipo_servico for s in self.servicos
+                                                  if s.tipo_servico.nome.removeprefix(f"{TAG} ") in esperados})
+                        guiche = self.entidade(Guiche, chave, unidade=unidade, nome=self.nome_guiche(perfil, repeticao))
                         if user.guiche_atual_id is None:
                             Usuario.objects.using(self.db).filter(pk=user.pk).update(guiche_atual=guiche)
-                    self.entidade(EscalaTrabalho, email, profissional=user, unidade=unidade,
+                    self.entidade(EscalaTrabalho, chave, profissional=user, unidade=unidade,
                         dias_semana=["SEG", "TER", "QUA", "QUI", "SEX", "SAB", "DOM"],
                         turno1_inicio=time(8), turno1_fim=time(12), turno2_inicio=time(13), turno2_fim=time(17))
                     self.profissionais[unidade.pk].setdefault(perfil, []).append(user)
+                    self.logins_por_unidade[unidade.nome][f"{perfil} {repeticao + 1}" if perfil == "medico" else perfil] = user.email
                     if ui == 0 and repeticao == 0:
-                        self.logins[perfil] = email
+                        self.logins[perfil] = user.email
 
     def perfil_do_cidadao(self, idx, unidade):
         var = self.variacao
@@ -210,10 +324,8 @@ class CargaDemonstracao:
         self.pacientes = []
         for idx in range(self.quantidades["cidadaos"]):
             unidade = self.unidades[idx % len(self.unidades)]
-            self.pacientes.append(self.registro(Cidadao, idx, nome=f"{TAG} Pessoa {idx + 1:04d}",
-                cpf=cpf_sintetico(810000000 + idx), email=f"pessoa{idx + 1:04d}@{DOMINIO}", telefone="85988888888",
-                unidade_origem=unidade, logradouro=f"Rua Fictícia {idx % 20 + 1}", numero=str(idx % 500 + 1), cep="60000000",
-                **self.perfil_do_cidadao(idx, unidade)))
+            perfil = self.perfil_do_cidadao(idx, unidade)
+            self.pacientes.append(self.registro(Cidadao, idx, unidade_origem=unidade, **{**perfil, **self.cidadao(idx, unidade, perfil)}))
         self.inserir(Cidadao, self.pacientes)
 
     def registro_clinico(self, idx, criado, agendamento, paciente, unidade, profissional):
@@ -230,7 +342,7 @@ class CargaDemonstracao:
         febre = var.random() < 0.06
         return self.registro(RegistroAtendimento, idx, criado=criado, agendamento=agendamento,
             cidadao=paciente, unidade=unidade, profissional=profissional,
-            queixa_principal=f"{TAG} Registro clínico sintético.",
+            queixa_principal=self.queixa(cid, paciente),
             classificacao_risco=var.choices([r for r, _ in RISCOS], weights=[peso for _, peso in RISCOS])[0], cid=cid,
             pressao_sistolica=sistolica, pressao_diastolica=sistolica - var.randint(35, 50),
             glicemia_capilar=var.randint(140, 260) if diabetico else var.randint(75, 130),
@@ -241,7 +353,9 @@ class CargaDemonstracao:
         vagas, agendamentos, receitas, itens, registros = {}, [], [], [], []
         self.dispensacoes = defaultdict(list)
         self.saldos_vagas = Counter()
+        self.vagas = vagas
         ativos, ocupados = set(), set()
+        self.ativos = ativos
         qtd_fila = self.quantidades["fila"]
         pacientes = self.pacientes[:-qtd_fila] if qtd_fila else self.pacientes
         concluidos = {"FINALIZADO", "AGUARDANDO_RETIRADA", "CHAMANDO_RETIRADA"}
@@ -249,18 +363,21 @@ class CargaDemonstracao:
         por_unidade = defaultdict(list)
         for paciente in pacientes:
             por_unidade[paciente.unidade_origem_id].append(paciente)
+        self.por_unidade = por_unidade
+        borda = self.casos_de_borda()
         for idx in range(self.quantidades["agendamentos"]):
             ui = idx % len(self.unidades)
             unidade = self.unidades[ui]
-            servico = self.servicos[(idx // len(self.unidades)) % len(self.servicos)]
+            servico = self.servico_do_agendamento(idx)
             perfil = "farmaceutico" if servico.envolve_dispensacao else ("medico" if servico.gera_receita else "enfermeiro")
             profissional = rng.choice(self.profissionais[unidade.pk][perfil])
             paciente = rng.choice(pacientes)
             # A maior parte das consultas é na unidade de origem do paciente; o resto conta como fora do território.
             if por_unidade[unidade.pk] and var.random() < 0.75:
                 paciente = var.choice(por_unidade[unidade.pk])
-            dia = self.base - timedelta(days=0 if idx < 80 else rng.randrange(self.dias))
-            horario = time(8 + (idx // len(self.unidades)) % 9, 30 if idx % 2 else 0)
+            paciente = self.ajustar_paciente(paciente, servico, unidade)
+            dia = self.base - timedelta(days=0 if idx < self.AGENDAMENTOS_NO_DIA else rng.randrange(self.dias))
+            horario = self.horario_do_agendamento(idx)
             inicio = self.instante(dia, horario) + timedelta(minutes=rng.randint(0, 25))
             # Mesmo sorteio de antes, agora relativo à meta do serviço: cada unidade tem um desempenho diferente.
             sorteio = rng.randint(8, 20)
@@ -270,15 +387,17 @@ class CargaDemonstracao:
             situacao = rng.choices(["FINALIZADO", "AUSENCIA_CIDADAO", "CANCELADO_CRAS"], weights=[80, 13, 7])[0]
             if idx < 40:
                 situacao = ["AGENDADO", "ATIVADO", "CHAMANDO", "ATENDIMENTO", "FINALIZADO"][idx % 5]
-            if idx == 40:
+            if borda and idx == 40:
                 dia = self.base - timedelta(days=2)
                 horario = time(23, 50)
                 inicio = self.instante(dia, horario)
                 fim = inicio + timedelta(minutes=30)
                 situacao = "FINALIZADO"
-            if idx == 41:
+            if borda and idx == 41:
                 fim = inicio
                 situacao = "FINALIZADO"
+            if dia == self.base:
+                situacao = self.situacao_no_dia(idx, dia, horario, situacao)
             motivo = None
             if situacao == "CANCELADO_CRAS":
                 # Parte dos cancelamentos foi pedida pelo cidadão; os da unidade se dividem entre bloqueio e outros motivos.
@@ -326,7 +445,7 @@ class CargaDemonstracao:
                 data_hora_inicio_atendimento=inicio.time() if inicio else None,
                 data_hora_fim_atendimento=fim.time() if fim else None,
                 inicio_atendimento_em=inicio, fim_atendimento_em=fim, ativado_em=chegada, motivo_cancelamento=motivo,
-                final_atendimento="REALIZADO" if finalizado else None, observacoes_gerais=f"{TAG} Atendimento sintético.")
+                final_atendimento="REALIZADO" if finalizado else None, observacoes_gerais=self.observacao_agendamento(idx))
             agendamentos.append(ag)
             if finalizado and perfil == "enfermeiro":
                 registros.append(self.registro_clinico(idx, fim or self.instante(dia, horario), ag, paciente, unidade, profissional))
@@ -335,7 +454,7 @@ class CargaDemonstracao:
             emissao = fim or self.instante(dia, horario)
             receita = self.registro(Receita, idx, criado=emissao, agendamento=ag, cidadao=paciente,
                 profissional=profissional, data_emissao=emissao, data_validade=emissao.date() + timedelta(days=30),
-                observacoes=f"{TAG} Receita fictícia para demonstração; sem finalidade clínica.")
+                observacoes=self.observacao_receita())
             receitas.append(receita)
             pesos = [12 if mi == (ui * 2) % len(self.medicamentos) else 2 for mi in range(len(self.medicamentos))]
             escolhidos = []
@@ -347,8 +466,9 @@ class CargaDemonstracao:
                 med = self.medicamentos[mi]
                 quantidade = rng.choice([10, 20, 30, 60])
                 entregue = rng.choice([0, quantidade // 2, quantidade])
+                dosagem, frequencia, duracao_uso = self.posologia(med)
                 item = self.registro(ReceitaMedicamento, f"{idx}:{mi}", criado=emissao, receita=receita, medicamento=med,
-                    nome=med.nome, dosagem=f"{med.concentracao} mg", frequencia="Prescrição fictícia", duracao="Demonstração",
+                    nome=med.nome, dosagem=dosagem, frequencia=frequencia, duracao=duracao_uso,
                     quantidade_prescrita=quantidade, quantidade_dispensada=entregue,
                     status_dispensacao="DISPENSADO" if entregue == quantidade else ("PARCIAL" if entregue else "PENDENTE"))
                 itens.append(item)
@@ -360,6 +480,7 @@ class CargaDemonstracao:
                 ag.situacao = "AGUARDANDO_RETIRADA"
                 ag.retirar_medicamento = True
             registros.append(self.registro_clinico(idx, emissao, ag, paciente, unidade, profissional))
+        self.antes_de_gravar_agenda(vagas, agendamentos)
         for vaga in vagas.values():
             vaga.vagas_ocupadas = self.saldos_vagas[vaga.pk]
             vaga.vagas = max(1, vaga.vagas_ocupadas + vaga.pk.int % 4)
@@ -374,38 +495,41 @@ class CargaDemonstracao:
         self.inserir(ReceitaMedicamento, itens)
         self.inserir(RegistroAtendimento, registros)
 
+    def antes_de_gravar_agenda(self, vagas, agendamentos):
+        """Permite às subclasses acrescentar agendamentos (ex.: agenda futura) antes da gravação."""
+
     def estoque(self):
         lotes, movimentos = [], []
         for ui, unidade in enumerate(self.unidades):
             farmaceutico = self.profissionais[unidade.pk]["farmaceutico"][0]
             for mi, med in enumerate(self.medicamentos):
                 entregas = sorted(self.dispensacoes[(unidade.pk, med.pk)], key=lambda linha: (
-                    linha[2], str(identificador(MovimentacaoEstoque._meta.label_lower, f"saida:{linha[0].pk}")),
+                    linha[2], str(self.id(MovimentacaoEstoque, f"saida:{linha[0].pk}")),
                 ))
                 entregue = sum(qtd for _, qtd, _ in entregas)
-                alvo = 20 if (ui + mi) % 7 == 0 else self.rng.randint(150, 600)
+                alvo = self.saldo_alvo(ui, mi, med)
                 inicial = entregue + alvo
                 chave = f"{ui}:{mi}"
-                lote = self.registro(LoteMedicamento, chave, unidade=unidade, medicamento=med, numero_lote=f"DEMO-{ui:02d}-{mi:02d}",
-                    validade=self.base + timedelta(days=180), data_entrada=self.antigo.date(),
-                    quantidade_inicial=inicial, quantidade_atual=alvo, fornecedor=f"{TAG} Fornecedor fictício")
+                lote = self.registro(LoteMedicamento, chave, unidade=unidade, medicamento=med,
+                    data_entrada=self.antigo.date(), quantidade_inicial=inicial, quantidade_atual=alvo,
+                    **self.lote(ui, mi, med))
                 lotes.append(lote)
                 saldo = inicial
                 movimentos.append(self.registro(MovimentacaoEstoque, f"entrada:{chave}", lote=lote, tipo="ENTRADA",
-                    quantidade=inicial, saldo_apos=saldo, usuario=farmaceutico, data=self.antigo, motivo=f"{TAG} Entrada sintética"))
+                    quantidade=inicial, saldo_apos=saldo, usuario=farmaceutico, data=self.antigo, motivo=self.motivo_movimento("entrada")))
                 for item, quantidade, data in entregas:
                     saldo -= quantidade
                     movimentos.append(self.registro(MovimentacaoEstoque, f"saida:{item.pk}", criado=data, lote=lote,
                         tipo="SAIDA", quantidade=-quantidade, saldo_apos=saldo, usuario=farmaceutico,
-                        data=data, receita_item=item, motivo=f"{TAG} Dispensação sintética"))
-                if mi == 0:
+                        data=data, receita_item=item, motivo=self.motivo_movimento("saida")))
+                if mi == 0 and self.tem_lote_vencido(ui):
                     vencido = self.registro(LoteMedicamento, f"vencido:{ui}", unidade=unidade, medicamento=med,
-                        numero_lote=f"DEMO-VENCIDO-{ui:02d}", validade=self.base - timedelta(days=5),
-                        data_entrada=self.antigo.date(), quantidade_inicial=30, quantidade_atual=30)
+                        data_entrada=self.antigo.date(), quantidade_inicial=30, quantidade_atual=30,
+                        **self.lote(ui, mi, med, vencido=True))
                     lotes.append(vencido)
                     movimentos.append(self.registro(MovimentacaoEstoque, f"entrada-vencido:{ui}", lote=vencido,
                         tipo="ENTRADA", quantidade=30, saldo_apos=30, usuario=farmaceutico,
-                        data=self.antigo, motivo=f"{TAG} Lote vencido para testar alertas"))
+                        data=self.antigo, motivo=self.motivo_movimento("vencido")))
         self.inserir(LoteMedicamento, lotes)
         self.inserir(MovimentacaoEstoque, movimentos)
 
